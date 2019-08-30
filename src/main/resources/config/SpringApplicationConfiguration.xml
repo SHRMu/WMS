@@ -24,6 +24,8 @@
     <!-- 启动@AspectJ支持 -->
     <!--<aop:aspectj-autoproxy/>-->
 
+    <!-- 测试数据库连接 -->
+
 
     <!-- ============================================
                 ExcelUtil 配置
@@ -97,13 +99,21 @@
     <!-- ============================================
                持久化配置
         ============================================-->
+<!--    &lt;!&ndash; 配置数据源 &ndash;&gt;-->
+<!--    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">-->
+<!--        <property name="user" value="${jdbc.user}"/>-->
+<!--        <property name="password" value="${jdbc.password}"/>-->
+<!--        <property name="driverClass" value="${jdbc.driverClass}"/>-->
+<!--        <property name="jdbcUrl" value="${jdbc.jdbcUrl}"/>-->
+<!--        <property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"/>-->
+<!--    </bean>-->
     <!-- 配置数据源 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-        <property name="user" value="${jdbc.user}"/>
-        <property name="password" value="${jdbc.password}"/>
-        <property name="driverClass" value="${jdbc.driverClass}"/>
-        <property name="jdbcUrl" value="${jdbc.jdbcUrl}"/>
-        <property name="testConnectionOnCheckout" value="${jdbc.testConnectionOnCheckout}"/>
+        <property name="user" value="root"/>
+        <property name="password" value="hyhz126"/>
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/wms_db?useSSL=false&amp;useJDBCCompliantTimezoneShift=true&amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC"/>
+        <property name="testConnectionOnCheckout" value="true"/>
     </bean>
 
     <!-- 配置 SqlSessionFactoryBean -->

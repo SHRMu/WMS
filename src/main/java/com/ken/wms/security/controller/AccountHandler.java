@@ -24,6 +24,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
@@ -76,8 +77,8 @@ public class AccountHandler {
         if (currentUser != null && !currentUser.isAuthenticated()) {
             String id = (String) user.get(USER_ID);
             String password = (String) user.get(USER_PASSWORD);
+            System.out.println("input password : "+password);
             UsernamePasswordToken token = new UsernamePasswordToken(id, password);
-
             // 执行登陆操作
             try {
                 //会调用realms/UserAuthorizingRealm中的doGetAuthenticationInfo方法

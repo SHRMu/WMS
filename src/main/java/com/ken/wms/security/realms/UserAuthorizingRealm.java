@@ -19,6 +19,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,6 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
                 //获取该用户的所属仓库
                 List<RepositoryAdmin> repositoryAdmin = (List<RepositoryAdmin>) repositoryAdminManageService.selectByID(userInfoDTO.getUserID()).get("data");
                 session.setAttribute("repositoryBelong", (repositoryAdmin.isEmpty()) ? "none" : repositoryAdmin.get(0).getRepositoryBelongID());
-
 
                 // 结合验证码对密码进行处理
                 String checkCode = (String) session.getAttribute("checkCode");
