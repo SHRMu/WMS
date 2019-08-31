@@ -604,6 +604,7 @@ function infoModal(type, msg) {
 		</div>
 	</div>
 </div>
+
 <!-- 提示消息模态框 -->
 <div class="modal fade" id="info_modal" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true">
