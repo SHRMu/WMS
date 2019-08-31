@@ -170,9 +170,6 @@ public class StorageManageHandler {
             }
         }
 
-        if (rows == null)
-            rows = new ArrayList<>();
-
         // 设置 Response
         responseContent.setCustomerInfo("rows", rows);
         responseContent.setResponseTotal(total);

@@ -88,13 +88,13 @@ public class CustomerManageHandler {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
-        List<Supplier> rows = null;
+        List<Customer> rows = null;
         long total = 0;
 
         Map<String, Object> queryResult = query(searchType, keyWord, offset, limit);
 
         if (queryResult != null) {
-            rows = (List<Supplier>) queryResult.get("data");
+            rows = (List<Customer>) queryResult.get("data");
             total = (long) queryResult.get("total");
         }
 

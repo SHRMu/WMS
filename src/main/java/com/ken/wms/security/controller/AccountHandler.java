@@ -77,7 +77,6 @@ public class AccountHandler {
         if (currentUser != null && !currentUser.isAuthenticated()) {
             String id = (String) user.get(USER_ID);
             String password = (String) user.get(USER_PASSWORD);
-            System.out.println("input password : "+password);
             UsernamePasswordToken token = new UsernamePasswordToken(id, password);
             // 执行登陆操作
             try {

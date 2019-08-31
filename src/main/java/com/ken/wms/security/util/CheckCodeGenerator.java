@@ -24,7 +24,7 @@ public class CheckCodeGenerator {
 	private static int width = 80;// 生成验证码的宽度
 	private static int height = 35;// 生成验证码的高度
 	private static int codeCount = 4;// 验证码个数
-	private static int lineCounr = 20;
+	private static int lineCounr = 10;
 	private static Font font;// 验证码字体样式
 
 	static {
