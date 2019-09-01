@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="de.demarks.wms.dao.DetectMapper">
+
+    <resultMap type="de.demarks.wms.domain.DetectDO" id="stockInDO">
+        <id property="id" column="DETECTION_ID"/>
+        <result property="goodID" column="DETECTION__GOOD_ID"/>
+        <result property="batch" column="DETECTION__BATCH" />
+        <result property="repositoryID" column="DETECTION_REPOSITORY_ID"/>
+        <result property="passed" column="DETECTION_NUMBER"/>
+        <result property="scratch" column="DETECTION_SCRATCH"/>
+        <result property="damage" column="DETECTION_DAMAGE" />
+        <result property="time" column="STOCKIN_TIME"/>
+        <result property="personInCharge" column="STOCKIN_PERSON"/>
+    </resultMap>
+
+    <insert id="insert">
+		insert into wms_detect(RECORD_GOODID,RECORD_BATCH,RECORD_REPOSITORYID,RECORD_PASSED,RECORD_SCRATCH,RECORD_DAMAGE,RECORD_TIME,RECORD_PERSON)
+		values(#{goodID},#{batch},#{repositoryID},#{passed},#{scratch},#{damage},#{time},#{personInCharge})
+	</insert>
+
+</mapper>
