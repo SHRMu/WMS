@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-	<entity class="com.ken.wms.domain.Supplier">
+	<entity class="de.demarks.wms.domain.Supplier">
 		<property>
 			<field>name</field>
 			<value>供应商名</value>
@@ -24,7 +24,7 @@
 		</property>
 	</entity>
 	
-	<entity class="com.ken.wms.domain.Customer">
+	<entity class="de.demarks.wms.domain.Customer">
 		<property>
 			<field>name</field>
 			<value>客户名称</value>
@@ -47,7 +47,7 @@
 		</property>
 	</entity>
 	
-	<entity class="com.ken.wms.domain.Goods">
+	<entity class="de.demarks.wms.domain.Goods">
 		<property>
 			<field>id</field>
 			<value>货物ID</value>
@@ -70,7 +70,7 @@
 		</property>
 	</entity>
 	
-	<entity class="com.ken.wms.domain.Repository">
+	<entity class="de.demarks.wms.domain.Repository">
 		<property>
 			<field>id</field>
 			<value>仓库ID</value>
@@ -101,7 +101,7 @@
 		</property>
 	</entity>
 	
-	<entity class="com.ken.wms.domain.RepositoryAdmin">
+	<entity class="de.demarks.wms.domain.RepositoryAdmin">
 		<property>
 			<field>id</field>
 			<value>ID</value>
@@ -131,7 +131,7 @@
 			<value>所属仓库ID</value>
 		</property>
 	</entity>
-	<entity class="com.ken.wms.domain.Storage">
+	<entity class="de.demarks.wms.domain.Storage">
 		<property>
 			<field>goodsID</field>
 			<value>货物ID</value>
