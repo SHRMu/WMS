@@ -2,21 +2,23 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_goods = "none";
+	var search_type_repositoryBatch = "none";
 	var search_keyWord = "";
 	var selectID;
 
 	$(function() {
 		optionAction();
 		searchAction();
-		goodsListInit();
+		datePickerInit();
+		repositorySelectorInit()
+		repositoryListInit();
 		bootstrapValidatorInit();
 
-		addGoodsAction();
-		editGoodsAction();
-		deleteGoodsAction();
-		importGoodsAction();
-		exportGoodsAction()
+		addRepositoryAction();
+		editRepositoryAction();
+		deleteRepositoryAction();
+		importRepositoryAction();
+		exportRepositoryAction()
 	})
 
 	// 下拉框選擇動作
@@ -26,13 +28,13 @@
 			$("#search_input").val("");
 			if (type == "所有") {
 				$("#search_input").attr("readOnly", "true");
-				search_type_goods = "searchAll";
-			} else if (type == "货物ID") {
+				search_type_repositoryBatch = "searchAll";
+			} else if (type == "批次数") {
 				$("#search_input").removeAttr("readOnly");
-				search_type_goods = "searchByID";
-			} else if (type == "货物名称") {
+				search_type_repositoryBatch = "searchByNumber";
+			} else if (type == "批次状态") {
 				$("#search_input").removeAttr("readOnly");
-				search_type_goods = "searchByName";
+				search_type_repositoryBatch = "searchByStatus";
 			} else {
 				$("#search_input").removeAttr("readOnly");
 			}
@@ -55,38 +57,69 @@
 		var temp = {
 			limit : params.limit,
 			offset : params.offset,
-			searchType : search_type_goods,
+			searchType : search_type_repositoryBatch,
 			keyWord : search_keyWord
 		}
 		return temp;
 	}
 
+	// 仓库下拉列表初始化
+	function repositorySelectorInit(){
+		$.ajax({
+			type : 'GET',
+			url : 'repositoryManage/getRepositoryList',
+			dataType : 'json',
+			contentType : 'application/json',
+			data : {
+				searchType : 'searchAll',
+				keyWord : '',
+				offset : -1,
+				limit : -1
+			},
+			success : function(response){
+				$.each(response.rows,function(index,elem){
+					$('#repositoryBatch_repositoryID').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
+				});
+			},
+			error : function(response){
+				$('#repositoryBatch_repositoryID').append("<option value='-1'>加载失败</option>");
+			}
+
+		})
+	}
+
 	// 表格初始化
-	function goodsListInit() {
-		$('#goodsList')
+	function repositoryListInit() {
+		$('#repositoryBatchList')
 				.bootstrapTable(
 						{
 							columns : [
 									{
 										field : 'id',
-										title : '货物ID'
+										title : '仓库ID'
 									//sortable: true
 									},
 									{
-										field : 'name',
-										title : '货物名称'
+										field : 'address',
+										title : '仓库地址'
 									},
 									{
-										field : 'type',
-										title : '货物类型'
+										field : 'adminName',
+										title : '仓库管理员'
 									},
 									{
-										field : 'size',
-										title : '货物尺寸'
+										field : 'status',
+										title : '状态'
 									},
 									{
-										field : 'weight',
-										title : '货物重量(kg)',
+										field : 'area',
+										title : '面积',
+										visible : false
+									},
+									{
+										field : 'desc',
+										title : '描述',
+										visible : false
 									},
 									{
 										field : 'operation',
@@ -107,12 +140,12 @@
 											'click .delete' : function(e,
 													value, row, index) {
 												selectID = row.id;
-												$('#deleteWarning_modal').modal(
-														'show');
+												$('#deleteWarning_modal')
+														.modal('show');
 											}
 										}
 									} ],
-							url : 'goodsManage/getGoodsList',
+							url : 'repositoryManage/getRepositoryList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -127,8 +160,24 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#goodsList').bootstrapTable('refresh', {
+		$('#repositoryBatchList').bootstrapTable('refresh', {
 			query : {}
+		});
+	}
+
+	// 日期选择器初始化
+	function datePickerInit(){
+		$('.form_date').datetimepicker({
+			format:'yyyy-mm-dd',
+			language : 'zh-CN',
+			endDate : new Date(),
+			weekStart : 1,
+			todayBtn : 1,
+			autoClose : 1,
+			todayHighlight : 1,
+			startView : 2,
+			forceParse : 0,
+			minView:2
 		});
 	}
 
@@ -137,16 +186,16 @@
 		$('#edit_modal').modal("show");
 
 		// load info
-		$('#goods_form_edit').bootstrapValidator("resetForm", true);
-		$('#goods_name_edit').val(row.name);
-		$('#goods_type_edit').val(row.type);
-		$('#goods_size_edit').val(row.size);
-		$('#goods_weight_edit').val(row.weight);
+		$('#repository_form_edit').bootstrapValidator("resetForm", true);
+		$('#repository_address_edit').val(row.address);
+		$('#repository_status_edit').val(row.status);
+		$('#repository_area_edit').val(row.area);
+		$('#repository_desc_edit').val(row.desc);
 	}
 
-	// 添加供应商模态框数据校验
+	// 添加仓库模态框数据校验
 	function bootstrapValidatorInit() {
-		$("#goods_form,#goods_form_edit").bootstrapValidator({
+		$("#repository_form,#repository_form_edit").bootstrapValidator({
 			message : 'This is not valid',
 			feedbackIcons : {
 				valid : 'glyphicon glyphicon-ok',
@@ -155,17 +204,24 @@
 			},
 			excluded : [ ':disabled' ],
 			fields : {
-				goods_name : {
+				repository_address : {
 					validators : {
 						notEmpty : {
-							message : '货物名称不能为空'
+							message : '仓库地址不能为空'
 						}
 					}
 				},
-				goods_weight : {
+				repository_status : {
 					validators : {
 						notEmpty : {
-							message : '货物重量不能为空'
+							message : '仓库状态不能为空'
+						}
+					}
+				},
+				repository_area : {
+					validators : {
+						notEmpty : {
+							message : '仓库面积不能为空'
 						}
 					}
 				}
@@ -173,29 +229,29 @@
 		})
 	}
 
-	// 编辑货物信息
-	function editGoodsAction() {
+	// 编辑仓库信息
+	function editRepositoryAction() {
 		$('#edit_modal_submit').click(
 				function() {
-					$('#goods_form_edit').data('bootstrapValidator')
+					$('#repository_form_edit').data('bootstrapValidator')
 							.validate();
-					if (!$('#goods_form_edit').data('bootstrapValidator')
+					if (!$('#repository_form_edit').data('bootstrapValidator')
 							.isValid()) {
 						return;
 					}
 
 					var data = {
 						id : selectID,
-						name : $('#goods_name_edit').val(),
-						type : $('#goods_type_edit').val(),
-						size : $('#goods_size_edit').val(),
-						weight : $('#goods_weight_edit').val(),
+						address : $('#repository_address_edit').val(),
+						status : $('#repository_status_edit').val(),
+						area : $('#repository_area_edit').val(),
+						desc : $('#repository_desc_edit').val(),
 					}
 
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'goodsManage/updateGoods',
+						url : 'repositoryManage/updateRepository',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -205,10 +261,10 @@
 							var msg;
 							if (response.result == "success") {
 								type = "success";
-								msg = "货物信息更新成功";
+								msg = "仓库信息更新成功";
 							} else if (resposne == "error") {
 								type = "error";
-								msg = "货物信息更新失败"
+								msg = "仓库信息更新失败"
 							}
 							infoModal(type, msg);
 							tableRefresh();
@@ -219,58 +275,59 @@
 				});
 	}
 
-	// 刪除货物信息
-	function deleteGoodsAction(){
-		$('#delete_confirm').click(function(){
+	// 刪除仓库信息
+	function deleteRepositoryAction() {
+		$('#delete_confirm').click(function() {
 			var data = {
-				"goodsID" : selectID
+				"repositoryID" : selectID
 			}
-			
+
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "goodsManage/deleteGoods",
+				url : "repositoryManage/deleteRepository",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
-				success : function(response){
+				success : function(response) {
 					$('#deleteWarning_modal').modal("hide");
 					var type;
 					var msg;
-					if(response.result == "success"){
+					if (response.result == "success") {
 						type = "success";
-						msg = "货物信息删除成功";
-					}else{
+						msg = "仓库信息删除成功";
+					} else {
 						type = "error";
-						msg = "货物信息删除失败";
+						msg = "仓库信息删除失败";
 					}
 					infoModal(type, msg);
 					tableRefresh();
-				},error : function(response){
+				},
+				error : function(response) {
 				}
 			})
-			
+
 			$('#deleteWarning_modal').modal('hide');
 		})
 	}
 
-	// 添加货物信息
-	function addGoodsAction() {
-		$('#add_goods').click(function() {
+	// 添加仓库信息
+	function addRepositoryAction() {
+		$('#add_repositoryBatch').click(function() {
 			$('#add_modal').modal("show");
 		});
 
 		$('#add_modal_submit').click(function() {
 			var data = {
-				name : $('#goods_name').val(),
-				type : $('#goods_type').val(),
-				size : $('#goods_size').val(),
-				weight : $('#goods_weight').val(),
+				address : $('#repository_address').val(),
+				status : $('#repository_status').val(),
+				area : $('#repository_area').val(),
+				desc : $('#repository_desc').val(),
 			}
 			// ajax
 			$.ajax({
 				type : "POST",
-				url : "goodsManage/addGoods",
+				url : "repositoryManage/addRepository",
 				dataType : "json",
 				contentType : "application/json",
 				data : JSON.stringify(data),
@@ -280,20 +337,20 @@
 					var type;
 					if (response.result == "success") {
 						type = "success";
-						msg = "货物添加成功";
+						msg = "仓库添加成功";
 					} else if (response.result == "error") {
 						type = "error";
-						msg = "货物添加失败";
+						msg = "仓库添加失败";
 					}
 					infoModal(type, msg);
 					tableRefresh();
 
 					// reset
-					$('#goods_name').val("");
-					$('#goods_type').val("");
-					$('#goods_size').val("");
-					$('#goods_weight').val("");
-					$('#goods_form').bootstrapValidator("resetForm", true);
+					$('#repository_address').val("");
+					$('#repository_ststus').val("");
+					$('#repository_area').val("");
+					$('#repository_desc').val("");
+					$('#repository_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
 				}
@@ -304,9 +361,9 @@
 	var import_step = 1;
 	var import_start = 1;
 	var import_end = 3;
-	// 导入货物信息
-	function importGoodsAction() {
-		$('#import_goods').click(function() {
+	// 导入仓库信息
+	function importRepositoryAction() {
+		$('#import_repositoryBatch').click(function() {
 			$('#import_modal').modal("show");
 		});
 
@@ -349,24 +406,24 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "goodsManage/importGoods",
-				secureuri: false,
-				dataType: 'json',
-				fileElementId:"file",
-				success : function(data, status){
+				url : "repositoryManage/importRepository",
+				secureuri : false,
+				dataType : 'json',
+				fileElementId : "file",
+				success : function(data, status) {
 					var total = 0;
 					var available = 0;
-					var msg1 = "货物信息导入成功";
-					var msg2 = "货物信息导入失败";
+					var msg1 = "仓库信息导入成功";
+					var msg2 = "仓库信息导入失败";
 					var info;
 
 					$('#import_progress_bar').addClass("hide");
-					if(data.result == "success"){
+					if (data.result == "success") {
 						total = data.total;
 						available = data.available;
 						info = msg1;
 						$('#import_success').removeClass('hide');
-					}else{
+					} else {
 						info = msg2
 						$('#import_error').removeClass('hide');
 					}
@@ -374,7 +431,8 @@
 					$('#import_result').removeClass('hide');
 					$('#import_info').text(info);
 					$('#confirm').removeClass('disabled');
-				},error : function(data, status){
+				},
+				error : function(data, status) {
 				}
 			})
 		})
@@ -385,31 +443,33 @@
 		})
 	}
 
-	// 导出货物信息
-	function exportGoodsAction() {
-		$('#export_goods').click(function() {
+	// 导出仓库信息
+	function exportRepositoryAction() {
+		$('#export_repositoryBatch').click(function() {
 			$('#export_modal').modal("show");
 		})
 
-		$('#export_goods_download').click(function(){
-			var data = {
-				searchType : search_type_goods,
-				keyWord : search_keyWord
-			}
-			var url = "goodsManage/exportGoods?" + $.param(data)
-			window.open(url, '_blank');
-			$('#export_modal').modal("hide");
-		})
+		$('#export_repository_download').click(
+				function() {
+					var data = {
+						searchType : search_type_repositoryBatch,
+						keyWord : search_keyWord
+					}
+					var url = "repositoryManage/exportRepository?"
+							+ $.param(data)
+					window.open(url, '_blank');
+					$('#export_modal').modal("hide");
+				})
 	}
 
-	// 导入货物模态框重置
-	function importModalReset(){
+	// 导入仓库模态框重置
+	function importModalReset() {
 		var i;
-		for(i = import_start; i <= import_end; i++){
+		for (i = import_start; i <= import_end; i++) {
 			var step = "step" + i;
 			$('#' + step).removeClass("hide")
 		}
-		for(i = import_start; i <= import_end; i++){
+		for (i = import_start; i <= import_end; i++) {
 			var step = "step" + i;
 			$('#' + step).addClass("hide")
 		}
@@ -433,19 +493,15 @@
 		$('#submit').addClass("hide");
 		$('#confirm').addClass("hide");
 
-		//$('#file').wrap('<form>').closest('form').get(0).reset();
-		//$('#file').unwrap();
-		//var control = $('#file');
-		//control.replaceWith( control = control.clone( true ) );
 		$('#file').on("change", function() {
 			$('#previous').addClass("hide");
 			$('#next').addClass("hide");
 			$('#submit').removeClass("hide");
 		})
-		
+
 		import_step = 1;
 	}
-	
+
 	// 操作结果提示模态框
 	function infoModal(type, msg) {
 		$('#info_success').removeClass("hide");
@@ -459,9 +515,10 @@
 		$('#info_modal').modal("show");
 	}
 </script>
+
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>货物信息管理</li>
+		<li>批次信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
@@ -472,8 +529,8 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">批次数</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">批次状态</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
@@ -482,7 +539,7 @@
 				<div>
 					<div class="col-md-3 col-sm-4">
 						<input id="search_input" type="text" class="form-control"
-							placeholder="货物ID">
+							placeholder="批次信息查询">
 					</div>
 					<div class="col-md-2 col-sm-2">
 						<button id="search_button" class="btn btn-success">
@@ -495,13 +552,13 @@
 
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-5">
-				<button class="btn btn-sm btn-default" id="add_goods">
-					<span class="glyphicon glyphicon-plus"></span> <span>添加货物信息</span>
+				<button class="btn btn-sm btn-default" id="add_repositoryBatch">
+					<span class="glyphicon glyphicon-plus"></span> <span>添加批次信息</span>
 				</button>
-				<button class="btn btn-sm btn-default" id="import_goods">
+				<button class="btn btn-sm btn-default" id="import_repositoryBatch">
 					<span class="glyphicon glyphicon-import"></span> <span>导入</span>
 				</button>
-				<button class="btn btn-sm btn-default" id="export_goods">
+				<button class="btn btn-sm btn-default" id="export_repositoryBatch">
 					<span class="glyphicon glyphicon-export"></span> <span>导出</span>
 				</button>
 			</div>
@@ -510,13 +567,13 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="goodsList" class="table table-striped"></table>
+				<table id="repositoryBatchList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
 </div>
 
-<!-- 添加货物信息模态框 -->
+<!-- 添加仓库信息模态框 -->
 <div id="add_modal" class="modal fade" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -525,45 +582,66 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">添加货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">添加批次信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="goods_form"
+						<form class="form-horizontal" role="form" id="repository_form"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物名称：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次数：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_name"
-										name="goods_name" placeholder="货物名称">
+									<input type="text" class="form-control" id="repositoryBatch_number"
+										name="repositoryBatch_number" placeholder="批次数">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物类型：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次状态：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_type"
-										name="goods_type" placeholder="货物类型">
+									<select name="" class="form-control" id="repositoryBatch_status" name="repositoryBatch_status">
+										<option value="可用">可用</option>
+										<option value="结束">结束</option>
+									</select>
+<%--									<input type="text" class="form-control" id="repositoryBatch_status"--%>
+<%--										name="repositoryBatch_status" placeholder="批次状态">--%>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物尺寸：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>所属仓库：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_size"
-										name="goods_size" placeholder="货物尺寸">
+									<select name="" class="form-control" id="repositoryBatch_repositoryID" name="repositoryBatch_repositoryID">
+										<option value="">请选择仓库</option>
+									</select>
+<%--									<label for="" class="form-label">入库仓库：</label>--%>
+<%--									<select name="" id="repository_selector" class="form-control">--%>
+<%--										<option value="">请选择仓库</option>--%>
+<%--									</select>--%>
+									<%--									<input type="text" class="form-control" id="repositoryBatch_status"--%>
+									<%--										name="repositoryBatch_status" placeholder="批次状态">--%>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物重量(kg)：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>开始时间：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_weight"
-										name="goods_weight" placeholder="货物重量">
+<%--									<input type="text" class="form-control" id="repository_status"--%>
+<%--										name="repository_status" placeholder="仓库状态">--%>
+									<input class="form_date form-control" value="" id="repositoryBatch_time" name="repositoryBatch_time" placeholder="开始时间">
+
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次描述：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<textarea class="form-control" id="repositoryBatch_desc"
+										name="repositoryBatch_desc" placeholder="批次描述" style="min-width: 100%"></textarea>
 								</div>
 							</div>
 						</form>
@@ -583,7 +661,7 @@
 	</div>
 </div>
 
-<!-- 导入货物信息模态框 -->
+<!-- 导入仓库信息模态框 -->
 <div class="modal fade" id="import_modal" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -592,7 +670,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">导入货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">导入仓库信息</h4>
 			</div>
 			<div class="modal-body">
 				<div id="step1">
@@ -600,11 +678,11 @@
 						<div class="col-md-1 col-sm-1"></div>
 						<div class="col-md-10 col-sm-10">
 							<div>
-								<h4>点击下面的下载按钮，下载货物信息电子表格</h4>
+								<h4>点击下面的下载按钮，下载仓库信息电子表格</h4>
 							</div>
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<a class="btn btn-info"
-									href="commons/fileSource/download/goodsInfo.xlsx"
+									href="commons/fileSource/download/repositoryInfo.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>
@@ -617,7 +695,7 @@
 						<div class="col-md-1 col-sm-1"></div>
 						<div class="col-md-10 col-sm-10">
 							<div>
-								<h4>请按照货物信息电子表格中指定的格式填写需要添加的一个或多个货物信息</h4>
+								<h4>请按照仓库信息电子表格中指定的格式填写需要添加的一个或多个仓库信息</h4>
 							</div>
 							<div class="alert alert-info"
 								style="margin-top: 10px; margin-buttom: 30px">
@@ -632,13 +710,15 @@
 						<div class="col-md-8 col-sm-10">
 							<div>
 								<div>
-									<h4>请点击下面上传文件按钮，上传填写好的货物信息电子表格</h4>
+									<h4>请点击下面上传文件按钮，上传填写好的客户信息电子表格</h4>
 								</div>
 								<div style="margin-top: 30px; margin-buttom: 15px">
 									<span class="btn btn-info btn-file"> <span> <span
 											class="glyphicon glyphicon-upload"></span> <span>上传文件</span>
-									</span> 
-									<form id="import_file_upload"><input type="file" id="file" name="file"></form>
+									</span>
+										<form id="import_file_upload">
+											<input type="file" id="file" name="file">
+										</form>
 									</span>
 								</div>
 							</div>
@@ -657,11 +737,6 @@
 									<span class="sr-only">请稍后...</span>
 								</div>
 							</div>
-							<!-- 
-							<div style="text-align: center">
-								<h4 id="import_info"></h4>
-							</div>
-							 -->
 						</div>
 						<div class="col-md-1 col-sm-1"></div>
 					</div>
@@ -669,7 +744,8 @@
 						<div class="col-md-4 col-sm-4"></div>
 						<div class="col-md-4 col-sm-4">
 							<div id="import_result" class="hide">
-								<div id="import_success" class="hide" style="text-align: center;">
+								<div id="import_success" class="hide"
+									style="text-align: center;">
 									<img src="media/icons/success-icon.png" alt=""
 										style="width: 100px; height: 100px;">
 								</div>
@@ -709,7 +785,7 @@
 	</div>
 </div>
 
-<!-- 导出货物信息模态框 -->
+<!-- 导出仓库信息模态框 -->
 <div class="modal fade" id="export_modal" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -718,7 +794,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">导出货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">导出仓库信息</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row">
@@ -727,8 +803,8 @@
 							style="width: 70px; height: 70px; margin-top: 20px;">
 					</div>
 					<div class="col-md-8 col-sm-8">
-						<h3>是否确认导出货物信息</h3>
-						<p>(注意：请确定要导出的货物信息，导出的内容为当前列表的搜索结果)</p>
+						<h3>是否确认导出仓库信息</h3>
+						<p>(注意：请确定要导出的仓库信息，导出的内容为当前列表的搜索结果)</p>
 					</div>
 				</div>
 			</div>
@@ -736,7 +812,8 @@
 				<button class="btn btn-default" type="button" data-dismiss="modal">
 					<span>取消</span>
 				</button>
-				<button class="btn btn-success" type="button" id="export_goods_download">
+				<button class="btn btn-success" type="button"
+					id="export_repository_download">
 					<span>确认下载</span>
 				</button>
 			</div>
@@ -803,8 +880,8 @@
 							style="width: 70px; height: 70px; margin-top: 20px;">
 					</div>
 					<div class="col-md-8 col-sm-8">
-						<h3>是否确认删除该条货物信息</h3>
-						<p>(注意：若该货物已经有仓库进出库记录或有仓存记录，则该货物信息将不能删除成功。如需删除该货物的信息，请先确保该货物没有关联的仓库进出库记录或有仓存记录)</p>
+						<h3>是否确认删除该条仓库信息</h3>
+						<p>(注意：若该仓库已经有出入库记录或仓存信息，则该仓库信息将不能删除成功。如需删除该仓库的信息，请保证该仓库没有出入库和仓存信息关联)</p>
 					</div>
 				</div>
 			</div>
@@ -820,7 +897,7 @@
 	</div>
 </div>
 
-<!-- 编辑货物信息模态框 -->
+<!-- 编辑仓库信息模态框 -->
 <div id="edit_modal" class="modal fade" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -829,47 +906,48 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">编辑货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">编辑仓库信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="goods_form_edit"
+						<form class="form-horizontal" role="form" id="repository_form_edit"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物名称：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库地址：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_name_edit"
-										name="goods_name" placeholder="货物名称">
+									<input type="text" class="form-control" id="repository_address_edit"
+										name="repository_address" placeholder="仓库地址">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物类型：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库面积：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control"
-										id="goods_type_edit" name="goods_type"
-										placeholder="货物类型">
+										id="repository_area_edit" name="repository_area"
+										placeholder="仓库面积">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物尺寸：</span>
-								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="goods_size_edit"
-										name="goods_size" placeholder="货物尺寸">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物重量(kg)：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库状态：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control"
-										id="goods_weight_edit" name="goods_weight"
-										placeholder="货物重量">
+										id="repository_status_edit" name="repository_status"
+										placeholder="仓库状态">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库描述：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<textarea class="form-control"
+										id="repository_desc_edit" name="repository_desc"
+										placeholder="仓库描述"></textarea>
 								</div>
 							</div>
 						</form>

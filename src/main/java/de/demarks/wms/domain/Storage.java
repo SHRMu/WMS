@@ -3,7 +3,7 @@ package de.demarks.wms.domain;
 /**
  * 仓库库存
  * 
- * @author Ken
+ * @author Shouran
  *
  */
 public class Storage {
@@ -12,9 +12,12 @@ public class Storage {
 	private String goodsName;// 货物名称
 	private String goodsSize;// 货物规格
 	private String goodsType;// 货物类型
-	private Double goodsValue;// 货物价值
+	private double goodsWeight;// 货物重量
+	private Long batchID; //批次ID
+	private String batchCode; //批次编号
 	private Integer repositoryID;// 仓库ID
 	private Long number;// 库存数量
+
 
 	public Integer getGoodsID() {
 		return goodsID;
@@ -48,12 +51,13 @@ public class Storage {
 		this.goodsType = goodsType;
 	}
 
-	public Double getGoodsValue() {
-		return goodsValue;
+
+	public double getGoodsWeight() {
+		return goodsWeight;
 	}
 
-	public void setGoodsValue(Double goodsValue) {
-		this.goodsValue = goodsValue;
+	public void setGoodsWeight(double goodsWeight) {
+		this.goodsWeight = goodsWeight;
 	}
 
 	public Integer getRepositoryID() {
@@ -72,11 +76,34 @@ public class Storage {
 		this.number = number;
 	}
 
-	@Override
-	public String toString() {
-		return "Storage [goodsID=" + goodsID + ", goodsName=" + goodsName + ", goodsSize=" + goodsSize + ", goodsType="
-				+ goodsType + ", goodsValue=" + goodsValue + ", repositoryID=" + repositoryID + ", number=" + number
-				+ "]";
+	public Long getBatchID() {
+		return batchID;
 	}
 
+	public void setBatchID(Long batchID) {
+		this.batchID = batchID;
+	}
+
+	public String getBatchCode() {
+		return batchCode;
+	}
+
+	public void setBatchCode(String batchCode) {
+		this.batchCode = batchCode;
+	}
+
+	@Override
+	public String toString() {
+		return "Storage{" +
+				"goodsID=" + goodsID +
+				", goodsName='" + goodsName + '\'' +
+				", goodsSize='" + goodsSize + '\'' +
+				", goodsType='" + goodsType + '\'' +
+				", goodsWeight=" + goodsWeight +
+				", batchID=" + batchID +
+				", batchCode='" + batchCode + '\'' +
+				", repositoryID=" + repositoryID +
+				", number=" + number +
+				'}';
+	}
 }

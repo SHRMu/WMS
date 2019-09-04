@@ -2,16 +2,16 @@ package de.demarks.wms.domain;
 
 /**
  * 货物信息
- * @author Ken
+ * @author Shouran
  *
  */
 public class Goods {
 
-	private Integer id;// 货物ID
-	private String name;// 货物名
-	private String type;// 货物类型
+	private Integer id;// 货物ID 自增
+	private String name;// 货物名 A3101
+	private String type;// 货物类型 耳机/音响
 	private String size;// 货物规格
-	private Double value;// 货物价值
+	private float weight;// 货物重量
 
 	public Integer getId() {
 		return id;
@@ -45,17 +45,22 @@ public class Goods {
 		this.size = size;
 	}
 
-	public Double getValue() {
-		return value;
+	public float getWeight() {
+		return weight;
 	}
 
-	public void setValue(Double value) {
-		this.value = value;
+	public void setWeight(float weight) {
+		this.weight = weight;
 	}
 
 	@Override
 	public String toString() {
-		return "Goods [id=" + id + ", name=" + name + ", type=" + type + ", size=" + size + ", value=" + value + "]";
+		return "Goods{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", type='" + type + '\'' +
+				", size='" + size + '\'' +
+				", weight=" + weight +
+				'}';
 	}
-
 }

@@ -5,10 +5,12 @@ import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.dao.GoodsMapper;
+import de.demarks.wms.dao.RepositoryBatchMapper;
 import de.demarks.wms.dao.RepositoryMapper;
 import de.demarks.wms.dao.StorageMapper;
 import de.demarks.wms.domain.Goods;
 import de.demarks.wms.domain.Repository;
+import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.domain.Storage;
 import de.demarks.wms.exception.StorageManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
@@ -35,6 +37,8 @@ public class StorageManageServiceImpl implements StorageManageService {
     private StorageMapper storageMapper;
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private RepositoryBatchMapper repositoryBatchMapper;
     @Autowired
     private RepositoryMapper repositoryMapper;
     @Autowired
@@ -267,23 +271,141 @@ public class StorageManageServiceImpl implements StorageManageService {
     }
 
     /**
+     * 指定批次ID的库存记录
+     *
+     * @param batchID   指定的批次ID
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByBatchID(Integer batchID, Integer Repository) throws StorageManageServiceException {
+        return selectByBatchID(batchID, Repository, -1, -1);
+    }
+
+    /**
+     * 分页返回指定批次ID的库存记录
+     *
+     * @param batchID   指定的批次ID
+     * @param offset    分页偏移值
+     * @param limit     分页大小
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByBatchID(Integer batchID, Integer repositoryID, int offset, int limit) throws StorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<Storage> storageList;
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                storageList = storageMapper.selectByBatchIDAndRepositoryID(batchID, repositoryID);
+                if (storageList != null) {
+                    PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
+                    total = pageInfo.getTotal();
+                } else
+                    storageList = new ArrayList<>();
+            } else {
+                storageList = storageMapper.selectByBatchIDAndRepositoryID(batchID, repositoryID);
+                if (storageList != null)
+                    total = storageList.size();
+                else
+                    storageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new StorageManageServiceException(e);
+        }
+
+        resultSet.put("data", storageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    /**
+     * 返回指定批次编号的库存记录
+     *
+     * @param batchCode 批次编号
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByBatchCode(String batchCode, Integer Repository) throws StorageManageServiceException {
+        return selectByBatchCode(batchCode, Repository, -1, -1);
+    }
+
+    /**
+     * 分页返回指定批次编号的库存记录
+     *
+     * @param batchCode 批次编号
+     * @param offset    分页偏移值
+     * @param limit     分页大小
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByBatchCode(String batchCode, Integer repositoryID, int offset, int limit) throws StorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<Storage> storageList;
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                storageList = storageMapper.selectByBatchCodeAndRepositoryID(batchCode, repositoryID);
+                if (storageList != null) {
+                    PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
+                    total = pageInfo.getTotal();
+                } else
+                    storageList = new ArrayList<>();
+            } else {
+                storageList = storageMapper.selectByBatchCodeAndRepositoryID(batchCode, repositoryID);
+                if (storageList != null)
+                    total = storageList.size();
+                else
+                    storageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new StorageManageServiceException(e);
+        }
+
+        resultSet.put("data", storageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    /**
      * 添加一条库存记录
      *
      * @param goodsID      指定的货物ID
+     * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
      * @param number       库存数量
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     @UserOperation(value = "添加库存记录")
     @Override
-    public boolean addNewStorage(Integer goodsID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean addNewStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
         try {
             boolean isAvailable = true;
 
             // validate
             Goods goods = goodsMapper.selectById(goodsID);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID);
             Repository repository = repositoryMapper.selectByID(repositoryID);
             if (goods == null)
+                isAvailable = false;
+            if (repositoryBatch == null)
                 isAvailable = false;
             if (repository == null)
                 isAvailable = false;
@@ -312,13 +434,14 @@ public class StorageManageServiceImpl implements StorageManageService {
      * 更新一条库存记录
      *
      * @param goodsID      指定的货物ID
+     * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
      * @param number       更新的库存数量
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     @UserOperation(value = "修改库存记录")
     @Override
-    public boolean updateStorage(Integer goodsID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean updateStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
         try {
             boolean isUpdate = false;
 
@@ -342,23 +465,24 @@ public class StorageManageServiceImpl implements StorageManageService {
 
     /**
      * 删除一条库存记录
-     * 货物ID与仓库ID可唯一确定一条库存记录
+     * 货物ID与批次ID与仓库ID可唯一确定一条库存记录
      *
      * @param goodsID      指定的货物ID
+     * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     @UserOperation(value = "删除库存记录")
     @Override
-    public boolean deleteStorage(Integer goodsID, Integer repositoryID) throws StorageManageServiceException {
+    public boolean deleteStorage(Integer goodsID, Integer batchID, Integer repositoryID) throws StorageManageServiceException {
         try {
             boolean isDelete = false;
 
             // validate
-            List<Storage> storageList = storageMapper.selectByGoodsIDAndRepositoryID(goodsID, repositoryID);
+            List<Storage> storageList = storageMapper.selectByGoodsIDAndBatchIDAndRepositoryID(goodsID, batchID, repositoryID);
             if (storageList != null && !storageList.isEmpty()) {
                 // delete
-                storageMapper.deleteByRepositoryIDAndGoodsID(goodsID, repositoryID);
+                storageMapper.deleteByRepositoryIDAndGoodsIDAndBatchID(goodsID, batchID, repositoryID);
                 isDelete = true;
             }
 
@@ -447,12 +571,13 @@ public class StorageManageServiceImpl implements StorageManageService {
      * 为指定的货物库存记录增加指定数目
      *
      * @param goodsID      货物ID
+     * @param batchID      批次ID
      * @param repositoryID 仓库ID
      * @param number       增加的数量
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     @Override
-    public boolean storageIncrease(Integer goodsID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean storageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
 
         // 检查货物库存增加数目的有效性
         if (number < 0)
@@ -463,9 +588,9 @@ public class StorageManageServiceImpl implements StorageManageService {
             Storage storage = getStorage(goodsID, repositoryID);
             if (storage != null) {
                 long newStorage = storage.getNumber() + number;
-                updateStorage(goodsID, repositoryID, newStorage);
+                updateStorage(goodsID, batchID, repositoryID, newStorage);
             } else {
-                addNewStorage(goodsID, repositoryID, number);
+                addNewStorage(goodsID, batchID, repositoryID, number);
             }
         }
         return true;
@@ -475,12 +600,13 @@ public class StorageManageServiceImpl implements StorageManageService {
      * 为指定的货物库存记录减少指定的数目
      *
      * @param goodsID      货物ID
+     * @param batchID      批次ID
      * @param repositoryID 仓库ID
      * @param number       减少的数量
      * @return 返回一个 boolean 值，若值为 true 表示数目减少成功，否则表示减少失败
      */
     @Override
-    public boolean storageDecrease(Integer goodsID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean storageDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
 
         synchronized (this) {
             // 检查对应的库存记录是否存在
@@ -491,7 +617,7 @@ public class StorageManageServiceImpl implements StorageManageService {
                     return false;
 
                 long newStorage = storage.getNumber() - number;
-                updateStorage(goodsID, repositoryID, newStorage);
+                updateStorage(goodsID,batchID, repositoryID, newStorage);
                 return true;
             } else
                 return false;

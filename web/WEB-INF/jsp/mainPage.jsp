@@ -97,8 +97,11 @@ pageEncoding="UTF-8"%>
                                            name="pagecomponent/storageManagement.jsp">库存查询</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="javascript:void(0)" id=""
-                                           class="menu_item"
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/detectRecordManagement.html">已检测记录</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
                                            name="pagecomponent/stockRecordManagement.html">出入库记录</a>
                                     </li>
                                 </shiro:hasRole>
@@ -123,6 +126,10 @@ pageEncoding="UTF-8"%>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
                                            name="pagecomponent/stock-inManagement.jsp">货物入库</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/detectManagement.jsp">货物检测</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
@@ -182,18 +189,17 @@ pageEncoding="UTF-8"%>
                         <div id="collapse4" class="panel-collapse collapse collapseBody">
                             <div class="panel-body">
                                 <ul class="list-group">
-                                    <!-- 去除供应商管理 -->
-<%--                                    <li class="list-group-item">--%>
-<%--                                        <a href="javascript:void(0)" id="" class="menu_item"--%>
-<%--                                           name="pagecomponent/supplierManagement.jsp">供应商信息管理</a>--%>
-<%--                                    </li>--%>
-                                    <li class="list-group-item">
-                                        <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/customerManagement.jsp">客户信息管理</a>
-                                    </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
                                            name="pagecomponent/goodsManagement.jsp">货物信息管理</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/repositoryBatchManagement.jsp">批次信息管理</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/customerManagement.jsp">客户信息管理</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"

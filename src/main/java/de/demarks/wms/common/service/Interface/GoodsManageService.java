@@ -71,7 +71,7 @@ public interface GoodsManageService {
     /**
      * 更新货物记录
      *
-     * @param goods 供应商信息
+     * @param goods 货物信息
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     boolean updateGoods(Goods goods) throws GoodsManageServiceException;

@@ -6,14 +6,15 @@
 	var search_keyWord = "";
 	var search_repository = "";
 	var select_goodsID;
+	var select_batchID;
 	var select_repositoryID;
 
 	$(function() {
-		optionAction();
-		searchAction();
-		storageListInit();
 		bootstrapValidatorInit();
 		repositoryOptionInit();
+		storageListInit();
+		optionAction();
+		searchAction();
 
 		addStorageAction();
 		editStorageAction();
@@ -22,29 +23,46 @@
 		exportStorageAction()
 	})
 
-	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
-	function optionAction() {
-		$(".dropOption").click(function() {
-			var type = $(this).text();
-			$("#search_input").val("");
-			if (type == "所有") {
-				$("#search_input_type").attr("readOnly", "true");
-				search_type_storage = "searchAll";
-			} else if (type == "货物ID") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsID";
-			} else if (type == "货物名称") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsName";
-			} else if(type = "货物类型"){
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsType";
-			}else {
-				$("#search_input_type").removeAttr("readOnly");
+	// 添加库存信息模态框数据校验
+	function bootstrapValidatorInit() {
+		$("#storage_form").bootstrapValidator({
+			message : 'This is not valid',
+			feedbackIcons : {
+				valid : 'glyphicon glyphicon-ok',
+				invalid : 'glyphicon glyphicon-remove',
+				validating : 'glyphicon glyphicon-refresh'
+			},
+			excluded : [ ':disabled' ],
+			fields : {
+				storage_goodsID : {
+					validators : {
+						notEmpty : {
+							message : '货物ID不能为空'
+						}
+					}
+				},
+				storage_batchID : {
+					validators : {
+						notEmpty : {
+							message : '批次ID不能为空'
+						}
+					}
+				},
+				storage_repositoryID : {
+					validators : {
+						notEmpty : {
+							message : '仓库ID不能为空'
+						}
+					}
+				},
+				storage_number : {
+					validators : {
+						notEmpty : {
+							message : '库存数量不能为空'
+						}
+					}
+				}
 			}
-
-			$("#search_type").text(type);
-			$("#search_input_type").attr("placeholder", type);
 		})
 	}
 
@@ -62,7 +80,7 @@
 				limit : -1
 			},
 			success : function(response){
-			    //组装option
+				//组装option
 				$.each(response.rows,function(index,elem){
 					$('#search_input_repository').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
 				})
@@ -71,6 +89,107 @@
 			}
 		});
 		$('#search_input_repository').append("<option value='all'>请选择仓库</option>");
+	}
+
+	// 表格初始化
+	function storageListInit() {
+		$('#storageList')
+				.bootstrapTable(
+						{
+							columns : [
+								{
+									field : 'goodsID',
+									title : '货物ID'
+									//sortable: true
+								},
+								{
+									field : 'goodsName',
+									title : '货物名称'
+								},
+								{
+									field : 'batchID',
+									title : '批次ID'
+								},
+								{
+									field : 'batchCode',
+									title : '批次编号'
+								},
+								{
+									field : 'goodsValue',
+									title : '货物价值',
+									visible : false
+								},
+								{
+									field : 'repositoryID',
+									title : '仓库ID'
+								},
+								{
+									field : 'number',
+									title : '库存数量'
+								},
+								{
+									field : 'operation',
+									title : '操作',
+									formatter : function(value, row, index) {
+										var s = '<button class="btn btn-info btn-sm edit"><span>编辑</span></button>';
+										var d = '<button class="btn btn-danger btn-sm delete"><span>删除</span></button>';
+										var fun = '';
+										return s + ' ' + d;
+									},
+									events : {
+										// 操作列中编辑按钮的动作，rowEditOperation(row)，传入row
+										'click .edit' : function(e, value,
+																 row, index) {
+											//selectID = row.id;
+											rowEditOperation(row);
+										},
+										'click .delete' : function(e,
+																   value, row, index) {
+											select_goodsID = row.goodsID;
+											select_batchID = row.batchID;
+											select_repositoryID = row.repositoryID
+											$('#deleteWarning_modal').modal(
+													'show');
+										}
+									}
+								} ],
+							url : 'storageManage/getStorageListWithRepository',
+							method : 'GET',
+							queryParams : queryParams,
+							sidePagination : "server",
+							dataType : 'json',
+							pagination : true,
+							pageNumber : 1,
+							pageSize : 5,
+							pageList : [ 5, 10, 25, 50, 100 ],
+							clickToSelect : true
+						});
+	}
+
+	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
+	function optionAction() {
+		$(".dropOption").click(function() {
+			var type = $(this).text();
+			$("#search_input").val("");
+			if (type == "所有") {
+				$("#search_input_type").attr("readOnly", "true");
+				search_type_storage = "searchAll";
+			} else if (type == "货物ID") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsID";
+			} else if (type == "批次ID") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByBatchID";
+			} else if(type = "货物类型"){
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsType";
+			}else {
+				$("#search_input_type").removeAttr("readOnly");
+			}
+
+			$("#search_type").text(type);
+			$("#search_input_type").attr("placeholder", type);
+		})
 	}
 
 	// 搜索动作
@@ -94,80 +213,6 @@
 		return temp;
 	}
 
-	// 表格初始化
-	function storageListInit() {
-		$('#storageList')
-				.bootstrapTable(
-						{
-							columns : [
-									{
-										field : 'goodsID',
-										title : '货物ID'
-									//sortable: true
-									},
-									{
-										field : 'goodsName',
-										title : '货物名称'
-									},
-									{
-										field : 'goodsType',
-										title : '货物类型'
-									},
-									{
-										field : 'goodsSize',
-										title : '货物尺寸',
-										visible : false
-									},
-									{
-										field : 'goodsValue',
-										title : '货物价值',
-										visible : false
-									},
-									{
-										field : 'repositoryID',
-										title : '仓库ID'
-									},
-									{
-										field : 'number',
-										title : '库存数量'
-									},
-									{
-										field : 'operation',
-										title : '操作',
-										formatter : function(value, row, index) {
-											var s = '<button class="btn btn-info btn-sm edit"><span>编辑</span></button>';
-											var d = '<button class="btn btn-danger btn-sm delete"><span>删除</span></button>';
-											var fun = '';
-											return s + ' ' + d;
-										},
-										events : {
-											// 操作列中编辑按钮的动作，rowEditOperation(row)，传入row
-											'click .edit' : function(e, value,
-													row, index) {
-												//selectID = row.id;
-												rowEditOperation(row);
-											},
-											'click .delete' : function(e,
-													value, row, index) {
-												select_goodsID = row.goodsID;
-												select_repositoryID = row.repositoryID
-												$('#deleteWarning_modal').modal(
-														'show');
-											}
-										}
-									} ],
-							url : 'storageManage/getStorageListWithRepository',
-							method : 'GET',
-							queryParams : queryParams,
-							sidePagination : "server",
-							dataType : 'json',
-							pagination : true,
-							pageNumber : 1,
-							pageSize : 5,
-							pageList : [ 5, 10, 25, 50, 100 ],
-							clickToSelect : true
-						});
-	}
 
 	// 表格刷新
 	function tableRefresh() {
@@ -183,44 +228,9 @@
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
 		$('#storage_goodsID_edit').text(row.goodsID);
+		$('#storage_batchID_edit').text(row.batchID);
 		$('#storage_repositoryID_edit').text(row.repositoryID);
 		$('#storage_number_edit').val(row.number);
-	}
-
-	// 添加库存信息模态框数据校验
-	function bootstrapValidatorInit() {
-		$("#storage_form").bootstrapValidator({
-			message : 'This is not valid',
-			feedbackIcons : {
-				valid : 'glyphicon glyphicon-ok',
-				invalid : 'glyphicon glyphicon-remove',
-				validating : 'glyphicon glyphicon-refresh'
-			},
-			excluded : [ ':disabled' ],
-			fields : {
-				storage_goodsID : {
-					validators : {
-						notEmpty : {
-							message : '货物ID不能为空'
-						}
-					}
-				},
-				storage_repositoryID : {
-					validators : {
-						notEmpty : {
-							message : '仓库ID不能为空'
-						}
-					}
-				},
-				storage_number : {
-					validators : {
-						notEmpty : {
-							message : '库存数量不能为空'
-						}
-					}
-				}
-			}
-		})
 	}
 
 	// 编辑库存信息，表单数据提交
@@ -236,6 +246,7 @@
 
 					var data = {
 						goodsID : $('#storage_goodsID_edit').text(),
+						batchID : $('#storage_batchID_edit').text(),
 						repositoryID : $('#storage_repositoryID_edit').text(),
 						number : $('#storage_number_edit').val(),
 					}
@@ -272,6 +283,7 @@
 		$('#delete_confirm').click(function(){
 			var data = {
 				"goodsID" : select_goodsID,
+				"batchID" : select_batchID,
 				"repositoryID" : select_repositoryID
 			}
 			
@@ -312,6 +324,7 @@
 		$('#add_modal_submit').click(function() {
 			var data = {
 				goodsID : $('#storage_goodsID').val(),
+				batchID : $('#storage_batchID').val(),
 				repositoryID : $('#storage_repositoryID').val(),
 				number : $('#storage_number').val()
 			}
@@ -338,6 +351,7 @@
 
 					// reset
 					$('#storage_goodsID').val("");
+					$('#storage_batchID').val("");
 					$('#storage_repositoryID').val("");
 					$('#storage_number').val("");
 					$('#storage_form').bootstrapValidator("resetForm", true);
@@ -507,6 +521,7 @@
 		$('#info_modal').modal("show");
 	}
 </script>
+
 <div class="panel panel-default">
 	<ol class="breadcrumb">
 		<li>库存信息管理</li>
@@ -521,7 +536,7 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">货物批次</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物类型</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
@@ -594,6 +609,14 @@
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="storage_goodsID"
 										name="storage_goodsID" placeholder="货物ID">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_batchID"
+										   name="storage_batchID" placeholder="批次ID">
 								</div>
 							</div>
 							<div class="form-group">
@@ -890,6 +913,13 @@
 								</label>
 								<div class="col-md-4 col-sm-4">
 									<p id="storage_goodsID_edit" class="form-control-static"></p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
+								</label>
+								<div class="col-md-4 col-sm-4">
+									<p id="storage_batchID_edit" class="form-control-static"></p>
 								</div>
 							</div>
 							<div class="form-group">

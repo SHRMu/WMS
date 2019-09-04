@@ -1,7 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <script>
+var stockout_packet = null;
+var stockout_batch = null;
 var stockout_repository = null;
+
 var stockout_customer = null;
 var stockout_goods = null;
 var stockout_number = null;
@@ -279,6 +282,8 @@ function stockoutOperation(){
 		}
 
 		data = {
+			packet : $('#packet_input').val(),
+			batch :  $('#batch_input').val(),
 			customerID : stockout_customer,
 			goodsID : stockout_goods,
 			repositoryID : stockout_repository,
@@ -352,6 +357,34 @@ function infoModal(type, msg) {
 						<li>货物出库</li>
 					</ol>
 					<div class="panel-body">
+						<div class="row" style="margin-bottom:25px">
+							<div class="col-md-6 col-sm-6">
+								<div class="row">
+									<div class="col-md-1 col-sm-1"></div>
+									<div class="col-md-10 col-sm-11">
+										<form action="" class="form-inline">
+											<div class="form-group">
+												<label for="" class="form-label">&nbsp;&nbsp;&nbsp;&nbsp;运单号：</label>
+												<input type="text" class="form-control" id="packet_input" placeholder="请输入包裹运单号">
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6 col-sm-6">
+								<div class="row">
+									<div class="col-md-1 col-sm-1"></div>
+									<div class="col-md-10 col-sm-11">
+										<form action="" class="form-inline">
+											<div class="form-group">
+												<label for="" class="form-label">&nbsp;批次号：</label>
+												<input type="text" class="form-control" id="batch_input" placeholder="请输入包裹批次号">
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
 						<div class="row">
 							<div class="col-md-6 col-sm-6">
 								<div class="row">
@@ -529,6 +562,7 @@ function infoModal(type, msg) {
 												<input type="text" class="form-control" placeholder="仓库编号">
 											-->
 												<select name="" id="repository_selector" class="form-control">
+													<option value="">请选择仓库</option>
 												</select>
 											</div>
 										</form>

@@ -196,7 +196,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
      */
     private boolean goodsCheck(Goods goods) {
         if (goods != null) {
-            if (goods.getName() != null && goods.getValue() != null) {
+            if (goods.getName() != null && goods.getSize() != null) {
                 return true;
             }
         }

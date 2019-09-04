@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 货物信息映射器
- * @author Ken
+ * @author Shouran
  *
  */
 @Repository
@@ -37,7 +37,7 @@ public interface GoodsMapper {
 	/**
 	 * 选择制定 goods name 的 goods
 	 * 模糊匹配
-	 * @param goodsName 货物德名称
+	 * @param goodsName 货物的名称
 	 * @return 返回模糊匹配指定goodsName的货物
 	 */
 	List<Goods> selectApproximateByName(String goodsName);

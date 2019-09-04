@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="de.demarks.wms.dao.RepositoryBatchMapper">
+
+	<resultMap type="de.demarks.wms.domain.RepositoryBatch" id="repositoryBatch">
+		<id property="id" column="REPO_BATCH_ID"/>
+		<result property="number" column="REPO_BATCH_NUMBER"/>
+		<result property="status" column="REPO_BATCH_STATUS"/>
+		<result property="desc" column="REPO_BATCH_DESC"/>
+		<result property="time" column="REPO_BATCH_TIME"/>
+		<result property="repositoryBelongID" column="REPO_BATCH_REPOID"/>
+	</resultMap>
+	
+	<select id="selectAll" resultMap="repositoryBatch">
+		select
+			REPO_BATCH_ID,
+			REPO_BATCH_NUMBER,
+			REPO_BATCH_STATUS,
+			REPO_BATCH_DESC,
+			REPO_BATCH_TIME,
+			REPO_BATCH_REPOID
+		from
+			wms_repo_batch
+	</select>
+	
+	<select id="selectByID" resultMap="repositoryBatch">
+		select
+			REPO_BATCH_ID,
+			REPO_BATCH_NUMBER,
+			REPO_BATCH_STATUS,
+			REPO_BATCH_DESC,
+			REPO_BATCH_TIME,
+			REPO_BATCH_REPOID
+		from
+			wms_repo_batch
+		where
+			REPO_BATCH_ID = #{id}
+	</select>
+	
+	<select id="selectByNumber" resultMap="repositoryBatch">
+		select
+			REPO_BATCH_ID,
+			REPO_BATCH_NUMBER,
+			REPO_BATCH_STATUS,
+			REPO_BATCH_DESC,
+			REPO_BATCH_TIME,
+			REPO_BATCH_REPOID
+		from
+			wms_repo_batch
+		where
+			REPO_BATCH_NUMBER = #{number}
+	</select>
+	
+	<select id="selectByRepositoryID" resultMap="repositoryBatch">
+		select
+			REPO_BATCH_ID,
+			REPO_BATCH_NUMBER,
+			REPO_BATCH_STATUS,
+			REPO_BATCH_DESC,
+			REPO_BATCH_TIME,
+			REPO_BATCH_REPOID
+		from
+			wms_repo_batch
+		where
+			REPO_BATCH_REPOID = #{repositoryID}
+	</select>
+	
+	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
+		insert into wms_repo_admin(REPO_BATCH_NUMBER,REPO_BATCH_STATUS,REPO_BATCH_DESC,REPO_BATCH_TIME,REPO_BATCH_REPOID)
+		values(#{number},#{number},#{status},#{desc},#{time},#{repositoryBelongID})
+	</insert>
+
+</mapper>

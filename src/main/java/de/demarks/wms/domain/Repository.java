@@ -2,7 +2,7 @@ package de.demarks.wms.domain;
 
 /**
  * 仓库信息
- * @author Ken
+ * @author Shouran
  *
  */
 public class Repository {

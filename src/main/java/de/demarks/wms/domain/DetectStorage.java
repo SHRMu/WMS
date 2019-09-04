@@ -3,7 +3,9 @@ package de.demarks.wms.domain;
 public class DetectStorage {
 
     private Integer goodsID;// 货物ID
-    private Integer batch; // 货物批次
+    private String goodsName; //货物名称
+    private Integer batchID; // 货物批次
+    private Integer batchCode; // 货物批次
     private Integer repositoryID;// 仓库ID
     private long passed; // 良品数
     private long scratch; // 划痕数
@@ -17,12 +19,28 @@ public class DetectStorage {
         this.goodsID = goodsID;
     }
 
-    public Integer getBatch() {
-        return batch;
+    public String getGoodsName() {
+        return goodsName;
     }
 
-    public void setBatch(Integer batch) {
-        this.batch = batch;
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public Integer getBatchID() {
+        return batchID;
+    }
+
+    public void setBatchID(Integer batchID) {
+        this.batchID = batchID;
+    }
+
+    public Integer getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(Integer batchCode) {
+        this.batchCode = batchCode;
     }
 
     public Integer getRepositoryID() {
@@ -62,7 +80,9 @@ public class DetectStorage {
     public String toString() {
         return "DetectStorage{" +
                 "goodsID=" + goodsID +
-                ", batch=" + batch +
+                ", goodsName='" + goodsName + '\'' +
+                ", batchID=" + batchID +
+                ", batchCode=" + batchCode +
                 ", repositoryID=" + repositoryID +
                 ", passed=" + passed +
                 ", scratch=" + scratch +

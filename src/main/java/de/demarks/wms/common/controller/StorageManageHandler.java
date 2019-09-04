@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * 库存管理请求处理
  *
- * @author Ken
+ * @author Shouran
  */
 @Controller
 @RequestMapping(value = "/**/storageManage")
@@ -40,8 +40,9 @@ public class StorageManageHandler {
     private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
-    private static final String SEARCH_BY_GOODS_NAME = "searchByGoodsName";
+    private static final String SEARCH_BY_BATCH_ID = "searchByBatchID";
     private static final String SEARCH_BY_GOODS_TYPE = "searchByGoodsType";
+    private static final String SEARCH_BY_BATCH_CODE = "searchByBatchCode";
     private static final String SEARCH_ALL = "searchAll";
 
     /**
@@ -84,12 +85,22 @@ public class StorageManageHandler {
                 } else
                     queryResult = storageManageService.selectByGoodsType(keyword, null, offset, limit);
                 break;
-            case SEARCH_BY_GOODS_NAME:
+            case SEARCH_BY_BATCH_ID:
+                if (StringUtils.isNumeric(keyword)){
+                    Integer batchID = Integer.valueOf(keyword);
+                    if (StringUtils.isNumeric(repositoryBelong)) {
+                        Integer repositoryID = Integer.valueOf(repositoryBelong);
+                        queryResult = storageManageService.selectByBatchID(batchID, repositoryID, offset, limit);
+                    } else
+                        queryResult = storageManageService.selectByBatchID(batchID, null, offset, limit);
+                }
+                break;
+            case SEARCH_BY_BATCH_CODE:
                 if (StringUtils.isNumeric(repositoryBelong)) {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = storageManageService.selectByGoodsName(keyword, repositoryID, offset, limit);
+                    queryResult = storageManageService.selectByBatchCode(keyword, repositoryID, offset, limit);
                 } else
-                    queryResult = storageManageService.selectByGoodsName(keyword, null, offset, limit);
+                    queryResult = storageManageService.selectByBatchCode(keyword, null, offset, limit);
                 break;
             default:
                 // do other thing
@@ -190,10 +201,13 @@ public class StorageManageHandler {
         boolean isAvailable = true;
 
         String goodsID = (String) params.get("goodsID");
+        String batchID = (String) params.get("batchID");
         String repositoryID = (String) params.get("repositoryID");
         String number = (String) params.get("number");
 
         if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
             isAvailable = false;
         if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
             isAvailable = false;
@@ -201,7 +215,7 @@ public class StorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = storageManageService.addNewStorage(Integer.valueOf(goodsID), Integer.valueOf(repositoryID),
+            isSuccess = storageManageService.addNewStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
@@ -225,10 +239,13 @@ public class StorageManageHandler {
         String result = Response.RESPONSE_RESULT_ERROR;
 
         String goodsID = (String) params.get("goodsID");
+        String batchID = (String) params.get("batchID");
         String repositoryID = (String) params.get("repositoryID");
         String number = (String) params.get("number");
 
         if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
             isAvailable = false;
         if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
             isAvailable = false;
@@ -236,7 +253,7 @@ public class StorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            result = storageManageService.updateStorage(Integer.valueOf(goodsID), Integer.valueOf(repositoryID),
+            result = storageManageService.updateStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
@@ -249,6 +266,7 @@ public class StorageManageHandler {
      * 删除一条库存信息
      *
      * @param goodsID      货物ID
+     * @param batchID      批次ID
      * @param repositoryID 仓库ID
      * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
      */
@@ -256,6 +274,7 @@ public class StorageManageHandler {
     public
     @ResponseBody
     Map<String, Object> deleteStorageRecord(@RequestParam("goodsID") String goodsID,
+                                            @RequestParam("batchID") String batchID,
                                             @RequestParam("repositoryID") String repositoryID) throws StorageManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -265,11 +284,13 @@ public class StorageManageHandler {
 
         if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
             isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
+            isAvailable = false;
         if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
             isAvailable = false;
 
         if (isAvailable) {
-            result = storageManageService.deleteStorage(Integer.valueOf(goodsID), Integer.valueOf(repositoryID))
+            result = storageManageService.deleteStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID))
                     ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

@@ -12,12 +12,22 @@ public class DetectDO {
     /**
      *  检测货物ID
      */
-    private Integer goodID;
+    private Integer goodsID;
 
     /**
-     *  检测货物批次
+     *  检测货物名称
      */
-    private Integer batch;
+    private String goodsName;
+
+    /**
+     *  检测货物批次ID
+     */
+    private Integer batchID;
+
+    /**
+     *  检测货物批次编号
+     */
+    private String batchCode;
 
     /**
      *  入库仓库ID
@@ -57,20 +67,36 @@ public class DetectDO {
         this.id = id;
     }
 
-    public Integer getGoodID() {
-        return goodID;
+    public Integer getGoodsID() {
+        return goodsID;
     }
 
-    public void setGoodID(Integer goodID) {
-        this.goodID = goodID;
+    public void setGoodsID(Integer goodsID) {
+        this.goodsID = goodsID;
     }
 
-    public Integer getBatch() {
-        return batch;
+    public String getGoodsName() {
+        return goodsName;
     }
 
-    public void setBatch(Integer batch) {
-        this.batch = batch;
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public Integer getBatchID() {
+        return batchID;
+    }
+
+    public void setBatchID(Integer batchID) {
+        this.batchID = batchID;
+    }
+
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
     }
 
     public Integer getRepositoryID() {
@@ -125,8 +151,10 @@ public class DetectDO {
     public String toString() {
         return "DetectDO{" +
                 "id=" + id +
-                ", goodID=" + goodID +
-                ", batch=" + batch +
+                ", goodsID=" + goodsID +
+                ", goodsName='" + goodsName + '\'' +
+                ", batchID=" + batchID +
+                ", batchCode='" + batchCode + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", passed=" + passed +
                 ", scratch=" + scratch +

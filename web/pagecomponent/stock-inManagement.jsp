@@ -55,6 +55,20 @@ function dataValidateInit(){
 		message : 'This is not valid',
 
 		fields : {
+			packet_input : {
+				validators : {
+					notEmpty : {
+						message : '入库包裹运单号不能为空'
+					},
+				}
+			},
+			batch_input : {
+				validators : {
+					notEmpty : {
+						message : '入库包裹批次号不能为空'
+					},
+				}
+			},
 			stockin_input : {
 				validators : {
 					notEmpty : {
@@ -125,7 +139,7 @@ function customerAutocomplete(){
 	})
 }
 
-// 填充发货商详细信息
+// 填充客户详细信息
 function customerInfoSet(customerID){
 	var detailInfo;
 	$.each(customerCache,function(index,elem){
@@ -290,8 +304,8 @@ function stockInOption(){
 		}
 
 		data = {
-			packet : stockin_packet,
-			batch : stockin_batch,
+			packet : $('#packet_input').val(),
+			batch : $('#batch_input').val(),
 			repositoryID : stockin_repository,
 			customerID : stockin_customer,
 			goodsID : stockin_goods,
@@ -330,6 +344,8 @@ function stockInOption(){
 
 // 页面重置
 function inputReset(){
+	$('#packet_input').val('');
+	$('#batch_input').val('');
 	$('#customer_input').val('');
 	$('#goods_input').val('');
 	$('#stockin_input').val('');

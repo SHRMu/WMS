@@ -45,7 +45,36 @@ public interface StorageMapper {
 	 */
 	List<Storage> selectByGoodsTypeAndRepositoryID(@Param("goodsType") String goodsType,
 												   @Param("repositoryID") Integer repositoryID);
-	
+
+	/**
+	 * 选择指定批次ID和仓库ID的库存信息
+	 * @param batchID 批次ID
+	 * @param repositoryID 库存ID
+	 * @return 返回所有指定货物ID和仓库ID的库存信息
+	 */
+	List<Storage> selectByBatchIDAndRepositoryID(@Param("batchID") Integer batchID,
+												 @Param("repositoryID") Integer repositoryID);
+
+	/**
+	 * 选择指定批次数和仓库ID的库存信息
+	 * @param batchCode 批次编号
+	 * @param repositoryID 库存ID
+	 * @return 返回所有指定货物ID和仓库ID的库存信息
+	 */
+	List<Storage> selectByBatchCodeAndRepositoryID(@Param("batchCode") String batchCode,
+												   @Param("repositoryID") Integer repositoryID);
+
+	/**
+	 * 选择指定货物ID和批次ID和仓库ID的库存信息
+	 * @param goodsID 货物ID
+	 * @param batchID 批次ID
+	 * @param repositoryID 库存ID
+	 * @return 返回所有指定货物ID和仓库ID的库存信息
+	 */
+	List<Storage> selectByGoodsIDAndBatchIDAndRepositoryID(@Param("goodsID") Integer goodsID,
+														   @Param("batchID") Integer batchID,
+														   @Param("repositoryID") Integer repositoryID);
+
 	/**
 	 * 更新库存信息
 	 * 该库存信息必需已经存在于数据库当中，否则更新无效
@@ -70,6 +99,12 @@ public interface StorageMapper {
 	 * @param goodsID 货物ID
 	 */
 	void deleteByGoodsID(Integer goodsID);
+
+	/**
+	 * 删除指定批次ID的库存信息
+	 * @param batchID 货物ID
+	 */
+	void deleteByBatchID(Integer batchID);
 	
 	/**
 	 * 删除指定仓库的库存信息
@@ -80,7 +115,10 @@ public interface StorageMapper {
 	/**
 	 * 删除指定仓库中的指定货物的库存信息
 	 * @param goodsID 货物ID
+	 * @param batchID 批次ID
 	 * @param repositoryID 仓库ID
 	 */
-	void deleteByRepositoryIDAndGoodsID(@Param("goodsID") Integer goodsID, @Param("repositoryID") Integer repositoryID);
+	void deleteByRepositoryIDAndGoodsIDAndBatchID(@Param("goodsID") Integer goodsID,@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID);
+
+
 }

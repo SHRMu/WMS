@@ -21,9 +21,14 @@ public class StockOutDO {
     private String packet;
 
     /**
-     * 批次号
+     * 批次ID
      */
-    private Integer batch;
+    private Integer batchID;
+
+    /**
+     * 批次编号
+     */
+    private Integer batchCode;
 
     /**
      * 客户ID
@@ -89,12 +94,20 @@ public class StockOutDO {
         this.packet = packet;
     }
 
-    public Integer getBatch() {
-        return batch;
+    public Integer getBatchID() {
+        return batchID;
     }
 
-    public void setBatch(Integer batch) {
-        this.batch = batch;
+    public void setBatchID(Integer batchID) {
+        this.batchID = batchID;
+    }
+
+    public Integer getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(Integer batchCode) {
+        this.batchCode = batchCode;
     }
 
     public Integer getCustomerID() {
@@ -158,7 +171,8 @@ public class StockOutDO {
         return "StockOutDO{" +
                 "id=" + id +
                 ", packet='" + packet + '\'' +
-                ", batch=" + batch +
+                ", batchID=" + batchID +
+                ", batchCode=" + batchCode +
                 ", customerID=" + customerID +
                 ", customerName='" + customerName + '\'' +
                 ", goodID=" + goodID +

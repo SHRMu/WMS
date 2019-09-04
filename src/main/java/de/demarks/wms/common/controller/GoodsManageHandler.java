@@ -3,6 +3,7 @@ package de.demarks.wms.common.controller;
 import de.demarks.wms.common.service.Interface.GoodsManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
+import de.demarks.wms.domain.Customer;
 import de.demarks.wms.domain.Goods;
 import de.demarks.wms.exception.GoodsManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -86,20 +87,20 @@ public class GoodsManageHandler {
                                      @RequestParam("keyWord") String keyWord) throws GoodsManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
-//        List<Customer> rows = null;
-//        long total = 0;
-//
-//        // 查询
-//        Map<String, Object> queryResult = query(searchType, keyWord, offset, limit);
-//
-//        if (queryResult != null) {
-//            rows = (List<Customer>) queryResult.get("data");
-//            total = (long) queryResult.get("total");
-//        }
-//
-//        // 设置 Response
-//        responseContent.setCustomerInfo("rows", rows);
-//        responseContent.setResponseTotal(total);
+        List<Customer> rows = null;
+        long total = 0;
+
+        // 查询
+        Map<String, Object> queryResult = query(searchType, keyWord, offset, limit);
+
+        if (queryResult != null) {
+            rows = (List<Customer>) queryResult.get("data");
+            total = (long) queryResult.get("total");
+        }
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
         return responseContent.generateResponse();
     }
 

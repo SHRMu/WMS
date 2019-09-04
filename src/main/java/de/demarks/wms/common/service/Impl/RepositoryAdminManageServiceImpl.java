@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * 仓库管理员管理 service 实现类
  *
- * @author Ken
+ * @author Shouran
  */
 @Service
 public class RepositoryAdminManageServiceImpl implements RepositoryAdminManageService {

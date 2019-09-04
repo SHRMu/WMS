@@ -8,18 +8,18 @@
 	<resultMap type="de.demarks.wms.domain.Goods" id="goods">
 		<id property="id" column="GOOD_ID"/>
 		<result property="name" column="GOOD_NAME"/>
-		<result property="type" column="GOOD_RYPE"/>
+		<result property="type" column="GOOD_TYPE"/>
 		<result property="size" column="GOOD_SIZE"/>
-		<result property="value" column="GOOD_VALUE"/>
+		<result property="weight" column="GOOD_WEIGHT"/>
 	</resultMap>
 	
 	<select id="selectAll" resultMap="goods">
 		select
 			g.GOOD_ID,
 			g.GOOD_NAME,
-			g.GOOD_RYPE,
+			g.GOOD_TYPE,
 			g.GOOD_SIZE,
-			g.GOOD_VALUE
+			g.GOOD_WEIGHT
 		from 
 			wms_goods g
 	</select>
@@ -28,9 +28,9 @@
 		select
 			g.GOOD_ID,
 			g.GOOD_NAME,
-			g.GOOD_RYPE,
+			g.GOOD_TYPE,
 			g.GOOD_SIZE,
-			g.GOOD_VALUE
+			g.GOOD_WEIGHT
 		from 
 			wms_goods g
 		where
@@ -41,9 +41,9 @@
 		select
 			g.GOOD_ID,
 			g.GOOD_NAME,
-			g.GOOD_RYPE,
+			g.GOOD_TYPE,
 			g.GOOD_SIZE,
-			g.GOOD_VALUE
+			g.GOOD_WEIGHT
 		from 
 			wms_goods g
 		where
@@ -54,9 +54,9 @@
 		select
 			g.GOOD_ID,
 			g.GOOD_NAME,
-			g.GOOD_RYPE,
+			g.GOOD_TYPE,
 			g.GOOD_SIZE,
-			g.GOOD_VALUE
+			g.GOOD_WEIGHT
 		from 
 			wms_goods g
 		where
@@ -64,15 +64,15 @@
 	</select>
 
 	<insert id="insert">
-		insert into wms_goods(GOOD_NAME,GOOD_RYPE,GOOD_SIZE,GOOD_VALUE)
-		values (#{name},#{type},#{size},#{value})
+		insert into wms_goods(GOOD_NAME,GOOD_TYPE,GOOD_SIZE,GOOD_WEIGHT)
+		values (#{name},#{type},#{size},#{weight})
 	</insert>
 	
 	<insert id="insertBatch">
-		insert into wms_goods(GOOD_NAME,GOOD_RYPE,GOOD_SIZE,GOOD_VALUE)
+		insert into wms_goods(GOOD_NAME,GOOD_TYPE,GOOD_SIZE,GOOD_WEIGHT)
 		values
 		<foreach collection="list" item="goods" separator=",">
-			(#{goods.name},#{goods.type},#{goods.size},#{goods.value})
+			(#{goods.name},#{goods.type},#{goods.size},#{goods.weight})
 		</foreach>
 	</insert>
 	
@@ -81,9 +81,9 @@
 			wms_goods
 		set
 			GOOD_NAME = #{name},
-			GOOD_RYPE = #{type},
+			GOOD_TYPE = #{type},
 			GOOD_SIZE = #{size},
-			GOOD_VALUE = #{value}
+			GOOD_WEIGHT = #{weight}
 		where
 			GOOD_ID = #{id}
 	</update>

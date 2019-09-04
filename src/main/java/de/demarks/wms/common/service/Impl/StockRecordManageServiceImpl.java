@@ -65,7 +65,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         try {
             // 更新库存记录
             boolean isSuccess;
-            isSuccess = storageManageService.storageIncrease(goodsID, repositoryID, number);
+            isSuccess = storageManageService.storageIncrease(goodsID, null, repositoryID, number);
 
             // 保存入库记录
             if (isSuccess) {
@@ -113,7 +113,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         try {
             // 更新库存信息
             boolean isSuccess;
-            isSuccess = storageManageService.storageDecrease(goodsID, repositoryID, number);
+            isSuccess = storageManageService.storageDecrease(goodsID, null, repositoryID, number);
 
             // 保存出库记录
             if (isSuccess) {

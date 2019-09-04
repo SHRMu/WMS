@@ -10,7 +10,7 @@ import java.util.List;
 public interface DetectStorageMapper {
 
     /**
-     * 选择所有的库存信息
+     * 选择所有的检测库存信息
      * @return 返回所有的库存信息
      */
     List<DetectStorage> selectAllAndRepositoryID(@Param("repositoryID") Integer repositoryID);
