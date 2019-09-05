@@ -4,17 +4,18 @@ import java.util.Date;
 
 /**
  * 批次信息
+ *
  * @author Shouran
  *
  */
 public class RepositoryBatch {
 
-    private Integer id; // 批次ID
-    private Integer number; // 批次数
-    private String status; // 批次状态
+    private Integer id; // 批次ID 自增
+    private String code; // 批次编号 Anker 10
+    private String status; // 批次状态 可用/完结
     private String desc;// 批次描述
-    private Date time; //批次开始时间
-    private Integer repositoryBelongID; // 批次所属仓库
+    private Date time; //批次开始时间 创建时间
+    private Integer repositoryID; // 批次所属仓库
 
     public Integer getId() {
         return id;
@@ -24,12 +25,12 @@ public class RepositoryBatch {
         this.id = id;
     }
 
-    public Integer getNumber() {
-        return number;
+    public String getCode() {
+        return code;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getStatus() {
@@ -56,23 +57,23 @@ public class RepositoryBatch {
         this.time = time;
     }
 
-    public Integer getRepositoryBelongID() {
-        return repositoryBelongID;
+    public Integer getRepositoryID() {
+        return repositoryID;
     }
 
-    public void setRepositoryBelongID(Integer repositoryBelongID) {
-        this.repositoryBelongID = repositoryBelongID;
+    public void setRepositoryID(Integer repositoryID) {
+        this.repositoryID = repositoryID;
     }
 
     @Override
     public String toString() {
         return "RepositoryBatch{" +
                 "id=" + id +
-                ", number=" + number +
+                ", code='" + code + '\'' +
                 ", status='" + status + '\'' +
                 ", desc='" + desc + '\'' +
                 ", time=" + time +
-                ", repositoryBelongID=" + repositoryBelongID +
+                ", repositoryID=" + repositoryID +
                 '}';
     }
 }

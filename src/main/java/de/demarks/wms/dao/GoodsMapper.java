@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * 货物信息映射器
  * @author Shouran
- *
+ * @since 2019/09/01
  */
 @Repository
 public interface GoodsMapper {
@@ -35,7 +35,7 @@ public interface GoodsMapper {
 	Goods selectByName(String goodsName);
 	
 	/**
-	 * 选择制定 goods name 的 goods
+	 * 选择指定 Goods name 的 goods
 	 * 模糊匹配
 	 * @param goodsName 货物的名称
 	 * @return 返回模糊匹配指定goodsName的货物

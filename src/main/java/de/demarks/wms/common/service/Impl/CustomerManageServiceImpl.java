@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * 客户信息管理 service 实现类
  *
- * @author Ken
+ * @author Shouran
  */
 @Service
 public class CustomerManageServiceImpl implements CustomerManageService {
@@ -71,15 +71,25 @@ public class CustomerManageServiceImpl implements CustomerManageService {
     }
 
     /**
-     * 返回指定 customer name 的客户记录 支持查询分页以及模糊查询
+     * 返回指定 customer Name 的客户记录 支持模糊查询
      *
-     * @param offset       分页的偏移值
-     * @param limit        分页的大小
-     * @param customerName 客户的名称
+     * @param customerName 客户名称
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @Override
-    public Map<String, Object> selectByName(int offset, int limit, String customerName) throws CustomerManageServiceException {
+    public Map<String, Object> selectByName(String customerName) throws CustomerManageServiceException {
+        return selectByName(customerName, -1, -1);
+    }
+    /**
+     * 分页返回指定 customer name 的客户记录
+     * 支持 查询分页以及模糊查询
+     * @param customerName 客户的名称
+     * @param offset       分页的偏移值
+     * @param limit        分页的大小
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByName(String customerName, int offset, int limit) throws CustomerManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<Customer> customers;
@@ -117,18 +127,16 @@ public class CustomerManageServiceImpl implements CustomerManageService {
     }
 
     /**
-     * 返回指定 customer Name 的客户记录 支持模糊查询
+     * 返回所有客户的记录
      *
-     * @param customerName 客户名称
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @Override
-    public Map<String, Object> selectByName(String customerName) throws CustomerManageServiceException {
-        return selectByName(-1, -1, customerName);
+    public Map<String, Object> selectAll() throws CustomerManageServiceException {
+        return selectAll(-1, -1);
     }
-
     /**
-     * 分页查询客户的记录
+     * 分页返回所有客户的记录
      *
      * @param offset 分页的偏移值
      * @param limit  分页的大小
@@ -170,16 +178,6 @@ public class CustomerManageServiceImpl implements CustomerManageService {
         resultSet.put("data", customers);
         resultSet.put("total", total);
         return resultSet;
-    }
-
-    /**
-     * 查询所有客户的记录
-     *
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    @Override
-    public Map<String, Object> selectAll() throws CustomerManageServiceException {
-        return selectAll(-1, -1);
     }
 
     /**

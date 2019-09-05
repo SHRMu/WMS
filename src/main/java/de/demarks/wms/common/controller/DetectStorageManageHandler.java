@@ -1,15 +1,17 @@
 package de.demarks.wms.common.controller;
 
-import de.demarks.wms.common.service.Interface.DetectStorageManageService;
+import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.common.util.ResponseUtil;
-import de.demarks.wms.exception.DetectStorageManageServiceException;
-import de.demarks.wms.exception.StorageManageServiceException;
+import de.demarks.wms.exception.DetectStorageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
+/**
+ * @author huanyingcool
+ */
 @Controller
 public class DetectStorageManageHandler {
 
@@ -17,7 +19,7 @@ public class DetectStorageManageHandler {
     private ResponseUtil responseUtil;
 
     @Autowired
-    private DetectStorageManageService detectStorageManageService;
+    private DetectStorageService detectStorageManageService;
 
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
     private static final String SEARCH_BY_GOODS_NAME = "searchByGoodsName";
@@ -35,7 +37,7 @@ public class DetectStorageManageHandler {
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     private Map<String, Object> query(String searchType, String keyword, String repositoryBelong, int offset,
-                                      int limit) throws DetectStorageManageServiceException {
+                                      int limit) throws DetectStorageServiceException {
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
@@ -78,5 +80,7 @@ public class DetectStorageManageHandler {
 
         return queryResult;
     }
+
+
 
 }

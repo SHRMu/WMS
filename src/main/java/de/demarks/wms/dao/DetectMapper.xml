@@ -5,21 +5,56 @@
 
 <mapper namespace="de.demarks.wms.dao.DetectMapper">
 
-    <resultMap type="de.demarks.wms.domain.DetectDO" id="stockInDO">
-        <id property="id" column="DETECTION_ID"/>
-        <result property="goodID" column="DETECTION__GOOD_ID"/>
-        <result property="batch" column="DETECTION__BATCH" />
-        <result property="repositoryID" column="DETECTION_REPOSITORY_ID"/>
-        <result property="passed" column="DETECTION_NUMBER"/>
-        <result property="scratch" column="DETECTION_SCRATCH"/>
-        <result property="damage" column="DETECTION_DAMAGE" />
-        <result property="time" column="STOCKIN_TIME"/>
-        <result property="personInCharge" column="STOCKIN_PERSON"/>
+    <resultMap type="de.demarks.wms.domain.DetectDO" id="detectDO">
+        <id property="id" column="id"/>
+        <result property="goodsID" column="goodsID"/>
+        <result property="goodsName" column="goodsName" />
+        <result property="batchID" column="batchID"/>
+        <result property="batchCode" column="batchCode" />
+        <result property="repositoryID" column="repositoryID"/>
+        <result property="number" column="number" />
+        <result property="passed" column="passed"/>
+        <result property="scratch" column="scratch"/>
+        <result property="damage" column="damage" />
+        <result property="time" column="time"/>
+        <result property="personInCharge" column="personInCharge"/>
     </resultMap>
 
+    <select id="selectAll">
+        select
+
+        from
+            wms_detect d, wms_goods g, wms_repo_batch b
+
+    </select>
+
     <insert id="insert">
-		insert into wms_detect(RECORD_GOODID,RECORD_BATCH,RECORD_REPOSITORYID,RECORD_PASSED,RECORD_SCRATCH,RECORD_DAMAGE,RECORD_TIME,RECORD_PERSON)
-		values(#{goodID},#{batch},#{repositoryID},#{passed},#{scratch},#{damage},#{time},#{personInCharge})
+		insert into wms_record_storage
+		(
+			DETECT_ID,
+			DETECT_GOODID,
+			DETECT_BATCHID,
+			DETECT_REPOSITORYID,
+			DETECT_NUMBER,
+			DETECT_PASSED,
+			DETECT_SCRATCH,
+			DETECT_DAMAGE,
+			DETECT_TIME,
+			DETECT_PERSON
+		)
+		values
+		(
+			#{id},
+			#{goodsID},
+			#{batchID},
+			#{repositoryID},
+			#{number}
+			#{passed},
+			#{scratch},
+			#{damage},
+			#{time},
+			#{personInCharge}
+		)
 	</insert>
 
 </mapper>

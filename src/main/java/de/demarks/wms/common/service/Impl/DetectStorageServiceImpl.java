@@ -1,6 +1,6 @@
 package de.demarks.wms.common.service.Impl;
 
-import de.demarks.wms.common.service.Interface.DetectStorageManageService;
+import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.dao.DetectStorageMapper;
 import de.demarks.wms.dao.GoodsMapper;
 import de.demarks.wms.dao.RepositoryMapper;
@@ -8,7 +8,7 @@ import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.domain.Goods;
 import de.demarks.wms.domain.Repository;
 import de.demarks.wms.domain.Storage;
-import de.demarks.wms.exception.DetectStorageManageServiceException;
+import de.demarks.wms.exception.DetectStorageServiceException;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DetectStorageManageServiceImpl implements DetectStorageManageService {
+public class DetectStorageServiceImpl implements DetectStorageService {
 
     @Autowired
     private GoodsMapper goodsMapper;
@@ -31,47 +31,47 @@ public class DetectStorageManageServiceImpl implements DetectStorageManageServic
     private DetectStorageMapper detectStorageMapper;
 
     @Override
-    public Map<String, Object> selectAll(Integer repositoryID) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectAll(Integer repositoryID) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectAll(Integer repositoryID, int offset, int limit) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectAll(Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer repositoryID) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer repositoryID) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer repositoryID, int offset, int limit) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer repositoryID) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer repositoryID) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer repositoryID, int offset, int limit) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsType(String goodsType, Integer Repository) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsType(String goodsType, Integer Repository) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public Map<String, Object> selectByGoodsType(String goodsType, Integer repositoryID, int offset, int limit) throws DetectStorageManageServiceException {
+    public Map<String, Object> selectByGoodsType(String goodsType, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         return null;
     }
 
     @Override
-    public boolean addNewStorage(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageManageServiceException {
+    public boolean addNewStorage(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isAvailable = true;
 
@@ -101,13 +101,13 @@ public class DetectStorageManageServiceImpl implements DetectStorageManageServic
 
             return isAvailable;
         } catch (PersistenceException e) {
-            throw new DetectStorageManageServiceException(e);
+            throw new DetectStorageServiceException(e);
         }
 
     }
 
     @Override
-    public boolean updateStorage(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageManageServiceException {
+    public boolean updateStorage(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isUpdate = false;
             // validate
@@ -126,22 +126,22 @@ public class DetectStorageManageServiceImpl implements DetectStorageManageServic
 
             return isUpdate;
         } catch (PersistenceException e) {
-            throw new DetectStorageManageServiceException(e);
+            throw new DetectStorageServiceException(e);
         }
     }
 
     @Override
-    public boolean storageDecrease(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageManageServiceException {
+    public boolean storageDecrease(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         return false;
     }
 
     @Override
-    public boolean deleteStorage(Integer goodsID, Integer repositoryID) throws DetectStorageManageServiceException {
+    public boolean deleteStorage(Integer goodsID, Integer repositoryID) throws DetectStorageServiceException {
         return false;
     }
 
     @Override
-    public Map<String, Object> importStorage(MultipartFile file) throws DetectStorageManageServiceException {
+    public Map<String, Object> importStorage(MultipartFile file) throws DetectStorageServiceException {
         return null;
     }
 
@@ -151,17 +151,18 @@ public class DetectStorageManageServiceImpl implements DetectStorageManageServic
     }
 
     /**
-     * 为指定的货物库存记录增加指定数目
+     * 为指定的货物检测库存记录增加指定数目
      *
      * @param goodsID      货物ID
+     * @param batchID      批次ID
      * @param repositoryID 仓库ID
-     * @param passed       入库数量
+     * @param passed       良品数量
      * @param scratch      划痕数量
      * @param damage       故障数量
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     @Override
-    public boolean storageIncrease(Integer goodsID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageManageServiceException {
+    public boolean storageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         // 检查货物库存增加数目的有效性
         if ( passed < 0 || scratch < 0 || damage < 0)
             return false;

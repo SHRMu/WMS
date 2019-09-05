@@ -16,7 +16,7 @@ public class Storage {
 	private Long batchID; //批次ID
 	private String batchCode; //批次编号
 	private Integer repositoryID;// 仓库ID
-	private Long number;// 库存数量
+	private Long number;// 待检测
 
 
 	public Integer getGoodsID() {

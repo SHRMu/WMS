@@ -7,6 +7,7 @@ public class DetectStorage {
     private Integer batchID; // 货物批次
     private Integer batchCode; // 货物批次
     private Integer repositoryID;// 仓库ID
+    private long number; // 未出库良品
     private long passed; // 良品数
     private long scratch; // 划痕数
     private long damage; // 故障数
@@ -51,6 +52,14 @@ public class DetectStorage {
         this.repositoryID = repositoryID;
     }
 
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
     public long getPassed() {
         return passed;
     }
@@ -75,7 +84,6 @@ public class DetectStorage {
         this.damage = damage;
     }
 
-
     @Override
     public String toString() {
         return "DetectStorage{" +
@@ -84,6 +92,7 @@ public class DetectStorage {
                 ", batchID=" + batchID +
                 ", batchCode=" + batchCode +
                 ", repositoryID=" + repositoryID +
+                ", number=" + number +
                 ", passed=" + passed +
                 ", scratch=" + scratch +
                 ", damage=" + damage +

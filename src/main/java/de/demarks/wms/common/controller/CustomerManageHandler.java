@@ -55,7 +55,7 @@ public class CustomerManageHandler {
                     queryResult = customerManageService.selectById(Integer.valueOf(keyWord));
                 break;
             case SEARCH_BY_NAME:
-                queryResult = customerManageService.selectByName(offset, limit, keyWord);
+                queryResult = customerManageService.selectByName(keyWord, offset, limit);
                 break;
             case SEARCH_ALL:
                 queryResult = customerManageService.selectAll(offset, limit);

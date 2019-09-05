@@ -7,17 +7,17 @@
 
 	<resultMap type="de.demarks.wms.domain.RepositoryBatch" id="repositoryBatch">
 		<id property="id" column="REPO_BATCH_ID"/>
-		<result property="number" column="REPO_BATCH_NUMBER"/>
+		<result property="code" column="REPO_BATCH_CODE"/>
 		<result property="status" column="REPO_BATCH_STATUS"/>
 		<result property="desc" column="REPO_BATCH_DESC"/>
 		<result property="time" column="REPO_BATCH_TIME"/>
-		<result property="repositoryBelongID" column="REPO_BATCH_REPOID"/>
+		<result property="repositoryID" column="REPO_BATCH_REPOID"/>
 	</resultMap>
 	
 	<select id="selectAll" resultMap="repositoryBatch">
 		select
 			REPO_BATCH_ID,
-			REPO_BATCH_NUMBER,
+			REPO_BATCH_CODE,
 			REPO_BATCH_STATUS,
 			REPO_BATCH_DESC,
 			REPO_BATCH_TIME,
@@ -29,7 +29,7 @@
 	<select id="selectByID" resultMap="repositoryBatch">
 		select
 			REPO_BATCH_ID,
-			REPO_BATCH_NUMBER,
+			REPO_BATCH_CODE,
 			REPO_BATCH_STATUS,
 			REPO_BATCH_DESC,
 			REPO_BATCH_TIME,
@@ -40,10 +40,10 @@
 			REPO_BATCH_ID = #{id}
 	</select>
 	
-	<select id="selectByNumber" resultMap="repositoryBatch">
+	<select id="selectByCode" resultMap="repositoryBatch">
 		select
 			REPO_BATCH_ID,
-			REPO_BATCH_NUMBER,
+			REPO_BATCH_CODE,
 			REPO_BATCH_STATUS,
 			REPO_BATCH_DESC,
 			REPO_BATCH_TIME,
@@ -51,13 +51,28 @@
 		from
 			wms_repo_batch
 		where
-			REPO_BATCH_NUMBER = #{number}
+			REPO_BATCH_CODE like concat(concat("%",#{code},"%"))
 	</select>
-	
+
+	<select id="selectByStatus" resultMap="repositoryBatch">
+		select
+			REPO_BATCH_ID,
+			REPO_BATCH_CODE,
+			REPO_BATCH_STATUS,
+			REPO_BATCH_DESC,
+			REPO_BATCH_TIME,
+			REPO_BATCH_REPOID
+		from
+			wms_repo_batch
+		where
+			REPO_BATCH_STATUS like concat(concat("%",#{status},"%"))
+	</select>
+
+
 	<select id="selectByRepositoryID" resultMap="repositoryBatch">
 		select
 			REPO_BATCH_ID,
-			REPO_BATCH_NUMBER,
+			REPO_BATCH_CODE,
 			REPO_BATCH_STATUS,
 			REPO_BATCH_DESC,
 			REPO_BATCH_TIME,
@@ -69,8 +84,26 @@
 	</select>
 	
 	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
-		insert into wms_repo_admin(REPO_BATCH_NUMBER,REPO_BATCH_STATUS,REPO_BATCH_DESC,REPO_BATCH_TIME,REPO_BATCH_REPOID)
-		values(#{number},#{number},#{status},#{desc},#{time},#{repositoryBelongID})
+		insert into wms_repo_batch(REPO_BATCH_CODE,REPO_BATCH_STATUS,REPO_BATCH_DESC,REPO_BATCH_TIME,REPO_BATCH_REPOID)
+		values(#{code},#{status},#{desc},#{time},#{repositoryID})
 	</insert>
+
+	<update id="update">
+		update
+			wms_repo_batch
+		set
+			REPO_BATCH_CODE = #{code},
+			REPO_BATCH_STATUS = #{status},
+			REPO_BATCH_DESC = #{desc},
+			REPO_BATCH_TIME = #{time},
+			REPO_BATCH_REPOID = #{repositoryID}
+		where
+			REPO_BATCH_ID = #{id}
+	</update>
+
+	<delete id="deleteByID">
+		delete from wms_repo_batch
+		where REPO_BATCH_ID = #{id}
+	</delete>
 
 </mapper>

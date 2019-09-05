@@ -71,7 +71,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             if (isSuccess) {
                 StockInDO stockInDO = new StockInDO();
                 stockInDO.setPacket(packet);
-                stockInDO.setBatch(batch);
+                stockInDO.setBatchID(batch);
                 stockInDO.setGoodID(goodsID);
                 stockInDO.setCustomerID(customerID);
                 stockInDO.setNumber(number);
@@ -119,7 +119,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             if (isSuccess) {
                 StockOutDO stockOutDO = new StockOutDO();
                 stockOutDO.setPacket(packet);
-                stockOutDO.setBatch(batch);
+                stockOutDO.setBatchID(batch);
                 stockOutDO.setCustomerID(customerID);
                 stockOutDO.setGoodID(goodsID);
                 stockOutDO.setNumber(number);

@@ -35,6 +35,11 @@ public class DetectDO {
     private Integer repositoryID;
 
     /**
+     *  检测总数
+     */
+    private long number;
+
+    /**
      *  良品数量
      */
     private long passed;
@@ -107,6 +112,14 @@ public class DetectDO {
         this.repositoryID = repositoryID;
     }
 
+    public long getNumber() {
+        return number;
+    }
+
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
     public long getPassed() {
         return passed;
     }
@@ -156,6 +169,7 @@ public class DetectDO {
                 ", batchID=" + batchID +
                 ", batchCode='" + batchCode + '\'' +
                 ", repositoryID=" + repositoryID +
+                ", number=" + number +
                 ", passed=" + passed +
                 ", scratch=" + scratch +
                 ", damage=" + damage +

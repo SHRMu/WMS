@@ -3,8 +3,8 @@ package de.demarks.wms.domain;
 /**
  * 出库/入库记录DO
  *
- * @author Ken
- * @since 2017/4/5.
+ * @author Shouran
+ *
  */
 public class StockRecordDTO {
 
@@ -27,6 +27,11 @@ public class StockRecordDTO {
      * 商品名称
      */
     private String goodsName;
+
+    /**
+     * 批次编号
+     */
+    private String batchCode;
 
     /**
      * 出库或入库仓库ID
@@ -65,6 +70,10 @@ public class StockRecordDTO {
         return goodsName;
     }
 
+    public String getBatchCode() {
+        return batchCode;
+    }
+
     public Integer getRepositoryID() {
         return repositoryID;
     }
@@ -97,6 +106,10 @@ public class StockRecordDTO {
         this.goodsName = goodsName;
     }
 
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
     public void setRepositoryID(Integer repositoryID) {
         this.repositoryID = repositoryID;
     }
@@ -120,9 +133,10 @@ public class StockRecordDTO {
                 ", type='" + type + '\'' +
                 ", supplierOrCustomerName='" + supplierOrCustomerName + '\'' +
                 ", goodsName='" + goodsName + '\'' +
+                ", batchCode='" + batchCode + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
-                ", time=" + time +
+                ", time='" + time + '\'' +
                 ", personInCharge='" + personInCharge + '\'' +
                 '}';
     }

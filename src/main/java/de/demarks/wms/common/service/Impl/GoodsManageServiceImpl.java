@@ -70,14 +70,24 @@ public class GoodsManageServiceImpl implements GoodsManageService {
             goodsList.add(goods);
             total = 1;
         }
-
         resultSet.put("data", goodsList);
         resultSet.put("total", total);
         return resultSet;
     }
 
     /**
-     * 返回指定 goods name 的货物记录 支持查询分页以及模糊查询
+     * 返回指定 goods name 的货物记录 支持模糊查询
+     *
+     * @param goodsName 货物名称
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @Override
+    public Map<String, Object> selectByName(String goodsName) throws GoodsManageServiceException {
+        return selectByName(goodsName, -1, -1);
+    }
+
+    /**
+     * 分页返回指定 goods name 的货物记录 支持查询分页以及模糊查询
      *
      * @param offset    分页的偏移值
      * @param limit     分页的大小
@@ -85,7 +95,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @Override
-    public Map<String, Object> selectByName(int offset, int limit, String goodsName) throws GoodsManageServiceException {
+    public Map<String, Object> selectByName(String goodsName, int offset, int limit) throws GoodsManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<Goods> goodsList;
@@ -123,18 +133,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
     }
 
     /**
-     * 返回指定 goods name 的货物记录 支持模糊查询
-     *
-     * @param goodsName 货物名称
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    @Override
-    public Map<String, Object> selectByName(String goodsName) throws GoodsManageServiceException {
-        return selectByName(-1, -1, goodsName);
-    }
-
-    /**
-     * 分页查询货物记录
+     * 分页查询所有货物记录
      *
      * @param offset 分页的偏移值
      * @param limit  分页的大小

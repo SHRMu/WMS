@@ -26,23 +26,22 @@ public interface GoodsManageService {
 
     /**
      * 返回指定 goods name 的货物记录
-     * 支持查询分页以及模糊查询
-     *
-     * @param offset    分页的偏移值
-     * @param limit     分页的大小
-     * @param goodsName 货物的名称
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    Map<String, Object> selectByName(int offset, int limit, String goodsName) throws GoodsManageServiceException;
-
-    /**
-     * 返回指定 goods name 的货物记录
      * 支持模糊查询
      *
      * @param goodsName 货物名称
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     Map<String, Object> selectByName(String goodsName) throws GoodsManageServiceException;
+
+    /**
+     * 分页返回指定 goods name 的货物记录
+     * 支持查询分页以及模糊查询
+     * @param offset    分页的偏移值
+     * @param limit     分页的大小
+     * @param goodsName 货物的名称
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    Map<String, Object> selectByName(String goodsName, int offset, int limit) throws GoodsManageServiceException;
 
     /**
      * 分页查询货物记录

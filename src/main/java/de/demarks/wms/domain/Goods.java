@@ -2,6 +2,7 @@ package de.demarks.wms.domain;
 
 /**
  * 货物信息
+ *
  * @author Shouran
  *
  */
@@ -10,8 +11,8 @@ public class Goods {
 	private Integer id;// 货物ID 自增
 	private String name;// 货物名 A3101
 	private String type;// 货物类型 耳机/音响
-	private String size;// 货物规格
-	private float weight;// 货物重量
+	private String size;// 货物规格 10*5*5
+	private float weight;// 货物重量kg
 
 	public Integer getId() {
 		return id;

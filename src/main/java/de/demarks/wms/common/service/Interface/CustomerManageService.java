@@ -12,7 +12,8 @@ import java.util.Map;
 /**
  * 客户信息管理 service
  *
- * @author Ken
+ * @author Shouran
+ * @since 2019/09/01
  */
 public interface CustomerManageService {
 
@@ -25,19 +26,8 @@ public interface CustomerManageService {
     Map<String, Object> selectById(Integer customerId) throws CustomerManageServiceException;
 
     /**
-     * 返回指定 customer name 的客户记录
-     * 支持查询分页以及模糊查询
-     *
-     * @param offset       分页的偏移值
-     * @param limit        分页的大小
-     * @param customerName 客户的名称
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    Map<String, Object> selectByName(int offset, int limit, String customerName) throws CustomerManageServiceException;
-
-    /**
      * 返回指定 customer Name 的客户记录
-     * 支持模糊查询
+     * 支持 模糊查询
      *
      * @param customerName 客户名称
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
@@ -45,13 +35,15 @@ public interface CustomerManageService {
     Map<String, Object> selectByName(String customerName) throws CustomerManageServiceException;
 
     /**
-     * 分页查询客户的记录
+     * 分页返回指定 customer name 的客户记录
+     * 支持 查询分页以及模糊查询
      *
-     * @param offset 分页的偏移值
-     * @param limit  分页的大小
+     * @param customerName 客户的名称
+     * @param offset       分页的偏移值
+     * @param limit        分页的大小
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    Map<String, Object> selectAll(int offset, int limit) throws CustomerManageServiceException;
+    Map<String, Object> selectByName(String customerName, int offset, int limit) throws CustomerManageServiceException;
 
     /**
      * 查询所有客户的记录
@@ -59,6 +51,15 @@ public interface CustomerManageService {
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     Map<String, Object> selectAll() throws CustomerManageServiceException;
+
+    /**
+     * 分页返回所有客户的记录
+     *
+     * @param offset 分页的偏移值
+     * @param limit  分页的大小
+     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    Map<String, Object> selectAll(int offset, int limit) throws CustomerManageServiceException;
 
     /**
      * 添加客户信息
