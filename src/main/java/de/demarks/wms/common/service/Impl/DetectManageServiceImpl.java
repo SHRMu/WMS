@@ -71,7 +71,7 @@ public class DetectManageServiceImpl implements DetectManageService {
             boolean isSuccess;
             long total = passed + scratch + damage; //检测总数
 
-            isSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total) && detectStorageService.storageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage );
+            isSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total) && detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage );
 
             // 保存入库记录
             if (isSuccess) {
@@ -173,20 +173,6 @@ public class DetectManageServiceImpl implements DetectManageService {
         }
     }
 
-//    /**
-//     * 检查供应商ID对应的记录是否存在
-//     *
-//     * @param supplierID 供应商ID
-//     * @return 若存在则返回true，否则返回false
-//     */
-//    private boolean supplierValidate(Integer supplierID) throws StockRecordManageServiceException {
-//        try {
-//            Supplier supplier = supplierMapper.selectById(supplierID);
-//            return supplier != null;
-//        } catch (PersistenceException e) {
-//            throw new StockRecordManageServiceException(e);
-//        }
-//    }
 
 
 

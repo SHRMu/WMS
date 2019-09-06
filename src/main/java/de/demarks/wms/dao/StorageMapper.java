@@ -8,8 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * 库存信息映射器
- * @author Ken
+ * 待检测库存信息映射器
+ *
+ * @author huanyingcool
  *
  */
 @Repository
@@ -19,7 +20,8 @@ public interface StorageMapper {
 	 * 选择所有的库存信息
 	 * @return 返回所有的库存信息
 	 */
-	List<Storage> selectAllAndRepositoryID(@Param("repositoryID") Integer repositoryID);
+	List<Storage> selectAll(@Param("batchID") Integer batchID,
+							@Param("repositoryID") Integer repositoryID);
 	
 	/**
 	 * 选择指定货物ID和仓库ID的库存信息
@@ -27,53 +29,18 @@ public interface StorageMapper {
 	 * @param repositoryID 库存ID
 	 * @return 返回所有指定货物ID和仓库ID的库存信息
 	 */
-	List<Storage> selectByGoodsIDAndRepositoryID(@Param("goodsID") Integer goodsID,
-												 @Param("repositoryID") Integer repositoryID);
+	List<Storage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+								  @Param("batchID") Integer batchID,
+								  @Param("repositoryID") Integer repositoryID);
 	
 	/**
 	 * 选择指定货物名的库存信息
 	 * @param goodsName 货物名称
 	 * @return 返回所有指定货物名称的库存信息
 	 */
-	List<Storage> selectByGoodsNameAndRepositoryID(@Param("goodsName") String goodsName,
-												   @Param("repositoryID") Integer repositoryID);
-	
-	/**
-	 * 选择指定货物类型的库存信息
-	 * @param goodsType 货物类型
-	 * @return 返回所有指定货物类型的库存信息
-	 */
-	List<Storage> selectByGoodsTypeAndRepositoryID(@Param("goodsType") String goodsType,
-												   @Param("repositoryID") Integer repositoryID);
-
-	/**
-	 * 选择指定批次ID和仓库ID的库存信息
-	 * @param batchID 批次ID
-	 * @param repositoryID 库存ID
-	 * @return 返回所有指定货物ID和仓库ID的库存信息
-	 */
-	List<Storage> selectByBatchIDAndRepositoryID(@Param("batchID") Integer batchID,
-												 @Param("repositoryID") Integer repositoryID);
-
-	/**
-	 * 选择指定批次数和仓库ID的库存信息
-	 * @param batchCode 批次编号
-	 * @param repositoryID 库存ID
-	 * @return 返回所有指定货物ID和仓库ID的库存信息
-	 */
-	List<Storage> selectByBatchCodeAndRepositoryID(@Param("batchCode") String batchCode,
-												   @Param("repositoryID") Integer repositoryID);
-
-	/**
-	 * 选择指定货物ID和批次ID和仓库ID的库存信息
-	 * @param goodsID 货物ID
-	 * @param batchID 批次ID
-	 * @param repositoryID 库存ID
-	 * @return 返回所有指定货物ID和仓库ID的库存信息
-	 */
-	List<Storage> selectByGoodsIDAndBatchIDAndRepositoryID(@Param("goodsID") Integer goodsID,
-														   @Param("batchID") Integer batchID,
-														   @Param("repositoryID") Integer repositoryID);
+	List<Storage> selectByGoodsName(@Param("goodsName") String goodsName,
+									 @Param("batchID") Integer batchID,
+									 @Param("repositoryID") Integer repositoryID);
 
 	/**
 	 * 更新库存信息
@@ -95,30 +62,11 @@ public interface StorageMapper {
 	void insertBatch(List<Storage> storages);
 	
 	/**
-	 * 删除指定货物ID的库存信息
-	 * @param goodsID 货物ID
-	 */
-	void deleteByGoodsID(Integer goodsID);
-
-	/**
-	 * 删除指定批次ID的库存信息
-	 * @param batchID 货物ID
-	 */
-	void deleteByBatchID(Integer batchID);
-	
-	/**
-	 * 删除指定仓库的库存信息
-	 * @param repositoryID 仓库ID
-	 */
-	void deleteByRepositoryID(Integer repositoryID);
-	
-	/**
 	 * 删除指定仓库中的指定货物的库存信息
 	 * @param goodsID 货物ID
 	 * @param batchID 批次ID
 	 * @param repositoryID 仓库ID
 	 */
-	void deleteByRepositoryIDAndGoodsIDAndBatchID(@Param("goodsID") Integer goodsID,@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID);
-
+	void delete(@Param("goodsID") Integer goodsID,@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID);
 
 }

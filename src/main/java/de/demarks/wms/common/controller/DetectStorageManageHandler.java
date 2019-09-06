@@ -1,18 +1,32 @@
 package de.demarks.wms.common.controller;
 
 import de.demarks.wms.common.service.Interface.DetectStorageService;
+import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
+import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.exception.DetectStorageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author huanyingcool
  */
 @Controller
+@RequestMapping(value = "/**/detectStorageManage")
 public class DetectStorageManageHandler {
 
     @Autowired
@@ -21,22 +35,22 @@ public class DetectStorageManageHandler {
     @Autowired
     private DetectStorageService detectStorageManageService;
 
+    private static final String SEARCH_ALL = "searchAll";
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
     private static final String SEARCH_BY_GOODS_NAME = "searchByGoodsName";
-    private static final String SEARCH_BY_GOODS_TYPE = "searchByGoodsType";
-    private static final String SEARCH_ALL = "searchAll";
 
     /**
      * 查询库存信息
      *
      * @param searchType       查询类型
      * @param keyword          查询关键字
+     * @param batchBelong      查询批次
      * @param repositoryBelong 查询仓库
      * @param offset           分页偏移值
      * @param limit            分页大小
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    private Map<String, Object> query(String searchType, String keyword, String repositoryBelong, int offset,
+    private Map<String, Object> query(String searchType, String keyword, String batchBelong, String repositoryBelong, int offset,
                                       int limit) throws DetectStorageServiceException {
         Map<String, Object> queryResult = null;
 
@@ -44,9 +58,19 @@ public class DetectStorageManageHandler {
             case SEARCH_ALL:
                 if (StringUtils.isNumeric(repositoryBelong)) {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = detectStorageManageService.selectAll(repositoryID, offset, limit);
+                    if (StringUtils.isNumeric(batchBelong)){
+                        Integer batchID = Integer.valueOf(batchBelong);
+                        queryResult = detectStorageManageService.selectAll(batchID, repositoryID, offset, limit);
+                    }else {
+                        queryResult = detectStorageManageService.selectAll(null, repositoryID, offset, limit);
+                    }
                 } else {
-                    queryResult = detectStorageManageService.selectAll(null, offset, limit);
+                    if (StringUtils.isNumeric(batchBelong)){
+                        Integer batchID = Integer.valueOf(batchBelong);
+                        queryResult = detectStorageManageService.selectAll(batchID, null, offset, limit);
+                    }else {
+                        queryResult = detectStorageManageService.selectAll(null, null, offset, limit);
+                    }
                 }
                 break;
             case SEARCH_BY_GOODS_ID:
@@ -54,33 +78,332 @@ public class DetectStorageManageHandler {
                     Integer goodsID = Integer.valueOf(keyword);
                     if (StringUtils.isNumeric(repositoryBelong)) {
                         Integer repositoryID = Integer.valueOf(repositoryBelong);
-                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, repositoryID, offset, limit);
+                        if (StringUtils.isNumeric(batchBelong)) {
+                            Integer batchID = Integer.valueOf(batchBelong);
+                            queryResult = detectStorageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
+                        }else {
+                            queryResult = detectStorageManageService.selectByGoodsID(goodsID, null, repositoryID, offset, limit);
+                        }
                     } else
-                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, null, offset, limit);
+                    if (StringUtils.isNumeric(batchBelong)) {
+                        Integer batchID = Integer.valueOf(batchBelong);
+                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, batchID, null, offset, limit);
+                    }else {
+                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, null, null, offset, limit);
+                    }
                 }
-                break;
-            case SEARCH_BY_GOODS_TYPE:
-                if (StringUtils.isNumeric(repositoryBelong)) {
-                    Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = detectStorageManageService.selectByGoodsType(keyword, repositoryID, offset, limit);
-                } else
-                    queryResult = detectStorageManageService.selectByGoodsType(keyword, null, offset, limit);
                 break;
             case SEARCH_BY_GOODS_NAME:
                 if (StringUtils.isNumeric(repositoryBelong)) {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = detectStorageManageService.selectByGoodsName(keyword, repositoryID, offset, limit);
+                    if (StringUtils.isNumeric(batchBelong)) {
+                        Integer batchID = Integer.valueOf(batchBelong);
+                        queryResult = detectStorageManageService.selectByGoodsName(keyword, batchID, repositoryID, offset, limit);
+                    }else{
+                        queryResult = detectStorageManageService.selectByGoodsName(keyword, null, repositoryID, offset, limit);
+                    }
                 } else
-                    queryResult = detectStorageManageService.selectByGoodsName(keyword, null, offset, limit);
+                if (StringUtils.isNumeric(batchBelong)) {
+                    Integer batchID = Integer.valueOf(batchBelong);
+                    queryResult = detectStorageManageService.selectByGoodsName(keyword, batchID, null, offset, limit);
+                }else
+                    queryResult = detectStorageManageService.selectByGoodsName(keyword, null, null, offset, limit);
                 break;
             default:
                 // do other thing
                 break;
         }
-
         return queryResult;
     }
 
+
+    /**
+     * 查询指定批次和仓库的检测库存
+     *
+     * @param keyword          查询关键字
+     * @param searchType       查询类型
+     * @param batchBelong      查询所属的批次
+     * @param repositoryBelong 查询所属的仓库
+     * @param offset           分页偏移值
+     * @param limit            分页大小
+     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "getDetectStorageList", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getDetectStorageList(@RequestParam("keyword") String keyword,@RequestParam("searchType") String searchType,
+                                                 @RequestParam("batchBelong") String batchBelong, @RequestParam("repositoryBelong") String repositoryBelong,
+                                                 @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+
+        List<DetectStorage> rows;
+        long total = 0;
+
+        // query
+        Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryBelong, offset, limit);
+        if (queryResult != null) {
+            rows = (List<DetectStorage>) queryResult.get("data");
+            total = (long) queryResult.get("total");
+        } else
+            rows = new ArrayList<>();
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+
+    /**
+     * 添加一条库存信息
+     *
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     */
+    @RequestMapping(value = "addDetectStorage", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> addDetectStorage(@RequestBody Map<String, Object> params) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String isSuccess = Response.RESPONSE_RESULT_ERROR;
+        boolean isAvailable = true;
+
+        String goodsID = (String) params.get("goodsID");
+        String batchID = (String) params.get("batchID");
+        String repositoryID = (String) params.get("repositoryID");
+        String passed = (String) params.get("passed");
+        String scratch = (String) params.get("scratch");
+        String damage = (String) params.get("damage");
+
+        if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
+            isAvailable = false;
+        if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
+            isAvailable = false;
+        if (StringUtils.isBlank(passed) || !StringUtils.isNumeric(passed))
+            isAvailable = false;
+        if (StringUtils.isBlank(scratch) || !StringUtils.isNumeric(scratch))
+            isAvailable = false;
+        if (StringUtils.isBlank(damage) || !StringUtils.isNumeric(damage))
+            isAvailable = false;
+
+        if (isAvailable) {
+            isSuccess = detectStorageManageService.addDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+                    Integer.valueOf(passed), Integer.valueOf(scratch), Integer.valueOf(damage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(isSuccess);
+        return responseContent.generateResponse();
+    }
+
+
+    /**
+     * 更新库存信息
+     *
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     */
+    @RequestMapping(value = "updateDetectStorage", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> updateDetectStorage(@RequestBody Map<String, Object> params) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        boolean isAvailable = true;
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        String goodsID = (String) params.get("goodsID");
+        String batchID = (String) params.get("batchID");
+        String repositoryID = (String) params.get("repositoryID");
+        String passed = (String) params.get("passed");
+        String scratch = (String) params.get("scratch");
+        String damage = (String) params.get("damage");
+
+
+        if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
+            isAvailable = false;
+        if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
+            isAvailable = false;
+        if (StringUtils.isBlank(passed) || !StringUtils.isNumeric(passed))
+            isAvailable = false;
+        if (StringUtils.isBlank(scratch) || !StringUtils.isNumeric(scratch))
+            isAvailable = false;
+        if (StringUtils.isBlank(damage) || !StringUtils.isNumeric(damage))
+            isAvailable = false;
+
+
+        if (isAvailable) {
+            result = detectStorageManageService.updateDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+                    Integer.valueOf(passed),Integer.valueOf(scratch),Integer.valueOf(damage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 删除一条检测库存信息
+     *
+     * @param goodsID      货物ID
+     * @param batchID      批次ID
+     * @param repositoryID 仓库ID
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     */
+    @RequestMapping(value = "deleteDetectStorage", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> deleteDetectStorage(@RequestParam("goodsID") String goodsID,
+                                            @RequestParam("batchID") String batchID,
+                                            @RequestParam("repositoryID") String repositoryID) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+
+        String result = Response.RESPONSE_RESULT_ERROR;
+        boolean isAvailable = true;
+
+        if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
+            isAvailable = false;
+        if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
+            isAvailable = false;
+
+        if (isAvailable) {
+            result = detectStorageManageService.deleteDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID))
+                    ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 导入检测记录信息
+     *
+     * @param file 保存有库存信息的文件
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
+     * error；key为total表示导入的总条数；key为available表示有效的条数
+     */
+    @RequestMapping(value = "importDetectStorage", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> importDetectStorage(@RequestParam("file") MultipartFile file) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        int total = 0;
+        int available = 0;
+
+        if (file != null) {
+            Map<String, Object> importInfo = detectStorageManageService.importDetectStorage(file);
+            if (importInfo != null) {
+                total = (int) importInfo.get("total");
+                available = (int) importInfo.get("available");
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        responseContent.setResponseTotal(total);
+        responseContent.setCustomerInfo("available", available);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 查询库存信息，查询所属的仓库为session保存的信息
+     *
+     * @param keyword    查询关键字
+     * @param searchType 查询类型
+     * @param offset     分页偏移值
+     * @param limit      分页大小
+     * @param request    请求
+     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @SuppressWarnings("unchecked")
+//    @RequestMapping(value = "getSessDetectStorageList", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getDetectStorageList(@RequestParam("keyword") String keyword,
+                                             @RequestParam("searchType") String searchType, @RequestParam("offset") int offset,
+                                             @RequestParam("limit") int limit, HttpServletRequest request) throws DetectStorageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+
+        List<DetectStorage> rows = null;
+        long total = 0;
+
+        HttpSession session = request.getSession();
+        Integer batchID = (Integer)session.getAttribute("batchBelong");
+        Integer repositoryID = (Integer) session.getAttribute("repositoryBelong");
+        if (batchID != null && repositoryID != null) {
+            Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID.toString(), offset, limit);
+            if (queryResult != null) {
+                rows = (List<DetectStorage>) queryResult.get("data");
+                total = (long) queryResult.get("total");
+            }
+        }
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 导出库存信息
+     *
+     * @param searchType       查询类型
+     * @param keyword          查询关键字
+     * @param batchBelong      查询所属仓库
+     * @param repositoryBelong 查询所属仓库
+     * @param request          请求
+     * @param response         响应
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "exportStorageRecord", method = RequestMethod.GET)
+    public void exportStorageRecord(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
+                                    @RequestParam("batchBelong") String batchBelong, @RequestParam(value = "repositoryBelong", required = false) String repositoryBelong,
+                                    HttpServletRequest request, HttpServletResponse response) throws DetectStorageServiceException, IOException {
+        String fileName = "storageRecord.xlsx";
+
+        HttpSession session = request.getSession();
+        Integer sessionRepositoryBelong = (Integer) session.getAttribute("repositoryBelong");
+        if (sessionRepositoryBelong != null && !sessionRepositoryBelong.equals("none"))
+            repositoryBelong = sessionRepositoryBelong.toString();
+
+        List<DetectStorage> detectStorageList = null;
+        Map<String, Object> queryResult = query(searchType, keyword, null, repositoryBelong, -1, -1);
+        if (queryResult != null)
+            detectStorageList = (List<DetectStorage>) queryResult.get("data");
+
+        File file = detectStorageManageService.exportDetectStorage(detectStorageList);
+        if (file != null) {
+            // 设置响应头
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+            FileInputStream inputStream = new FileInputStream(file);
+            OutputStream outputStream = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+
+            int len;
+            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+        }
+    }
 
 
 }

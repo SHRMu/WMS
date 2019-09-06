@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 货物信息管理请求 Handler
  *
- * @author Ken
+ * @author huanyingcool
  */
 @RequestMapping(value = "/**/goodsManage")
 @Controller
@@ -105,28 +105,6 @@ public class GoodsManageHandler {
     }
 
     /**
-     * 添加一条货物信息
-     *
-     * @param goods 货物信息
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
-     */
-    @RequestMapping(value = "addGoods", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    Map<String, Object> addGoods(@RequestBody Goods goods) throws GoodsManageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-
-        // 添加记录
-        String result = goodsManageService.addGoods(goods) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
-
-        // 设置 Response
-        responseContent.setResponseResult(result);
-
-        return responseContent.generateResponse();
-    }
-
-    /**
      * 查询指定 goods ID 货物的信息
      *
      * @param goodsID 货物ID
@@ -154,6 +132,28 @@ public class GoodsManageHandler {
         // 设置 Response
         responseContent.setResponseResult(result);
         responseContent.setResponseData(goods);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 添加一条货物信息
+     *
+     * @param goods 货物信息
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     */
+    @RequestMapping(value = "addGoods", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> addGoods(@RequestBody Goods goods) throws GoodsManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+
+        // 添加记录
+        String result = goodsManageService.addGoods(goods) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+
         return responseContent.generateResponse();
     }
 

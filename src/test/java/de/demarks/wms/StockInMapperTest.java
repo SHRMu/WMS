@@ -24,8 +24,8 @@ public class StockInMapperTest{
 
         StockInDO stockInDO = new StockInDO();
         stockInDO.setPacket("DHL");
-        stockInDO.setBatch(10);
-        stockInDO.setGoodID(103);
+        stockInDO.setBatchID(10);
+        stockInDO.setGoodsID(103);
         stockInDO.setCustomerID(1214);
         stockInDO.setNumber(100);
         stockInDO.setPersonInCharge("admin");

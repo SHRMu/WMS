@@ -4,6 +4,7 @@
 <script>
 	var search_type_storage = "none";
 	var search_keyWord = "";
+	var search_batch = "";
 	var search_repository = "";
 	var select_goodsID;
 	var select_batchID;
@@ -12,6 +13,7 @@
 	$(function() {
 		bootstrapValidatorInit();
 		repositoryOptionInit();
+		validBatchOptionInit()
 		storageListInit();
 		optionAction();
 		searchAction();
@@ -24,6 +26,7 @@
 	})
 
 	// 添加库存信息模态框数据校验
+	// todo: 验证信息未生效
 	function bootstrapValidatorInit() {
 		$("#storage_form").bootstrapValidator({
 			message : 'This is not valid',
@@ -91,6 +94,31 @@
 		$('#search_input_repository').append("<option value='all'>请选择仓库</option>");
 	}
 
+	//有效的批次信息出事话，页面加载时完成
+	function validBatchOptionInit() {
+		$.ajax({
+			type : 'GET',
+			url : 'repositoryBatchManage/getValidBatchList',
+			dataType: 'json',
+			contentType : 'application/json',
+			data:{
+				searchType : "searchAll",
+				keyWord : "",
+				offset : -1,
+				limit : -1
+			},
+			success : function(response){
+				//组装option
+				$.each(response.rows,function(index,elem){
+					$('#search_input_batch').append("<option value='" + elem.id + "'>" + elem.id +"号批次</option>");
+				})
+			},
+			error : function(response){
+			}
+		});
+		$('#search_input_batch').append("<option value='all'>请选择可用批次</option>");
+	}
+
 	// 表格初始化
 	function storageListInit() {
 		$('#storageList')
@@ -99,8 +127,9 @@
 							columns : [
 								{
 									field : 'goodsID',
-									title : '货物ID'
+									title : '货物ID',
 									//sortable: true
+									visible: false
 								},
 								{
 									field : 'goodsName',
@@ -108,7 +137,8 @@
 								},
 								{
 									field : 'batchID',
-									title : '批次ID'
+									title : '批次ID',
+									visible: false
 								},
 								{
 									field : 'batchCode',
@@ -125,7 +155,7 @@
 								},
 								{
 									field : 'number',
-									title : '库存数量'
+									title : '待检测数量'
 								},
 								{
 									field : 'operation',
@@ -166,6 +196,18 @@
 						});
 	}
 
+	// 行编辑操作模态框展示与数据填充
+	function rowEditOperation(row) {
+		$('#edit_modal').modal("show");
+
+		// load info
+		$('#storage_form_edit').bootstrapValidator("resetForm", true);
+		$('#storage_goodsID_edit').text(row.goodsID);
+		$('#storage_batchID_edit').text(row.batchID);
+		$('#storage_repositoryID_edit').text(row.repositoryID);
+		$('#storage_number_edit').val(row.number);
+	}
+
 	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
 	function optionAction() {
 		$(".dropOption").click(function() {
@@ -177,9 +219,9 @@
 			} else if (type == "货物ID") {
 				$("#search_input_type").removeAttr("readOnly");
 				search_type_storage = "searchByGoodsID";
-			} else if (type == "批次ID") {
+			} else if (type == "货物名称") {
 				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByBatchID";
+				search_type_storage = "searchByGoodsName";
 			} else if(type = "货物类型"){
 				$("#search_input_type").removeAttr("readOnly");
 				search_type_storage = "searchByGoodsType";
@@ -196,9 +238,17 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
+			search_batch = $('#search_input_batch').val();
 			search_repository = $('#search_input_repository').val();
 			tableRefresh();
 		})
+	}
+
+	// 表格刷新
+	function tableRefresh() {
+		$('#storageList').bootstrapTable('refresh', {
+			query : {}
+		});
 	}
 
 	// 分页查询参数
@@ -213,25 +263,6 @@
 		return temp;
 	}
 
-
-	// 表格刷新
-	function tableRefresh() {
-		$('#storageList').bootstrapTable('refresh', {
-			query : {}
-		});
-	}
-
-	// 行编辑操作模态框展示与数据填充
-	function rowEditOperation(row) {
-		$('#edit_modal').modal("show");
-
-		// load info
-		$('#storage_form_edit').bootstrapValidator("resetForm", true);
-		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_batchID_edit').text(row.batchID);
-		$('#storage_repositoryID_edit').text(row.repositoryID);
-		$('#storage_number_edit').val(row.number);
-	}
 
 	// 编辑库存信息，表单数据提交
 	function editStorageAction() {
@@ -520,6 +551,7 @@
 		$('#info_content').text(msg);
 		$('#info_modal').modal("show");
 	}
+
 </script>
 
 <div class="panel panel-default">
@@ -536,7 +568,7 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物批次</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物类型</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
@@ -547,6 +579,11 @@
 					<div class="col-md-3 col-sm-3">
 						<input id="search_input_type" type="text" class="form-control"
 							placeholder="货物ID">
+					</div>
+					<!--通过后台查询可用批次信息-->
+					<div class="col-md-3 col-sm-4">
+						<select class="form-control" id="search_input_batch">
+						</select>
 					</div>
 					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">

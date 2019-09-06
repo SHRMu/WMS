@@ -6,109 +6,153 @@
 <mapper namespace="de.demarks.wms.dao.StockInMapper">
 	
 	<resultMap type="de.demarks.wms.domain.StockInDO" id="stockInDO">
-		<id property="id" column="STOCKIN_ID"/>
-		<result property="packet" column="STOCKIN_PACKET" />
-		<result property="batchID" column="STOCKIN_BATCH" />
-		<result property="customerID" column="STOCKIN_CUSTOMER_ID"/>
-		<result property="customerName" column="STOCKIN_CUSTOMER_NAME"/>
-		<result property="goodID" column="STOCKIN_GOOD_ID"/>
-		<result property="goodName" column="STOCKIN_GOOD_NAME"/>
-		<result property="number" column="STOCKIN_NUMBER"/>
-		<result property="time" column="STOCKIN_TIME"/>
-		<result property="personInCharge" column="STOCKIN_PERSON"/>
-		<result property="repositoryID" column="STOCKIN_REPOSITORY_ID"/>
+		<id property="id" column="stockin_id"/>
+		<result property="packet" column="stockin_packet" />
+		<result property="batchID" column="stockin_batchID" />
+		<result property="batchCode" column="stockin_batchCode" />
+		<result property="customerID" column="stockin_customerID"/>
+		<result property="customerName" column="stockin_customerName"/>
+		<result property="goodsID" column="stockin_goodsID"/>
+		<result property="goodName" column="stockin_goodName"/>
+		<result property="number" column="stockin_number"/>
+		<result property="time" column="stockin_time"/>
+		<result property="personInCharge" column="stockin_personInCharge"/>
+		<result property="repositoryID" column="stockin_repositoryID"/>
 	</resultMap>
 	
 	<select id="selectAll" resultMap="stockInDO">
 		select
-			r.RECORD_ID as STOCKIN_ID,
-			r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-			s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-			r.RECORD_GOODID as STOCKIN_GOOD_ID,
-			g.GOOD_NAME as STOCKIN_GOOD_NAME,
-			r.RECORD_NUMBER as STOCKIN_NUMBER,
-			r.RECORD_TIME as STOCKIN_TIME,
-			r.RECORD_PERSON as STOCKIN_PERSON,
-			r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
 		from
-			wms_record_in r,wms_goods g,wms_supplier s
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
 		where
-			r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID
 	</select>
-	
-	<select id="selectBySupplierId" resultMap="stockInDO">
-		select
-			r.RECORD_ID as STOCKIN_ID,
-			r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-			s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-			r.RECORD_GOODID as STOCKIN_GOOD_ID,
-			g.GOOD_NAME as STOCKIN_GOOD_NAME,
-			r.RECORD_NUMBER as STOCKIN_NUMBER,
-			r.RECORD_TIME as STOCKIN_TIME,
-			r.RECORD_PERSON as STOCKIN_PERSON,
-			r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
-		from
-			wms_record_in r,wms_goods g,wms_supplier s
-		where
-			r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
-			r.RECORD_GOODID = g.GOOD_ID and
-			r.RECORD_SUPPLIERID = #{supplierID}
-	</select>
-	
-	<select id="selectByGoodID" resultMap="stockInDO">
-		select
-			r.RECORD_ID as STOCKIN_ID,
-			r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-			s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-			r.RECORD_GOODID as STOCKIN_GOOD_ID,
-			g.GOOD_NAME as STOCKIN_GOOD_NAME,
-			r.RECORD_NUMBER as STOCKIN_NUMBER,
-			r.RECORD_TIME as STOCKIN_TIME,
-			r.RECORD_PERSON as STOCKIN_PERSON,
-			r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
-		from
-			wms_record_in r,wms_goods g,wms_supplier s
-		where
-			r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
-			r.RECORD_GOODID = g.GOOD_ID and
-			r.RECORD_GOODID = #{goodID}
-	</select>
-	
+
 	<select id="selectByID" resultMap="stockInDO">
 		select
-			r.RECORD_ID as STOCKIN_ID,
-			r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-			s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-			r.RECORD_GOODID as STOCKIN_GOOD_ID,
-			g.GOOD_NAME as STOCKIN_GOOD_NAME,
-			r.RECORD_NUMBER as STOCKIN_NUMBER,
-			r.RECORD_TIME as STOCKIN_TIME,
-			r.RECORD_PERSON as STOCKIN_PERSON,
-			r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
 		from
-			wms_record_in r,wms_goods g,wms_supplier s
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
 		where
-			r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
 			r.RECORD_ID = #{id}
 	</select>
 	
+	<select id="selectByCustomerID" resultMap="stockInDO">
+		select
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
+		from
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
+		where
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
+			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_CUSTOMERID = #{customerID}
+	</select>
+	
+	<select id="selectByGoodsID" resultMap="stockInDO">
+		select
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
+		from
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
+		where
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
+			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_GOODID = #{goodsID}
+	</select>
+
+	<select id="selectByBatchID" resultMap="stockInDO">
+		select
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
+		from
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
+		where
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
+			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = #{batchID}
+	</select>
+	
 	<select id="selectByRepositoryID" resultMap="stockInDO">
 		select
-			r.RECORD_ID as STOCKIN_ID,
-			r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-			s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-			r.RECORD_GOODID as STOCKIN_GOOD_ID,
-			g.GOOD_NAME as STOCKIN_GOOD_NAME,
-			r.RECORD_NUMBER as STOCKIN_NUMBER,
-			r.RECORD_TIME as STOCKIN_TIME,
-			r.RECORD_PERSON as STOCKIN_PERSON,
-			r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_person,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
 		from
-			wms_record_in r,wms_goods g,wms_supplier s
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
 		where
-			r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
 			r.RECORD_REPOSITORYID = #{repositoryID}
 	</select>
@@ -141,8 +185,8 @@
 	</select>
 	
 	<insert id="insert">
-		insert into wms_record_in(RECORD_PACKET,RECORD_BATCH,RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
-		values(#{packet},#{batch},#{customerID},#{goodID},#{number},#{time},#{personInCharge},#{repositoryID})
+		insert into wms_record_in(RECORD_PACKET,RECORD_BATCHID,RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
+		values(#{packet},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
 	</insert>
 	
 	<update id="update">
@@ -150,9 +194,9 @@
 			wms_record_in
 		set
 			RECORD_PACKET = #{packet},
-			RECORD_BATCH = #{batch},
+			RECORD_BATCHID = #{batchID},
 			RECORD_CUSTOMERID = #{customerID},
-			RECORD_GOODID = #{goodID},
+			RECORD_GOODID = #{goodsID},
 			RECORD_NUMBER = #{number},
 			RECORD_TIME = #{time},
 			RECORD_PERSON = #{personInCharge},

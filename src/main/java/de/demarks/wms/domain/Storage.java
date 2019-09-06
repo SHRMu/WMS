@@ -13,7 +13,7 @@ public class Storage {
 	private String goodsSize;// 货物规格
 	private String goodsType;// 货物类型
 	private double goodsWeight;// 货物重量
-	private Long batchID; //批次ID
+	private Integer batchID; //批次ID
 	private String batchCode; //批次编号
 	private Integer repositoryID;// 仓库ID
 	private Long number;// 待检测
@@ -76,11 +76,11 @@ public class Storage {
 		this.number = number;
 	}
 
-	public Long getBatchID() {
+	public Integer getBatchID() {
 		return batchID;
 	}
 
-	public void setBatchID(Long batchID) {
+	public void setBatchID(Integer batchID) {
 		this.batchID = batchID;
 	}
 

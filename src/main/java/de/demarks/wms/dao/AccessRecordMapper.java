@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * 用户登入登出记录因映射器
  *
- * @author Ken
- * @since 2017/3/5.
- */
+ * @author huanyingcool
+ *
+ * */
 @Repository
 public interface AccessRecordMapper {
 

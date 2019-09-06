@@ -7,66 +7,71 @@
 	
 	<!-- 结果映射 -->
 	<resultMap type="de.demarks.wms.domain.DetectStorage" id="detectStorage">
-		<id property="goodsID" column="goodsID"/>
-		<result property="batch" column="batch"/>
-		<result property="repositoryID" column="repositoryID"/>
-		<result property="passed" column="passed"/>
-		<result property="scratch" column="scratch"/>
-		<result property="damage" column="damage"/>
+		<id property="goodsID" column="detectSto_goodsID"/>
+		<id property="batchID" column="detectSto_batchID"/>
+		<result property="goodsName" column="detectSto_goodsName" />
+		<result property="batchCode" column="detectSto_batchCode" />
+		<result property="repositoryID" column="detectSto_repositoryID"/>
+		<result property="number" column="detectSto_number" />
+		<result property="passed" column="detectSto_passed"/>
+		<result property="scratch" column="detectSto_scratch"/>
+		<result property="damage" column="detectSto_damage"/>
 		<!--
 		<association property="goodsInfo" javaType="com.ken.Goods" resultMap="goods"/>
 		 -->
 	</resultMap>
-	
-	<!-- 
-	<resultMap type="com.ken.Goods" id="goods">
-		<id property="id" column="goodsID"/>
-		<result property="name" column="goodsName"/>
-		<result property="size" column="goodsSize"/>
-		<result property="type" column="goodsType"/>
-		<result property="value" column="goodsValue"/>
-	</resultMap>
-	 -->
 	 
-	<select id="selectAllAndRepositoryID" resultMap="detectStorage">
+	<select id="selectAll" resultMap="detectStorage">
 		select
-			r.REPO_ID as repositoryID,
-			s.RECORD_NUMBER as number,
-			g.GOOD_ID as goodsID,
-			g.GOOD_NAME as goodsName,
-			g.GOOD_RYPE as goodsType,
-			g.GOOD_SIZE as goodsSize,
-			g.GOOD_VALUE as goodsValue
+			g.GOOD_ID as detectSto_goodsID,
+			g.GOOD_NAME as detectSto_goodsName,
+			b.REPO_BATCH_ID as detectSto_batchID,
+			b.REPO_BATCH_CODE as detectSto_batchCode,
+			r.REPO_ID as detectSto_repositoryID,
+			ds.DETECT_NUMBER as detectSto_number,
+			ds.DETECT_PASSED as detectSto_passed,
+			ds.DETECT_SCRATCH as detectSto_scratch,
+			ds.DETECT_DAMAGE as detectSto_damage
 		from
-			wms_record_storage s,wms_respository r, wms_goods g
+			wms_detect_storage ds, wms_respository r, wms_repo_batch b, wms_goods g
 		where
-		 	s.RECORD_GOODID = g.GOOD_ID and
-		 	s.RECORD_REPOSITORY = r.REPO_ID
+		 	ds.DETECT_GOODID = g.GOOD_ID and
+		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID and
+		 	ds.DETECT_REPOSITORY = r.REPO_ID
+			<if test="batchID != null">
+				and b.REPO_BATCH_ID = #{batchID}
+			</if>
 		 	<if test="repositoryID != null">
 		 		and r.REPO_ID = #{repositoryID}
 		 	</if>
 	</select>
 	
-	<select id="selectByGoodsIDAndRepositoryID" resultMap="detectStorage">
+	<select id="selectByGoodsID" resultMap="detectStorage">
 		select
-			r.REPO_ID as repositoryID,
-			s.RECORD_NUMBER as number,
-			g.GOOD_ID as goodsID,
-			g.GOOD_NAME as goodsName,
-			g.GOOD_RYPE as goodsType,
-			g.GOOD_SIZE as goodsSize,
-			g.GOOD_VALUE as goodsValue
+			g.GOOD_ID as detectSto_goodsID,
+			g.GOOD_NAME as detectSto_goodsName,
+			b.REPO_BATCH_ID as detectSto_batchID,
+			b.REPO_BATCH_CODE as detectSto_batchCode,
+			r.REPO_ID as detectSto_repositoryID,
+			ds.DETECT_NUMBER as detectSto_number,
+			ds.DETECT_PASSED as detectSto_passed,
+			ds.DETECT_SCRATCH as detectSto_scratch,
+			ds.DETECT_DAMAGE as detectSto_damage
 		from
-			wms_record_storage s,wms_respository r, wms_goods g
+			wms_detect_storage ds, wms_respository r, wms_repo_batch b, wms_goods g
 		where
-		 	s.RECORD_GOODID = g.GOOD_ID and
-		 	s.RECORD_REPOSITORY = r.REPO_ID and
+			ds.DETECT_GOODID = g.GOOD_ID and
+			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
+			ds.DETECT_REPOSITORY = r.REPO_ID and
 		 	g.GOOD_ID = #{goodsID}
-		 	<if test="repositoryID != null">
-		 		and r.REPO_ID = #{repositoryID}
-		 	</if>
+			<if test="batchID != null">
+				and b.REPO_BATCH_ID = #{batchID}
+			</if>
+			<if test="repositoryID != null">
+				and r.REPO_ID = #{repositoryID}
+			</if>
 	</select>
-	
+
 	<select id="selectByGoodsNameAndRepositoryID" resultMap="detectStorage">
 		select
 			r.REPO_ID as repositoryID,
@@ -86,7 +91,7 @@
 		 		and r.REPO_ID = #{repositoryID}
 		 	</if>
 	</select>
-	
+
 	<select id="selectByGoodsTypeAndRepositoryID" resultMap="detectStorage">
 		select
 			r.REPO_ID as repositoryID,
@@ -106,9 +111,9 @@
 		 		and r.REPO_ID = #{repositoryID}
 		 	</if>
 	</select>
-	
+
 	<update id="update">
-		update 
+		update
 			wms_detect_storage
 		set
 			DETECT_GOODID = #{goodsID},
@@ -120,7 +125,7 @@
 			RECORD_GOODID = #{goodsID} and
 			RECORD_REPOSITORY = #{repositoryID}
 	</update>
-	
+
 	<insert id="insert">
 		insert into wms_detect_storage
 		(
@@ -141,7 +146,7 @@
 			#{damage}
 		)
 	</insert>
-	
+
 	<insert id="insertBatch">
 		insert into wms_record_storage(RECORD_GOODID,RECORD_REPOSITORY,RECORD_NUMBER)
 		values
@@ -150,21 +155,21 @@
 			#{storage.goodsID},#{storage.repositoryID},#{storage.number})
 		</foreach>
 	</insert>
-	
+
 	<delete id="deleteByGoodsID">
-		delete from 
+		delete from
 			wms_record_storage
 		where
 			RECORD_GOODID = #{goodsID}
 	</delete>
-	
+
 	<delete id="deleteByRepositoryID">
 		delete from
 			wms_record_storage
 		where
 			wms_record_storage.RECORD_REPOSITORY = #{repositoryID}
 	</delete>
-	
+
 	<delete id="deleteByRepositoryIDAndGoodsID">
 		delete from
 			wms_record_storage

@@ -24,6 +24,7 @@ public class RepositoryBatchManageHandler {
     private static final String SEARCH_ALL = "searchAll";
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_CODE = "searchByCode";
+    private static final String SEARCH_BY_ACTIVE = "searchByActive";
 
     /**
      * 通用的记录查询
@@ -34,11 +35,13 @@ public class RepositoryBatchManageHandler {
      * @param limit      分页大小
      * @return 返回所有符合条件的查询结果
      */
-
     private Map<String, Object> query(String searchType, String keyword, int offset, int limit) throws RepositoryBatchManageServiceException {
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
+            case SEARCH_ALL:
+                queryResult = repositoryBatchManageService.selectAll(offset, limit);
+                break;
             case SEARCH_BY_ID:
                 if (StringUtils.isNumeric(keyword)) {
                     queryResult = repositoryBatchManageService.selectById(Integer.valueOf(keyword));
@@ -47,9 +50,8 @@ public class RepositoryBatchManageHandler {
             case SEARCH_BY_CODE:
                 queryResult = repositoryBatchManageService.selectByCode(keyword, offset, limit);
                 break;
-            case SEARCH_ALL:
-                queryResult = repositoryBatchManageService.selectAll(offset, limit);
-                break;
+            case SEARCH_BY_ACTIVE:
+                queryResult = repositoryBatchManageService.selectByStatus("可用", offset, limit);
             default:
                 // do other thing
                 break;
@@ -71,7 +73,7 @@ public class RepositoryBatchManageHandler {
     @RequestMapping(value = "getRepositoryBatchList", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> getRepositoryList(@RequestParam("searchType") String searchType,
+    Map<String, Object> getRepositoryBatchList(@RequestParam("searchType") String searchType,
                                           @RequestParam("offset") int offset, @RequestParam("limit") int limit,
                                           @RequestParam("keyWord") String keyWord) throws RepositoryBatchManageServiceException {
         // 初始化 Response
@@ -95,35 +97,6 @@ public class RepositoryBatchManageHandler {
     }
 
 
-
-    /**
-     * 查询所有可用的批次
-     *
-     * @return 返回一个 map，其中key=data表示查询的记录，key=total表示记录的条数
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getActiveRepositoryBatch", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Map<String, Object> getActiveRepositoryBatch() throws RepositoryBatchManageServiceException {
-        // 初始化结果集
-        Map<String, Object> resultSet = new HashMap<>();
-        List<RepositoryBatch> data;
-        long total = 0;
-
-        // 查询
-        Map<String, Object> queryResult = repositoryBatchManageService.selectByStatus("可用");
-        if (queryResult != null) {
-            data = (List<RepositoryBatch>) queryResult.get("data");
-            total = (long) queryResult.get("total");
-        } else
-            data = new ArrayList<>();
-
-        resultSet.put("data", data);
-        resultSet.put("total", total);
-        return resultSet;
-    }
-
     /**
      * 添加一条批次信息
      *
@@ -142,36 +115,6 @@ public class RepositoryBatchManageHandler {
 
         // 设置 Response
         responseContent.setResponseResult(result);
-        return responseContent.generateResponse();
-    }
-
-    /**
-     * 查询指定 batchID 的批次信息
-     *
-     * @param batchID 仓库ID
-     * @return 返回一个map，其中：key 为 result 的值为操作的结果，包括：success 与 error；key 为 data
-     * 的值为仓库信息
-     */
-    @RequestMapping(value = "getRepositoryBatchInfo", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Map<String, Object> getRepositoryBatchInfo(@RequestParam("batchID") Integer batchID) throws RepositoryBatchManageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-        String result = Response.RESPONSE_RESULT_ERROR;
-
-        // 查询
-        RepositoryBatch repositoryBatch = null;
-        Map<String, Object> queryResult = repositoryBatchManageService.selectById(batchID);
-        if (queryResult != null) {
-            repositoryBatch = (RepositoryBatch) queryResult.get("data");
-            if (repositoryBatch != null)
-                result = Response.RESPONSE_RESULT_SUCCESS;
-        }
-
-        // 设置 Response
-        responseContent.setResponseResult(result);
-        responseContent.setResponseData(repositoryBatch);
         return responseContent.generateResponse();
     }
 
@@ -198,27 +141,27 @@ public class RepositoryBatchManageHandler {
     }
 
     /**
-     * 删除指定 batchID 的批次信息
+     * 删除指定 batchID 和 repositoryID 的批次信息
      *
-     * @param batchID 批次ID
+     * @param batchID      批次ID
+     * @param repositoryID 仓库ID
      * @return 返回一个map，其中：key 为 result 的值为操作的结果，包括：success 与 error；key 为 data
      * 的值为仓库信息
      */
     @RequestMapping(value = "deleteRepositoryBatch", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> deleteRepositoryBatch(@RequestParam("batchID") Integer batchID) throws RepositoryBatchManageServiceException {
+    Map<String, Object> deleteRepositoryBatch(@RequestParam("batchID") Integer batchID,
+                                              @RequestParam("repositoryID") Integer repositoryID) throws RepositoryBatchManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
         // 删除记录
-        String result = repositoryBatchManageService.deleteRepositoryBatch(batchID) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        String result = repositoryBatchManageService.deleteRepositoryBatch(batchID, repositoryID) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
         responseContent.setResponseResult(result);
         return responseContent.generateResponse();
     }
-
-
 
 }

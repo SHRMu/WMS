@@ -12,8 +12,7 @@ import java.util.Map;
 /**
  * 客户信息管理 service
  *
- * @author Shouran
- * @since 2019/09/01
+ * @author huanyingcool
  */
 public interface CustomerManageService {
 

@@ -23,6 +23,14 @@ public interface StockOutMapper {
     List<StockOutDO> selectAll();
 
     /**
+     * 选择指定ID的出库记录
+     *
+     * @param id 指定的出库记录ID
+     * @return 返回指定ID的出库记录
+     */
+    StockOutDO selectById(Integer id);
+
+    /**
      * 选择指定客户ID相关的出库记录
      *
      * @param customerId 指定的客户ID
@@ -33,10 +41,18 @@ public interface StockOutMapper {
     /**
      * 选择指定货物ID相关的出库记录
      *
-     * @param goodId 指定的货物ID
+     * @param goodsID 指定的货物ID
      * @return 返回指定货物ID相关的出库记录
      */
-    List<StockOutDO> selectByGoodId(Integer goodId);
+    List<StockOutDO> selectByGoodsID(Integer goodsID);
+
+    /**
+     * 选择指定批次ID相关的出库记录
+     *
+     * @param batchID 指定的货批次ID
+     * @return 返回指定货物ID相关的出库记录
+     */
+    List<StockOutDO> selectByBatchID(Integer batchID);
 
     /**
      * 选择指定仓库ID关联的出库记录
@@ -58,13 +74,7 @@ public interface StockOutMapper {
                                                  @Param("startDate") Date startDate,
                                                  @Param("endDate") Date endDate);
 
-    /**
-     * 选择指定ID的出库记录
-     *
-     * @param id 指定的出库记录ID
-     * @return 返回指定ID的出库记录
-     */
-    StockOutDO selectById(Integer id);
+
 
     /**
      * 插入一条新的出库记录

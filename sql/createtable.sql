@@ -4,8 +4,6 @@ DEFAULT COLLATE utf8_general_ci;
 
 use wms_db;
 
-# 创建数据表
-
 # 创建系统用户信息表
 create table wms_user
 (
@@ -36,13 +34,13 @@ create table wms_user_role
 )engine=innodb;
 
 # 导入系统用户信息
-INSERT INTO `wms_user` VALUES (1000,'admin','admin123'),(1018,'anker','anker123'),(1019,'user','user123');
+INSERT INTO `wms_user` VALUES (1001,'admin','admin123'),(1002,'user','user123'),(1003,'anker','anker123');
 
 # 导入系统角色信息
-INSERT INTO `wms_roles` VALUES (1,'systemAdmin',NULL,'systemAdmin'),(2,'commonsAdmin',NULL,'commonsAdmin');
+INSERT INTO `wms_roles` VALUES (1,'systemAdmin','最高权限管理员','systemAdmin'),(2,'commonsAdmin','普通仓库检测人员','commonsAdmin'),(3,'commonsViewer','客户用户','commonsViewer');
 
 # 导入 系统用户 - 角色 信息
-INSERT INTO `wms_user_role` VALUES (1,1000),(2,1018),(2,1019);
+INSERT INTO `wms_user_role` VALUES (1,1001),(2,1002),(3,1003);
 
 # 创建URL权限表
 create table wms_action
@@ -68,7 +66,11 @@ create table wms_role_action
 )engine=innodb;
 
 # 导入 角色 - URL权限 信息
-INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(4,2),(38,2),(43,2),(46,1),(47,1),(48,1);
+INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(46,1),(47,1),(48,1),(4,2),(38,2),(43,2);
+
+# 增加Batch权限
+INSERT INTO `wms_action` VALUES (49,'getRepositoryBatchList',NULL,'/repositoryBatchManage/getRepositoryBatchList'), (50,'getActiveBatchList',NULL,'/repositoryBatchManage/getActiveBatchList'), (51,'addRepositoryBatch',NULL,'/repositoryBatchManage/addRepositoryBatch'), (52,'updateRepositoryBatch',NULL,'/repositoryBatchManage/updateRepositoryBatch'),  (53,'deleteRepositoryBatch',NULL,'/repositoryBatchManage/deleteRepositoryBatch');
+INSERT INTO `wms_role_action` VALUES (49,1),(50,1),(51,1),(52,1),(53,1);
 
 # 系统登入登出记录表
 create table wms_access_record
@@ -92,21 +94,23 @@ create table wms_operation_record
     OPERATION_RESULT varchar(15) not null
 );
 
+#### 修改表格 ################################################################################################################
 
+ # 创建货物信息表
+ create table wms_goods
+ (
+	GOOD_ID int not null auto_increment,
+    GOOD_NAME varchar(30) not null,
+    GOOD_TYPE varchar(20),
+    GOOD_SIZE varchar(20),
+    GOOD_WEIGHT float not null,
+    primary key(GOOD_ID)
+ )engine=innodb;
 
-# 创建供应商信息表
-create table wms_supplier
-(
-	SUPPLIER_ID int not null auto_increment,
-    SUPPLIER_NAME varchar(30) not null,
-    SUPPLIER_PERSON varchar(10) not null,
-    SUPPLIER_TEL varchar(20) not null,
-    SUPPLIER_EMAIL varchar(20) not null,
-    SUPPLIER_ADDRESS varchar(30) not null,
-    primary key(SUPPLIER_ID)
-)engine=innodb;
+ # 导入货物信息
+INSERT INTO `wms_goods` VALUES (1001,'A3233','耳机','10*5*5',0.1),(1002,'A3234','耳机','10*5*5',0.1),(1003,'A3235','耳机','10*5*5',0.1);
 
-# 创建客户信息表
+ # 创建客户信息表
 create table wms_customer
 (
 	CUSTOMER_ID int not null auto_increment,
@@ -117,21 +121,25 @@ create table wms_customer
     CUSTOMER_ADDRESS varchar(30) not null,
     primary key(CUSTOMER_ID)
  )engine=innodb;
- 
- # 创建货物信息表
- create table wms_goods
- (
-	GOOD_ID int not null auto_increment,
-    GOOD_NAME varChar(30) not null,
-    GOOD_RYPE varchar(20),
-    GOOD_SIZE varchar(20),
-    GOOD_VALUE double not null,
-    primary key(GOOD_ID)
- )engine=innodb;
- 
 
- 
- # 创建仓库管理员信息表
+ # 导入客户信息
+INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888@136.com','中国 湖南'),(2002,'深圳市松林达电子有限公司','刘明','85263335-820','85264958@126.com','中国 广东 深圳市宝安区'),(2003,'郑州绿之源饮品有限公司 ','赵志敬','87094196','87092165@qq.com','中国 河南 郑州市 郑州市嘉亿东方大厦609');
+
+ # 创建仓库信息表
+ create table wms_respository
+ (
+	REPO_ID int not null auto_increment,
+    REPO_ADDRESS varchar(30) not null,
+    REPO_STATUS varchar(20) not null,
+    REPO_AREA varchar(20) not null,
+    REPO_DESC varchar(50),
+    primary key(REPO_ID)
+ )engine=innodb;
+
+ # 导入仓库信息
+INSERT INTO `wms_respository` VALUES (3001,'德国','可用','11000㎡','提供服务完整'),(3002,'广州白云石井','可用','1000㎡','物流极为便利'),(3003,' 香港北区文锦渡路','可用','5000.00㎡',NULL);
+
+  # 创建仓库管理员信息表
  create table wms_repo_admin
  (
 	REPO_ADMIN_ID int not null auto_increment,
@@ -145,12 +153,25 @@ create table wms_customer
     foreign key (REPO_ADMIN_REPOID) references wms_respository(REPO_ID)
 )engine=innodb;
 
+ #创建仓库批次信息表
+create table wms_repo_batch
+(
+    REPO_BATCH_ID int not null auto_increment,
+    REPO_BATCH_CODE varchar(20) not null,
+    REPO_BATCH_STATUS varchar(10) not null,
+    REPO_BATCH_TIME datetime not null,
+    REPO_BATCH_DESC varchar(50),
+    REPO_BATCH_REPOID int not null,
+    primary key (REPO_BATCH_ID),
+    foreign key (REPO_BATCH_REPOID) references wms_respository(REPO_ID)
+)engine=innodb;
 
-
-# 创建出库记录表
-create table wms_record_out
+# 创建入库记录表
+create table wms_record_in
 (
 	RECORD_ID int not null auto_increment,
+	RECORD_PACKET varchar(30) not null,
+	RECORD_BATCHID int not null,
     RECORD_CUSTOMERID int not null,
     RECORD_GOODID int not null,
     RECORD_NUMBER int not null,
@@ -158,107 +179,80 @@ create table wms_record_out
     RECORD_PERSON varchar(10) not null,
     RECORD_REPOSITORYID int not null,
     primary key(RECORD_ID),
-    foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_GOODID) references wms_goods(GOOD_ID),
+    foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_REPOSITORYID) references wms_respository(REPO_ID)
 )engine=innodb;
 
-
-
-# 系统登入登出记录表
-create table wms_access_record
-(
-	RECORD_ID int auto_increment primary key,
-    USER_ID int not null,
-    USER_NAME varchar(50) not null,
-    ACCESS_TYPE varchar(30) not null,
-    ACCESS_TIME datetime not null,
-    ACCESS_IP varchar(45) not null
-);
-
-# 用户系统操作记录表
-create table wms_operation_record
-(
-	RECORD_ID int auto_increment primary key,
-    USER_ID int not null,
-    USER_NAME varchar(50) not null,
-    OPERATION_NAME varchar(30) not null,
-    OPERATION_TIME datetime not null,
-    OPERATION_RESULT varchar(15) not null
-);
-
-# 导入供应商信息
-INSERT INTO `wms_supplier` VALUES (1013,'浙江奇同电器有限公司','王泽伟','13777771126','86827868@126.com','中国 浙江 温州市龙湾区 龙湾区永强大道1648号'),(1014,'醴陵春天陶瓷实业有限公司','温仙容','13974167256','23267999@126.com','中国 湖南 醴陵市 东正街15号'),(1015,'洛阳嘉吉利饮品有限公司','郑绮云','26391678','22390898@qq.com','中国 广东 佛山市顺德区 北滘镇怡和路2号怡和中心14楼');
-
-# 导入客户信息
-INSERT INTO `wms_customer` VALUES (1214,'醴陵荣旗瓷业有限公司','陈娟','17716786888','23369888@136.com','中国 湖南 醴陵市 嘉树乡玉茶村柏树组'),(1215,'深圳市松林达电子有限公司','刘明','85263335-820','85264958@126.com','中国 广东 深圳市宝安区 深圳市宝安区福永社区桥头村桥塘路育'),(1216,'郑州绿之源饮品有限公司 ','赵志敬','87094196','87092165@qq.com','中国 河南 郑州市 郑州市嘉亿东方大厦609');
-
-# 导入货物信息
-INSERT INTO `wms_goods` VALUES (103,'五孔插座西门子墙壁开关','电器','86*86',1.85),(104,'陶瓷马克杯','陶瓷','9*9*11',3.5),(105,'精酿苹果醋','饮料','312ml',300);
-
-# 导入仓库信息
-INSERT INTO `wms_respository` VALUES (1003,'北京顺义南彩工业园区彩祥西路9号','可用','11000㎡','提供服务完整'),(1004,'广州白云石井石潭路大基围工业区','可用','1000㎡','物流极为便利'),(1005,' 香港北区文锦渡路（红桥新村）','可用','5000.00㎡',NULL);
-
-# 导入仓库管理员信息
-INSERT INTO `wms_repo_admin` VALUES (1018,'王皓','女','12345874526','中国佛山','2016-12-09 00:00:00',1004),(1019,'李富荣','男','1234','广州','2016-12-07 00:00:00',1003);
-
-# 导入入库记录
-INSERT INTO `wms_record_in` VALUES (15,1015,105,1000,'2016-12-31 00:00:00','admin',1004),(16,1015,105,200,'2017-01-02 00:00:00','admin',1004);
-
-# 导入出库记录
-INSERT INTO `wms_record_out` VALUES (7,1214,104,750,'2016-12-31 00:00:00','admin',1003);
-
-# 导入库存信息
-INSERT INTO `wms_record_storage` VALUES (103,1005,10000),(104,1003,1750),(105,1004,2000);
-
-# 修改表格
-
- # 创建仓库信息表
- create table wms_respository
- (
-	REPO_ID int not null auto_increment,
-    REPO_ADDRESS varchar(30) not null,
-    REPO_STATUS varchar(20) not null,
-    REPO_AREA varchar(20) not null,
-    REPO_DESC varchar(50),
-    primary key(REPO_ID)
- )engine=innodb;
-
-# 导入仓库信息
-INSERT INTO `wms_respository` VALUES (1003,'德国','可用','11000㎡','提供服务完整'),(1004,'广州白云石井石潭路大基围工业区','可用','1000㎡','物流极为便利'),(1005,' 香港北区文锦渡路（红桥新村）','可用','5000.00㎡',NULL);
-
-# 创建入库记录表
-create table wms_record_in
+# 创建出库记录表
+create table wms_record_out
 (
 	RECORD_ID int not null auto_increment,
 	RECORD_PACKET varchar(30) not null,
-	RECORD_BATCH int not null,
-    RECORD_SENDER int not null,
+	RECORD_BATCHID int not null,
+    RECORD_CUSTOMERID int not null,
     RECORD_GOODID int not null,
     RECORD_NUMBER int not null,
     RECORD_TIME datetime not null,
     RECORD_PERSON varchar(10) not null,
     RECORD_REPOSITORYID int not null,
     primary key(RECORD_ID),
-    foreign key(RECORD_SENDER) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_GOODID) references wms_goods(GOOD_ID),
+    foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_REPOSITORYID) references wms_respository(REPO_ID)
 )engine=innodb;
-
-# 导入入库记录
-INSERT INTO `wms_record_in` VALUES (15,'DHL',10,1214,103,200,'2016-12-31 00:00:00','admin',1003),(16,'DPD',9,1214,103, 500, '2017-01-02 00:00:00','admin',1003);
 
 # 创建库存记录表
 create table wms_record_storage
 (
-	RECORD_GOODID int not null auto_increment,
+	RECORD_GOODID int not null,
+	RECORD_BATCHID int not null,
 	RECORD_REPOSITORY int not null,
     RECORD_NUMBER int not null,
-    primary key(RECORD_GOODID),
+    primary key(RECORD_GOODID, RECORD_BATCHID),
     foreign key (RECORD_GOODID) references wms_goods(GOOD_ID),
+    foreign key (RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
     foreign key (RECORD_REPOSITORY) references wms_respository(REPO_ID)
 )engine=innodb;
 
-# 导入库存信息
-INSERT INTO `wms_record_storage` VALUES (103,1003, 700);
+#创建检测信息表
+create table wms_detect
+(
+    DETECT_ID int not null auto_increment,
+    DETECT_GOODID int not null,
+    DETECT_BATCHID int not null,
+    DETECT_REPOSITORYID int not null,
+    DETECT_NUMBER int not null,
+    DETECT_PASSED int not null,
+    DETECT_SCRATCH int not null,
+    DETECT_DAMAGE int not null,
+    DETECT_TIME datetime not null,
+    DETECT_PERSON varchar(10) not null,
+    primary key(DETECT_ID),
+    foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
+    foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key (DETECT_REPOSITORYID) references wms_respository(REPO_ID)
+)engine=innodb;
+
+#创建检测库存
+create table wms_detect_storage
+(
+    DETECT_GOODID int not null,
+    DETECT_BATCHID int not null,
+    DETECT_REPOSITORY int not null,
+    DETECT_NUMBER int not null,
+    DETECT_PASSED int not null,
+    DETECT_SCRATCH int not null,
+    DETECT_DAMAGE int not null,
+    primary key(DETECT_GOODID, DETECT_BATCHID),
+    foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
+    foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key (DETECT_REPOSITORY) references wms_respository(REPO_ID)
+)engine=innodb;
+
+
+
+
 

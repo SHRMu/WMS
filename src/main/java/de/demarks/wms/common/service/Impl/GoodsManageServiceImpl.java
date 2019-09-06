@@ -5,14 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.GoodsManageService;
 import de.demarks.wms.common.util.ExcelUtil;
-import de.demarks.wms.dao.GoodsMapper;
-import de.demarks.wms.dao.StockInMapper;
-import de.demarks.wms.dao.StockOutMapper;
-import de.demarks.wms.dao.StorageMapper;
-import de.demarks.wms.domain.Goods;
-import de.demarks.wms.domain.StockInDO;
-import de.demarks.wms.domain.StockOutDO;
-import de.demarks.wms.domain.Storage;
+import de.demarks.wms.dao.*;
+import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.GoodsManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -42,6 +36,8 @@ public class GoodsManageServiceImpl implements GoodsManageService {
     private StockOutMapper stockOutMapper;
     @Autowired
     private StorageMapper storageMapper;
+    @Autowired
+    private DetectStorageMapper detectStorageMapper;
     @Autowired
     private ExcelUtil excelUtil;
 
@@ -264,19 +260,24 @@ public class GoodsManageServiceImpl implements GoodsManageService {
 
         try {
             // 检查该货物是否有入库信息
-            List<StockInDO> stockInDORecord = stockInMapper.selectByGoodID(goodsId);
+            List<StockInDO> stockInDORecord = stockInMapper.selectByGoodsID(goodsId);
             if (stockInDORecord != null && !stockInDORecord.isEmpty())
                 return false;
 
             // 检查该货物是否有出库信息
-            List<StockOutDO> stockOutDORecord = stockOutMapper.selectByGoodId(goodsId);
+            List<StockOutDO> stockOutDORecord = stockOutMapper.selectByGoodsID(goodsId);
             if (stockOutDORecord != null && !stockOutDORecord.isEmpty())
                 return false;
 
-            // 检查该货物是否有存储信息
-            List<Storage> storageRecord = storageMapper.selectByGoodsIDAndRepositoryID(goodsId, null);
+            // 检查该货物是否有待检测库存信息
+            List<Storage> storageRecord = storageMapper.selectByGoodsID(goodsId, null, null);
             if (storageRecord != null && !storageRecord.isEmpty())
                 return false;
+
+            //检查该货物是否有检测存储记录
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsId, null, null);
+            if (detectStorageList != null && !detectStorageList.isEmpty())
+                return  false;
 
             // 删除货物记录
             goodsMapper.deleteById(goodsId);

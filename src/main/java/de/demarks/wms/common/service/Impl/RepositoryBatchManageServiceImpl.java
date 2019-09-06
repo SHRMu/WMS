@@ -5,8 +5,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.RepositoryBatchManageService;
 
+import de.demarks.wms.dao.DetectStorageMapper;
 import de.demarks.wms.dao.RepositoryBatchMapper;
+import de.demarks.wms.dao.StorageMapper;
+import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.domain.RepositoryBatch;
+import de.demarks.wms.domain.Storage;
 import de.demarks.wms.exception.RepositoryBatchManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -26,6 +30,10 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
 
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
+    @Autowired
+    private StorageMapper storageMapper;
+    @Autowired
+    private DetectStorageMapper detectStorageMapper;
 
     /**
      * 返回指定 Batch ID 的批次记录
@@ -282,34 +290,36 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     }
 
     /**
-     * 删除仓库批次记录
+     * 删除批次记录
      *
      * @param batchID 批次ID
+     * @param repositoryID 仓库ID
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     @UserOperation(value = "删除批次信息")
     @Override
-    public boolean deleteRepositoryBatch(Integer batchID) throws RepositoryBatchManageServiceException {
+    public boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException {
         try {
-//            // 检查是否存在出库记录
-//            List<StockOutDO> stockOutDOList = stockOutMapper.selectByRepositoryID(repositoryId);
-//            if (stockOutDOList != null && !stockOutDOList.isEmpty())
-//                return false;
-//
-//            // 检查是否存在入库记录
-//            List<StockInDO> stockInDOList = stockInMapper.selectByRepositoryID(repositoryId);
-//            if (stockInDOList != null && !stockInDOList.isEmpty())
-//                return false;
-//
-//            // 检查是否存在库存记录
-//            List<Storage> storageRecords = storageMapper.selectAllAndRepositoryID(repositoryId);
-//            if (storageRecords != null && !storageRecords.isEmpty())
-//                return false;
-//
-//            // 检查是否已指派仓库管理员
-//            RepositoryAdmin repositoryAdmin = repositoryAdminMapper.selectByRepositoryID(repositoryId);
-//            if (repositoryAdmin != null)
-//                return false;
+            //检查该批次下是否有待检测的库存
+            List<Storage> storages = storageMapper.selectAll(batchID, repositoryID);
+            if ( storages != null && !storages.isEmpty())
+                return  false;
+
+            //检查该批次下所有已测良品均已发货
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectAll(batchID, repositoryID);
+            if ( detectStorageList != null && !detectStorageList.isEmpty()){
+                for (DetectStorage detectStorage:
+                     detectStorageList) {
+                    if (detectStorage.getPassed() > 0)
+                        return false;
+                }
+            }
+
+            //检查该批次状态是否为 完结
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID);
+            String status = repositoryBatch.getStatus();
+            if (!status.equals("完结"))
+                return false;
 
             // 删除记录
             repositoryBatchMapper.deleteByID(batchID);

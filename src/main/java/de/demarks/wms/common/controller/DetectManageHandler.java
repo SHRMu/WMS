@@ -34,8 +34,8 @@ public class DetectManageHandler {
      * 货物检测操作
      *
      * @param goodsID      货物ID
-     * @param batchID        批次号
-     * @param repositoryID 入库仓库ID
+     * @param batchID      批次ID
+     * @param repositoryID 仓库ID
      * @param passed       良品数量
      * @param scratch      划痕数量
      * @param damage       故障数量

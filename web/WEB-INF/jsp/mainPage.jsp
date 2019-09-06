@@ -94,11 +94,15 @@ pageEncoding="UTF-8"%>
                                 <shiro:hasRole name="systemAdmin">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/storageManagement.jsp">库存查询</a>
+                                           name="pagecomponent/storageManagement.jsp">待检测库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectRecordManagement.html">已检测记录</a>
+                                           name="pagecomponent/detectStorageManagement.jsp">已检测库存</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/detectRecordManagement.html">检测记录</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"

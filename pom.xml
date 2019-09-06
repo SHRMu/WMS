@@ -25,7 +25,7 @@
     <packaging>war</packaging>
 
     <name>WMS</name>
-    <groupId>com.ken</groupId>
+    <groupId>de.demarks</groupId>
     <artifactId>WMS</artifactId>
     <version>1.0</version>
 
@@ -301,5 +301,6 @@
                 </configuration>
             </plugin>
         </plugins>
+
     </build>
 </project>

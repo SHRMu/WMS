@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 入库记录映射器
  *
- * @author Ken
+ * @author huanyingcool
  */
 @Repository
 public interface StockInMapper {
@@ -23,20 +23,36 @@ public interface StockInMapper {
     List<StockInDO> selectAll();
 
     /**
-     * 选择指定供应商ID相关的入库记录
+     * 选择指定入库记录的ID的入库记录
      *
-     * @param supplierID 指定的供应商ID
+     * @param id 入库记录ID
+     * @return 返回指定ID的入库记录
+     */
+    StockInDO selectByID(Integer id);
+
+    /**
+     * 选择指定客户ID相关的入库记录
+     *
+     * @param customerID 指定的供应商ID
      * @return 返回指定供应商相关的入库记录
      */
-    List<StockInDO> selectBySupplierId(Integer supplierID);
+    List<StockInDO> selectByCustomerID(Integer customerID);
 
     /**
      * 选择指定货物ID相关的入库记录
      *
-     * @param goodID 指定的货物ID
+     * @param goodsID 指定的货物ID
      * @return 返回指定货物相关的入库记录
      */
-    List<StockInDO> selectByGoodID(Integer goodID);
+    List<StockInDO> selectByGoodsID(Integer goodsID);
+
+    /**
+     * 选择指定批次ID相关的入库记录
+     *
+     * @param batchID 指定的批次ID
+     * @return 返回指定货物相关的入库记录
+     */
+    List<StockInDO> selectByBatchID(Integer batchID);
 
     /**
      * 选择指定仓库ID相关的入库记录
@@ -59,14 +75,6 @@ public interface StockInMapper {
                                                 @Param("endDate") Date endDate);
 
     /**
-     * 选择指定入库记录的ID的入库记录
-     *
-     * @param id 入库记录ID
-     * @return 返回指定ID的入库记录
-     */
-    StockInDO selectByID(Integer id);
-
-    /**
      * 添加一条新的入库记录
      *
      * @param stockInDO 入库记录
@@ -86,4 +94,5 @@ public interface StockInMapper {
      * @param id 指定删除入库记录的ID
      */
     void deleteByID(Integer id);
+
 }

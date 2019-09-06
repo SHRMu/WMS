@@ -12,6 +12,7 @@
 	$(function() {
 		bootstrapValidatorInit();
 		repositoryOptionInit();
+		validBatchOptionInit()
 		storageListInit();
 		optionAction();
 		searchAction();
@@ -23,9 +24,9 @@
 		exportStorageAction()
 	})
 
-	// 添加库存信息模态框数据校验
+	// 添加检测库存模态框数据校验
 	function bootstrapValidatorInit() {
-		$("#storage_form").bootstrapValidator({
+		$("#detect_form").bootstrapValidator({
 			message : 'This is not valid',
 			feedbackIcons : {
 				valid : 'glyphicon glyphicon-ok',
@@ -34,31 +35,45 @@
 			},
 			excluded : [ ':disabled' ],
 			fields : {
-				storage_goodsID : {
+				detect_goodsID : {
 					validators : {
 						notEmpty : {
 							message : '货物ID不能为空'
 						}
 					}
 				},
-				storage_batchID : {
+				detect_batchID : {
 					validators : {
 						notEmpty : {
 							message : '批次ID不能为空'
 						}
 					}
 				},
-				storage_repositoryID : {
+				detect_repositoryID : {
 					validators : {
 						notEmpty : {
 							message : '仓库ID不能为空'
 						}
 					}
 				},
-				storage_number : {
+				detect_passed : {
 					validators : {
 						notEmpty : {
-							message : '库存数量不能为空'
+							message : '检测良品数不能为空'
+						}
+					}
+				},
+				detect_scratch : {
+					validators : {
+						notEmpty : {
+							message : '检测划痕数不能为空'
+						}
+					}
+				},
+				detect_damage : {
+					validators : {
+						notEmpty : {
+							message : '检测故障数不能为空'
 						}
 					}
 				}
@@ -91,6 +106,31 @@
 		$('#search_input_repository').append("<option value='all'>请选择仓库</option>");
 	}
 
+	//有效的批次信息出事话，页面加载时完成
+	function validBatchOptionInit() {
+		$.ajax({
+			type : 'GET',
+			url : 'repositoryBatchManage/getValidBatchList',
+			dataType: 'json',
+			contentType : 'application/json',
+			data:{
+				searchType : "searchAll",
+				keyWord : "",
+				offset : -1,
+				limit : -1
+			},
+			success : function(response){
+				//组装option
+				$.each(response.rows,function(index,elem){
+					$('#search_input_batch').append("<option value='" + elem.id + "'>" + elem.id +"号批次</option>");
+				})
+			},
+			error : function(response){
+			}
+		});
+		$('#search_input_batch').append("<option value='all'>请选择批次</option>");
+	}
+
 	// 表格初始化
 	function storageListInit() {
 		$('#storageList')
@@ -99,7 +139,8 @@
 							columns : [
 								{
 									field : 'goodsID',
-									title : '货物ID'
+									title : '货物ID',
+									visible : false
 									//sortable: true
 								},
 								{
@@ -108,24 +149,28 @@
 								},
 								{
 									field : 'batchID',
-									title : '批次ID'
+									title : '批次ID',
+									visible : false
 								},
 								{
 									field : 'batchCode',
 									title : '批次编号'
 								},
 								{
-									field : 'goodsValue',
-									title : '货物价值',
-									visible : false
-								},
-								{
 									field : 'repositoryID',
 									title : '仓库ID'
 								},
 								{
-									field : 'number',
-									title : '库存数量'
+									field : 'passed',
+									title : '良品数量'
+								},
+								{
+									field : 'scratch',
+									title : '划痕数量'
+								},
+								{
+									field : 'damage',
+									title : '故障数量'
 								},
 								{
 									field : 'operation',
@@ -212,7 +257,6 @@
 		}
 		return temp;
 	}
-
 
 	// 表格刷新
 	function tableRefresh() {
@@ -354,7 +398,7 @@
 					$('#storage_batchID').val("");
 					$('#storage_repositoryID').val("");
 					$('#storage_number').val("");
-					$('#storage_form').bootstrapValidator("resetForm", true);
+					$('#detectStorage_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
 				}
@@ -536,7 +580,7 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物批次</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物类型</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
@@ -549,6 +593,10 @@
 							placeholder="货物ID">
 					</div>
 					<!--通过后台查询仓库信息-->
+					<div class="col-md-3 col-sm-4">
+						<select class="form-control" id="search_input_batch">
+						</select>
+					</div>
 					<div class="col-md-3 col-sm-4">
 						<select class="form-control" id="search_input_repository">
 						</select>
@@ -565,7 +613,7 @@
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-5">
 				<button class="btn btn-sm btn-default" id="add_storage">
-					<span class="glyphicon glyphicon-plus"></span> <span>添加库存信息</span>
+					<span class="glyphicon glyphicon-plus"></span> <span>添加检测数据</span>
 				</button>
 				<button class="btn btn-sm btn-default" id="import_storage">
 					<span class="glyphicon glyphicon-import"></span> <span>导入</span>
@@ -594,14 +642,14 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">添加库存记录</h4>
+				<h4 class="modal-title" id="myModalLabel">添加已检测数据</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 添加库存信息模态框的内容 -->
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="storage_form"
+						<form class="form-horizontal" role="form" id="detectStorage_form"
 							style="margin-top: 25px">
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物ID：</span>
@@ -628,11 +676,27 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>良品：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_number"
-										name="storage_number" placeholder="数量">
+									<input type="text" class="form-control" id="storage_passed"
+										name="storage_passed" placeholder="良品">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_scratch"
+										   name="storage_scratch" placeholder="数量">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_damage"
+										   name="storage_damage" placeholder="故障">
 								</div>
 							</div>
 						</form>

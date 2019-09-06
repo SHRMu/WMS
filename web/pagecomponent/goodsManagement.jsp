@@ -144,7 +144,7 @@
 		$('#goods_weight_edit').val(row.weight);
 	}
 
-	// 添加供应商模态框数据校验
+	// 添加模态框数据校验
 	function bootstrapValidatorInit() {
 		$("#goods_form,#goods_form_edit").bootstrapValidator({
 			message : 'This is not valid',
@@ -458,7 +458,10 @@
 		$('#info_content').text(msg);
 		$('#info_modal').modal("show");
 	}
+
 </script>
+
+
 <div class="panel panel-default">
 	<ol class="breadcrumb">
 		<li>货物信息管理</li>
@@ -472,9 +475,9 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
 			</div>

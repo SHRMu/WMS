@@ -41,7 +41,6 @@ public class StorageManageHandler {
 
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
     private static final String SEARCH_BY_BATCH_ID = "searchByBatchID";
-    private static final String SEARCH_BY_GOODS_TYPE = "searchByGoodsType";
     private static final String SEARCH_BY_BATCH_CODE = "searchByBatchCode";
     private static final String SEARCH_ALL = "searchAll";
 
@@ -63,9 +62,9 @@ public class StorageManageHandler {
             case SEARCH_ALL:
                 if (StringUtils.isNumeric(repositoryBelong)) {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = storageManageService.selectAll(repositoryID, offset, limit);
+                    queryResult = storageManageService.selectAll(null, repositoryID, offset, limit);
                 } else {
-                    queryResult = storageManageService.selectAll(null, offset, limit);
+                    queryResult = storageManageService.selectAll(null, null, offset, limit);
                 }
                 break;
             case SEARCH_BY_GOODS_ID:
@@ -73,34 +72,10 @@ public class StorageManageHandler {
                     Integer goodsID = Integer.valueOf(keyword);
                     if (StringUtils.isNumeric(repositoryBelong)) {
                         Integer repositoryID = Integer.valueOf(repositoryBelong);
-                        queryResult = storageManageService.selectByGoodsID(goodsID, repositoryID, offset, limit);
+                        queryResult = storageManageService.selectByGoodsID(goodsID, null, repositoryID, offset, limit);
                     } else
-                        queryResult = storageManageService.selectByGoodsID(goodsID, null, offset, limit);
+                        queryResult = storageManageService.selectByGoodsID(goodsID, null, null, offset, limit);
                 }
-                break;
-            case SEARCH_BY_GOODS_TYPE:
-                if (StringUtils.isNumeric(repositoryBelong)) {
-                    Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = storageManageService.selectByGoodsType(keyword, repositoryID, offset, limit);
-                } else
-                    queryResult = storageManageService.selectByGoodsType(keyword, null, offset, limit);
-                break;
-            case SEARCH_BY_BATCH_ID:
-                if (StringUtils.isNumeric(keyword)){
-                    Integer batchID = Integer.valueOf(keyword);
-                    if (StringUtils.isNumeric(repositoryBelong)) {
-                        Integer repositoryID = Integer.valueOf(repositoryBelong);
-                        queryResult = storageManageService.selectByBatchID(batchID, repositoryID, offset, limit);
-                    } else
-                        queryResult = storageManageService.selectByBatchID(batchID, null, offset, limit);
-                }
-                break;
-            case SEARCH_BY_BATCH_CODE:
-                if (StringUtils.isNumeric(repositoryBelong)) {
-                    Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    queryResult = storageManageService.selectByBatchCode(keyword, repositoryID, offset, limit);
-                } else
-                    queryResult = storageManageService.selectByBatchCode(keyword, null, offset, limit);
                 break;
             default:
                 // do other thing
@@ -215,7 +190,7 @@ public class StorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = storageManageService.addNewStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            isSuccess = storageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

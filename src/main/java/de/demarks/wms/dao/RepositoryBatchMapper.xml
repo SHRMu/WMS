@@ -95,7 +95,6 @@
 			REPO_BATCH_CODE = #{code},
 			REPO_BATCH_STATUS = #{status},
 			REPO_BATCH_DESC = #{desc},
-			REPO_BATCH_TIME = #{time},
 			REPO_BATCH_REPOID = #{repositoryID}
 		where
 			REPO_BATCH_ID = #{id}

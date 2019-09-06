@@ -13,6 +13,7 @@ var customerCache = new Array();// 客户信息缓存
 var goodsCache = new Array();//货物信息缓存
 
 $(function(){
+	batchSelectorInit();
 	repositorySelectorInit();
 	dataValidateInit();
 	detilInfoToggle();
@@ -23,6 +24,32 @@ $(function(){
 
 	stockInOption();
 })
+
+
+//当前可用的批次初始化
+function batchSelectorInit() {
+	$.ajax({
+		type : 'GET',
+		url : 'repositoryBatchManage/getRepositoryBatchList',
+		dataType : 'json',
+		contentType : 'application/json',
+		data : {
+			searchType : 'searchByActive',
+			keyWord : '',
+			offset : -1,
+			limit : -1
+		},
+		success : function(response){
+			$.each(response.rows,function(index,elem){
+				$('#batch_selector').append("<option value='" + elem.id + "'>" + elem.id +"号批次</option>");
+			});
+		},
+		error : function(response){
+			$('#batch_selector').append("<option value='-1'>加载失败</option>");
+		}
+
+	})
+}
 
 // 仓库下拉列表初始化
 function repositorySelectorInit(){
@@ -59,13 +86,6 @@ function dataValidateInit(){
 				validators : {
 					notEmpty : {
 						message : '入库包裹运单号不能为空'
-					},
-				}
-			},
-			batch_input : {
-				validators : {
-					notEmpty : {
-						message : '入库包裹批次号不能为空'
 					},
 				}
 			},
@@ -345,7 +365,6 @@ function stockInOption(){
 // 页面重置
 function inputReset(){
 	$('#packet_input').val('');
-	$('#batch_input').val('');
 	$('#customer_input').val('');
 	$('#goods_input').val('');
 	$('#stockin_input').val('');
@@ -391,7 +410,7 @@ function infoModal(type, msg) {
 					<div class="col-md-10 col-sm-11">
 						<form action="" class="form-inline">
 							<div class="form-group">
-								<label for="" class="form-label">包裹单号：</label>
+								<label for="" class="form-label">包裹运单：</label>
 								<input type="text" class="form-control" placeholder="请输入运单号信息" id="packet_input" name="">
 							</div>
 						</form>
@@ -405,7 +424,10 @@ function infoModal(type, msg) {
 						<form action="" class="form-inline">
 							<div class="form-group">
 								<label for="" class="form-label">包裹批次：</label>
-								<input type="text" class="form-control" placeholder="请输入包裹批次" id="batch_input" name="">
+<%--								<input type="text" class="form-control" placeholder="请输入包裹批次" id="batch_input" name="">--%>
+								<select name="" id="batch_selector" class="form-control">
+									<option value="">请选择可用批次</option>
+								</select>
 							</div>
 						</form>
 					</div>
@@ -480,14 +502,6 @@ function infoModal(type, msg) {
 									<span id="info_customer_person">-</span>
 								</div>
 							</div>
-<%--											<div style="margin-top:5px">--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span for="" class="pull-right">电子邮件：</span>--%>
-<%--												</div>--%>
-<%--												<div class="col-md-6">--%>
-<%--													<span id="info_customer_email">-</span>--%>
-<%--												</div>--%>
-<%--											</div>--%>
 						</div>
 						<div class="col-md-6 col-sm-6  visible-md visible-lg">
 							<div style="margin-top:5px">
@@ -498,80 +512,6 @@ function infoModal(type, msg) {
 									<span id="info_customer_name">-</span>
 								</div>
 							</div>
-<%--											<div style="margin-top:5px">--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span for="" class="pull-right">联系电话：</span>--%>
-<%--												</div>--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span id="info_customer_tel">-</span>--%>
-<%--												</div>--%>
-<%--											</div>--%>
-<%--											<div style="margin-top:5px">--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span for="" class="pull-right">联系地址：</span>--%>
-<%--												</div>--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span id="info_customer_address">-</span>--%>
-<%--												</div>--%>
-<%--											</div>--%>
-
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6 col-sm-6">
-				<div class="row">
-					<div class="col-md-1 col-sm-1"></div>
-					<div class="col-md-11 col-sm-11">
-						<label for="" class="text-info">货物信息</label>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-1 col-sm-1"></div>
-					<div class="col-md-11 col-sm-11">
-						<div class="col-md-6 col-sm-6">
-<%--											<div style="margin-top:5px">--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span for="" class="pull-right">货物ID：</span>--%>
-<%--												</div>--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span id="info_goods_ID">-</span>--%>
-<%--												</div>--%>
-<%--											</div>--%>
-							<div style="margin-top:5px">
-								<div class="col-md-6 col-sm-6">
-									<span for="" class="pull-right">类型：</span>
-								</div>
-								<div class="col-md-6 col-sm-6">
-									<span id="info_goods_type">-</span>
-								</div>
-							</div>
-							<div style="margin-top:5px">
-								<div class="col-md-6 col-sm-6">
-									<span for="" class="pull-right">名称：</span>
-								</div>
-								<div class="col-md-6 col-sm-6">
-									<span id="info_goods_name">-</span>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6 col-sm-6">
-							<div style="margin-top:5px">
-								<div class="col-md-6 col-sm-6">
-									<span for="" class="pull-right">规格：</span>
-								</div>
-								<div class="col-md-6 col-sm-6">
-									<span id="info_goods_size">-</span>
-								</div>
-							</div>
-<%--											<div style="margin-top:5px">--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span for="" class="pull-right">货物价值：</span>--%>
-<%--												</div>--%>
-<%--												<div class="col-md-6 col-sm-6">--%>
-<%--													<span id="info_goods_value">-</span>--%>
-<%--												</div>--%>
-<%--											</div>--%>
 						</div>
 					</div>
 				</div>

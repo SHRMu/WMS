@@ -2,23 +2,24 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_repositoryBatch = "none";
+	var search_type_batch = "none";
 	var search_keyWord = "";
 	var selectID;
+	var selected_repositoryID;
 
 	$(function() {
 		optionAction();
 		searchAction();
-		datePickerInit();
-		repositorySelectorInit()
-		repositoryListInit();
+		repositorySelectorInit();
+		repositorySelected();
+		batchListInit();
 		bootstrapValidatorInit();
 
-		addRepositoryAction();
-		editRepositoryAction();
-		deleteRepositoryAction();
-		importRepositoryAction();
-		exportRepositoryAction()
+		addBatchAction();
+		editBatchAction();
+		deleteBatchAction();
+		importBatchAction();
+		exportBatchAction()
 	})
 
 	// 下拉框選擇動作
@@ -28,13 +29,13 @@
 			$("#search_input").val("");
 			if (type == "所有") {
 				$("#search_input").attr("readOnly", "true");
-				search_type_repositoryBatch = "searchAll";
-			} else if (type == "批次数") {
+				search_type_batch = "searchAll";
+			} else if (type == "批次ID") {
 				$("#search_input").removeAttr("readOnly");
-				search_type_repositoryBatch = "searchByNumber";
-			} else if (type == "批次状态") {
+				search_type_batch = "searchByID";
+			} else if (type == "批次编号") {
 				$("#search_input").removeAttr("readOnly");
-				search_type_repositoryBatch = "searchByStatus";
+				search_type_batch = "searchByCode";
 			} else {
 				$("#search_input").removeAttr("readOnly");
 			}
@@ -57,7 +58,7 @@
 		var temp = {
 			limit : params.limit,
 			offset : params.offset,
-			searchType : search_type_repositoryBatch,
+			searchType : search_type_batch,
 			keyWord : search_keyWord
 		}
 		return temp;
@@ -78,48 +79,49 @@
 			},
 			success : function(response){
 				$.each(response.rows,function(index,elem){
-					$('#repositoryBatch_repositoryID').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
+					$('#repository_selector, #repository_selector_edit').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
 				});
 			},
 			error : function(response){
-				$('#repositoryBatch_repositoryID').append("<option value='-1'>加载失败</option>");
+				$('#repository_selector, #repository_selector_edit').append("<option value='-1'>加载失败</option>");
 			}
 
 		})
 	}
+	
+	function repositorySelected() {
+		$('#repository_selector, #repository_selector_edit').change(function(){
+			selected_repositoryID = $(this).val();
+		});
+	}
 
 	// 表格初始化
-	function repositoryListInit() {
-		$('#repositoryBatchList')
+	function batchListInit() {
+		$('#batchList')
 				.bootstrapTable(
 						{
 							columns : [
 									{
 										field : 'id',
-										title : '仓库ID'
+										title : '批次ID'
 									//sortable: true
 									},
 									{
-										field : 'address',
-										title : '仓库地址'
-									},
-									{
-										field : 'adminName',
-										title : '仓库管理员'
+										field : 'code',
+										title : '批次编号'
 									},
 									{
 										field : 'status',
 										title : '状态'
 									},
 									{
-										field : 'area',
-										title : '面积',
-										visible : false
-									},
-									{
 										field : 'desc',
 										title : '描述',
-										visible : false
+										visible: false
+									},
+									{
+										field : 'repositoryID',
+										title : '所属仓库'
 									},
 									{
 										field : 'operation',
@@ -140,12 +142,13 @@
 											'click .delete' : function(e,
 													value, row, index) {
 												selectID = row.id;
+												selected_repositoryID = row.repositoryID;
 												$('#deleteWarning_modal')
 														.modal('show');
 											}
 										}
 									} ],
-							url : 'repositoryManage/getRepositoryList',
+							url : 'repositoryBatchManage/getRepositoryBatchList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -160,24 +163,8 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#repositoryBatchList').bootstrapTable('refresh', {
+		$('#batchList').bootstrapTable('refresh', {
 			query : {}
-		});
-	}
-
-	// 日期选择器初始化
-	function datePickerInit(){
-		$('.form_date').datetimepicker({
-			format:'yyyy-mm-dd',
-			language : 'zh-CN',
-			endDate : new Date(),
-			weekStart : 1,
-			todayBtn : 1,
-			autoClose : 1,
-			todayHighlight : 1,
-			startView : 2,
-			forceParse : 0,
-			minView:2
 		});
 	}
 
@@ -186,16 +173,16 @@
 		$('#edit_modal').modal("show");
 
 		// load info
-		$('#repository_form_edit').bootstrapValidator("resetForm", true);
-		$('#repository_address_edit').val(row.address);
-		$('#repository_status_edit').val(row.status);
-		$('#repository_area_edit').val(row.area);
-		$('#repository_desc_edit').val(row.desc);
+		$('#batch_form_edit').bootstrapValidator("resetForm", true);
+		$('#batch_code_edit').val(row.code);
+		$('#batch_status_edit').val(row.status);
+		$('#batch_desc_edit').val(row.desc);
+		$('#batch_repositoryID_edit').val(selected_repositoryID);
 	}
 
-	// 添加仓库模态框数据校验
+	// 添加批次模态框数据校验
 	function bootstrapValidatorInit() {
-		$("#repository_form,#repository_form_edit").bootstrapValidator({
+		$("#batch_form,#batch_form_edit").bootstrapValidator({
 			message : 'This is not valid',
 			feedbackIcons : {
 				valid : 'glyphicon glyphicon-ok',
@@ -204,24 +191,17 @@
 			},
 			excluded : [ ':disabled' ],
 			fields : {
-				repository_address : {
+				batch_code : {
 					validators : {
 						notEmpty : {
-							message : '仓库地址不能为空'
+							message : '批次编号不能为空'
 						}
 					}
 				},
-				repository_status : {
+				batch_status : {
 					validators : {
 						notEmpty : {
-							message : '仓库状态不能为空'
-						}
-					}
-				},
-				repository_area : {
-					validators : {
-						notEmpty : {
-							message : '仓库面积不能为空'
+							message : '批次状态不能为空'
 						}
 					}
 				}
@@ -229,29 +209,30 @@
 		})
 	}
 
-	// 编辑仓库信息
-	function editRepositoryAction() {
+	// 编辑批次信息
+	function editBatchAction() {
 		$('#edit_modal_submit').click(
 				function() {
-					$('#repository_form_edit').data('bootstrapValidator')
+					$('#batch_form_edit').data('bootstrapValidator')
 							.validate();
-					if (!$('#repository_form_edit').data('bootstrapValidator')
+					if (!$('#batch_form_edit').data('bootstrapValidator')
 							.isValid()) {
 						return;
 					}
 
 					var data = {
 						id : selectID,
-						address : $('#repository_address_edit').val(),
-						status : $('#repository_status_edit').val(),
-						area : $('#repository_area_edit').val(),
+						code : $('#batch_code_edit').val(),
+						status : $('#batch_status_edit').val(),
 						desc : $('#repository_desc_edit').val(),
+						// repositoryID : $('#batch_repositoryID_edit').val(),
+						repositoryID : selected_repositoryID,
 					}
 
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'repositoryManage/updateRepository',
+						url : 'repositoryBatchManage/updateRepositoryBatch',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -261,10 +242,10 @@
 							var msg;
 							if (response.result == "success") {
 								type = "success";
-								msg = "仓库信息更新成功";
+								msg = "批次信息更新成功";
 							} else if (resposne == "error") {
 								type = "error";
-								msg = "仓库信息更新失败"
+								msg = "批次信息更新失败"
 							}
 							infoModal(type, msg);
 							tableRefresh();
@@ -275,17 +256,18 @@
 				});
 	}
 
-	// 刪除仓库信息
-	function deleteRepositoryAction() {
+	// 刪除批次信息
+	function deleteBatchAction() {
 		$('#delete_confirm').click(function() {
 			var data = {
-				"repositoryID" : selectID
+				"batchID" : selectID,
+				"repositoryID" : selected_repositoryID
 			}
 
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "repositoryManage/deleteRepository",
+				url : "repositoryBatchManage/deleteRepositoryBatch",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
@@ -295,10 +277,10 @@
 					var msg;
 					if (response.result == "success") {
 						type = "success";
-						msg = "仓库信息删除成功";
+						msg = "批次信息删除成功";
 					} else {
 						type = "error";
-						msg = "仓库信息删除失败";
+						msg = "批次信息删除失败";
 					}
 					infoModal(type, msg);
 					tableRefresh();
@@ -311,23 +293,24 @@
 		})
 	}
 
-	// 添加仓库信息
-	function addRepositoryAction() {
-		$('#add_repositoryBatch').click(function() {
+	// 添加批次信息
+	function addBatchAction() {
+		$('#add_batch').click(function() {
 			$('#add_modal').modal("show");
 		});
 
 		$('#add_modal_submit').click(function() {
 			var data = {
-				address : $('#repository_address').val(),
-				status : $('#repository_status').val(),
-				area : $('#repository_area').val(),
-				desc : $('#repository_desc').val(),
+				code : $('#batch_code').val(),
+				status : $('#batch_status').val(),
+				desc : $('#batch_desc').val(),
+				// repositoryID : $('#repository_selector').val(),
+				repositoryID : selected_repositoryID,
 			}
 			// ajax
 			$.ajax({
 				type : "POST",
-				url : "repositoryManage/addRepository",
+				url : "repositoryBatchManage/addRepositoryBatch",
 				dataType : "json",
 				contentType : "application/json",
 				data : JSON.stringify(data),
@@ -337,20 +320,20 @@
 					var type;
 					if (response.result == "success") {
 						type = "success";
-						msg = "仓库添加成功";
+						msg = "批次添加成功";
 					} else if (response.result == "error") {
 						type = "error";
-						msg = "仓库添加失败";
+						msg = "批次添加失败";
 					}
 					infoModal(type, msg);
 					tableRefresh();
 
 					// reset
-					$('#repository_address').val("");
-					$('#repository_ststus').val("");
-					$('#repository_area').val("");
-					$('#repository_desc').val("");
-					$('#repository_form').bootstrapValidator("resetForm", true);
+					$('#batch_code').val("");
+					$('#batch_stats').val("");
+					$('#batch_desc').val("");
+					$('#repository_selector').val("");
+					$('#batch_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
 				}
@@ -361,9 +344,9 @@
 	var import_step = 1;
 	var import_start = 1;
 	var import_end = 3;
-	// 导入仓库信息
-	function importRepositoryAction() {
-		$('#import_repositoryBatch').click(function() {
+	// 导入批次信息
+	function importBatchAction() {
+		$('#import_batch').click(function() {
 			$('#import_modal').modal("show");
 		});
 
@@ -406,15 +389,15 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "repositoryManage/importRepository",
+				url : "repositoryBatchManage/importRepositoryBatch",
 				secureuri : false,
 				dataType : 'json',
 				fileElementId : "file",
 				success : function(data, status) {
 					var total = 0;
 					var available = 0;
-					var msg1 = "仓库信息导入成功";
-					var msg2 = "仓库信息导入失败";
+					var msg1 = "批次信息导入成功";
+					var msg2 = "批次信息导入失败";
 					var info;
 
 					$('#import_progress_bar').addClass("hide");
@@ -443,26 +426,26 @@
 		})
 	}
 
-	// 导出仓库信息
-	function exportRepositoryAction() {
-		$('#export_repositoryBatch').click(function() {
+	// 导出批次信息
+	function exportBatchAction() {
+		$('#export_batch').click(function() {
 			$('#export_modal').modal("show");
 		})
 
 		$('#export_repository_download').click(
 				function() {
 					var data = {
-						searchType : search_type_repositoryBatch,
+						searchType : search_type_batch,
 						keyWord : search_keyWord
 					}
-					var url = "repositoryManage/exportRepository?"
+					var url = "repositoryBatchManage/exportRepositoryBatch?"
 							+ $.param(data)
 					window.open(url, '_blank');
 					$('#export_modal').modal("hide");
 				})
 	}
 
-	// 导入仓库模态框重置
+	// 导入批次模态框重置
 	function importModalReset() {
 		var i;
 		for (i = import_start; i <= import_end; i++) {
@@ -529,9 +512,9 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">批次数</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">批次状态</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">批次ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">批次编号</a></li>
 					</ul>
 				</div>
 			</div>
@@ -552,13 +535,13 @@
 
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-5">
-				<button class="btn btn-sm btn-default" id="add_repositoryBatch">
+				<button class="btn btn-sm btn-default" id="add_batch">
 					<span class="glyphicon glyphicon-plus"></span> <span>添加批次信息</span>
 				</button>
-				<button class="btn btn-sm btn-default" id="import_repositoryBatch">
+				<button class="btn btn-sm btn-default" id="import_batch">
 					<span class="glyphicon glyphicon-import"></span> <span>导入</span>
 				</button>
-				<button class="btn btn-sm btn-default" id="export_repositoryBatch">
+				<button class="btn btn-sm btn-default" id="export_batch">
 					<span class="glyphicon glyphicon-export"></span> <span>导出</span>
 				</button>
 			</div>
@@ -567,7 +550,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="repositoryBatchList" class="table table-striped"></table>
+				<table id="batchList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -589,59 +572,41 @@
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="repository_form"
+						<form class="form-horizontal" role="form" id="batch_form"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次数：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次编号：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="repositoryBatch_number"
-										name="repositoryBatch_number" placeholder="批次数">
+									<input type="text" class="form-control" id="batch_code"
+										name="batch_code" placeholder="批次编号">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次状态：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<select name="" class="form-control" id="repositoryBatch_status" name="repositoryBatch_status">
+									<select name="" class="form-control" id="batch_status" name="batch_status">
 										<option value="可用">可用</option>
-										<option value="结束">结束</option>
+										<option value="完结">完结</option>
 									</select>
-<%--									<input type="text" class="form-control" id="repositoryBatch_status"--%>
-<%--										name="repositoryBatch_status" placeholder="批次状态">--%>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>所属仓库：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<select name="" class="form-control" id="repositoryBatch_repositoryID" name="repositoryBatch_repositoryID">
+									<select name="" class="form-control" id="repository_selector" name="">
 										<option value="">请选择仓库</option>
 									</select>
-<%--									<label for="" class="form-label">入库仓库：</label>--%>
-<%--									<select name="" id="repository_selector" class="form-control">--%>
-<%--										<option value="">请选择仓库</option>--%>
-<%--									</select>--%>
-									<%--									<input type="text" class="form-control" id="repositoryBatch_status"--%>
-									<%--										name="repositoryBatch_status" placeholder="批次状态">--%>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>开始时间：</span>
-								</label>
-								<div class="col-md-8 col-sm-8">
-<%--									<input type="text" class="form-control" id="repository_status"--%>
-<%--										name="repository_status" placeholder="仓库状态">--%>
-									<input class="form_date form-control" value="" id="repositoryBatch_time" name="repositoryBatch_time" placeholder="开始时间">
-
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次描述：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<textarea class="form-control" id="repositoryBatch_desc"
-										name="repositoryBatch_desc" placeholder="批次描述" style="min-width: 100%"></textarea>
+									<textarea class="form-control" id="batch_desc"
+										name="batch_desc" placeholder="批次描述" style="min-width: 100%"></textarea>
 								</div>
 							</div>
 						</form>
@@ -880,8 +845,8 @@
 							style="width: 70px; height: 70px; margin-top: 20px;">
 					</div>
 					<div class="col-md-8 col-sm-8">
-						<h3>是否确认删除该条仓库信息</h3>
-						<p>(注意：若该仓库已经有出入库记录或仓存信息，则该仓库信息将不能删除成功。如需删除该仓库的信息，请保证该仓库没有出入库和仓存信息关联)</p>
+						<h3>是否确认删除该条批次信息</h3>
+						<p>(注意：若该批次下还有未发货的良品库存，或者该批次状态仍为可用，则将不能删除成功，请先确认该批次所有良品已发货，同时修改该批次状态为完结。)</p>
 					</div>
 				</div>
 			</div>
@@ -913,41 +878,42 @@
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="repository_form_edit"
+						<form class="form-horizontal" role="form" id="batch_form_edit"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库地址：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次编号：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="repository_address_edit"
-										name="repository_address" placeholder="仓库地址">
+									<input type="text" class="form-control" id="batch_code_edit"
+										name="batch_code" placeholder="批次编号">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库面积：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次状态：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control"
-										id="repository_area_edit" name="repository_area"
-										placeholder="仓库面积">
+									<select name="" class="form-control" id="batch_status_edit" name="batch_status_edit">
+										<option value="可用">可用</option>
+										<option value="完结">完结</option>
+									</select>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库状态：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>所属仓库：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control"
-										id="repository_status_edit" name="repository_status"
-										placeholder="仓库状态">
+									<select name="" class="form-control" id="repository_selector_edit" name="">
+										<option value="">请选择仓库</option>
+									</select>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库描述：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次描述：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<textarea class="form-control"
-										id="repository_desc_edit" name="repository_desc"
-										placeholder="仓库描述"></textarea>
+										id="batch_desc_edit" name="batch_desc"
+										placeholder="批次描述"></textarea>
 								</div>
 							</div>
 						</form>

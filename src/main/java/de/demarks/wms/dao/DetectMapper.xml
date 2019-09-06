@@ -28,6 +28,28 @@
 
     </select>
 
+	<select id="selectByGoodsID">
+
+
+	</select>
+
+	<select id="selectByBatchID">
+
+	</select>
+
+	<select id="selectByRepositoryID">
+
+	</select>
+
+	<select id="selectByRepositoryIDAndDate">
+
+	</select>
+
+	<select id="selectByID">
+
+	</select>
+
+
     <insert id="insert">
 		insert into wms_record_storage
 		(
@@ -56,5 +78,13 @@
 			#{personInCharge}
 		)
 	</insert>
+
+	<update id="update">
+
+	</update>
+
+	<delete id="deleteByID">
+
+	</delete>
 
 </mapper>

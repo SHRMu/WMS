@@ -93,12 +93,13 @@ public interface RepositoryBatchManageService {
     boolean updateRepositoryBatch(RepositoryBatch repositoryBatch) throws RepositoryBatchManageServiceException;
 
     /**
-     * 删除仓库批次记录
+     * 删除指定 batchID 和 repositoryID 的批次记录
      *
      * @param batchID 批次ID
+     * @param repositoryID 仓库ID
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
-    boolean deleteRepositoryBatch(Integer batchID) throws RepositoryBatchManageServiceException;
+    boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException;
 
 
 }

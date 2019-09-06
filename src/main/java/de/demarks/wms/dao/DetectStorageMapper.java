@@ -6,39 +6,50 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ *  已检测待发货库存映射器
+ *
+ * @author huanyingcool
+ *
+ */
 @Repository
 public interface DetectStorageMapper {
 
     /**
-     * 选择所有的检测库存信息
+     * 选择指定批次ID和仓库ID的检测库存信息
+     * @param batchID       批次ID
+     * @param repositoryID  仓库ID
      * @return 返回所有的库存信息
      */
-    List<DetectStorage> selectAllAndRepositoryID(@Param("repositoryID") Integer repositoryID);
+    List<DetectStorage> selectAll(@Param("batchID")Integer batchID, @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定货物ID和仓库ID的库存信息
-     * @param goodsID 货物ID
+     * 选择指定货物ID检测库存信息
+     * @param goodsID      货物ID
+     * @return 返回所有指定货物ID和仓库ID的库存信息
+     */
+    List<DetectStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                        @Param("batchID") Integer batchID,
+                                        @Param("repositoryID") Integer repositoryID);
+
+    /**
+     * 选择指定货物名的检测库存信息
+     * @param goodsName 货物名称
+     * @return 返回所有指定货物名称的检测库存信息
+     */
+    List<DetectStorage> selectByGoodsName(@Param("goodsName") String goodsName,
+                                          @Param("batchID") Integer batchID,
+                                          @Param("repositoryID") Integer repositoryID);
+
+
+    /**
+     * 选择指定批次ID和仓库ID的库存信息
+     * @param batchCode 批次编号
      * @param repositoryID 库存ID
      * @return 返回所有指定货物ID和仓库ID的库存信息
      */
-    List<DetectStorage> selectByGoodsIDAndRepositoryID(@Param("goodsID") Integer goodsID,
-                                                 @Param("repositoryID") Integer repositoryID);
-
-    /**
-     * 选择指定货物名的库存信息
-     * @param goodsName 货物名称
-     * @return 返回所有指定货物名称的库存信息
-     */
-    List<DetectStorage> selectByGoodsNameAndRepositoryID(@Param("goodsName") String goodsName,
-                                                   @Param("repositoryID") Integer repositoryID);
-
-    /**
-     * 选择指定货物类型的库存信息
-     * @param goodsType 货物类型
-     * @return 返回所有指定货物类型的库存信息
-     */
-    List<DetectStorage> selectByGoodsTypeAndRepositoryID(@Param("goodsType") String goodsType,
-                                                   @Param("repositoryID") Integer repositoryID);
+    List<DetectStorage> selectByBatchCodeAndRepositoryID(@Param("batchCode") String batchCode,
+                                                       @Param("repositoryID") Integer repositoryID);
 
     /**
      * 更新库存信息

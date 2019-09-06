@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * 仓库管理员管理 service
  *
- * @author Shouran
+ * @author huanyingcool
  */
 public interface RepositoryAdminManageService {
 

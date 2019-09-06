@@ -43,7 +43,7 @@ public class StockInDO {
     /**
      * 商品ID
      */
-    private Integer goodID;
+    private Integer goodsID;
 
     /**
      * 商品名称
@@ -118,12 +118,12 @@ public class StockInDO {
         this.customerName = customerName;
     }
 
-    public Integer getGoodID() {
-        return goodID;
+    public Integer getGoodsID() {
+        return goodsID;
     }
 
-    public void setGoodID(Integer goodID) {
-        this.goodID = goodID;
+    public void setGoodsID(Integer goodsID) {
+        this.goodsID = goodsID;
     }
 
     public String getGoodName() {
@@ -175,7 +175,7 @@ public class StockInDO {
                 ", batchCode='" + batchCode + '\'' +
                 ", customerID=" + customerID +
                 ", customerName='" + customerName + '\'' +
-                ", goodID=" + goodID +
+                ", goodsID=" + goodsID +
                 ", goodName='" + goodName + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
