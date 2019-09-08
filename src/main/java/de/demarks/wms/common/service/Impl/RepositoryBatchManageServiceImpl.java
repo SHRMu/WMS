@@ -51,7 +51,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
         // 查詢
         RepositoryBatch repositoryBatch;
         try {
-            repositoryBatch = repositoryBatchMapper.selectByID(batchID);
+            repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
         } catch (PersistenceException e) {
             throw new RepositoryBatchManageServiceException(e);
         }
@@ -103,14 +103,14 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                batches = repositoryBatchMapper.selectByCode(code);
+                batches = repositoryBatchMapper.selectByCode(code,null);
                 if (batches != null) {
                     PageInfo<RepositoryBatch> pageInfo = new PageInfo<>(batches);
                     total = pageInfo.getTotal();
                 } else
                     batches = new ArrayList<>();
             } else {
-                batches = repositoryBatchMapper.selectByCode(code);
+                batches = repositoryBatchMapper.selectByCode(code,null);
                 if (batches != null)
                     total = batches.size();
                 else
@@ -162,14 +162,14 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                batches = repositoryBatchMapper.selectByStatus(status);
+                batches = repositoryBatchMapper.selectByStatus(status,null);
                 if (batches != null) {
                     PageInfo<RepositoryBatch> pageInfo = new PageInfo<>(batches);
                     total = pageInfo.getTotal();
                 } else
                     batches = new ArrayList<>();
             } else {
-                batches = repositoryBatchMapper.selectByStatus(status);
+                batches = repositoryBatchMapper.selectByStatus(status,null);
                 if (batches != null)
                     total = batches.size();
                 else
@@ -214,14 +214,14 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                batches = repositoryBatchMapper.selectAll();
+                batches = repositoryBatchMapper.selectAll(null);
                 if (batches != null) {
                     PageInfo<RepositoryBatch> pageInfo = new PageInfo<>(batches);
                     total = pageInfo.getTotal();
                 } else
                     batches = new ArrayList<>();
             } else {
-                batches = repositoryBatchMapper.selectAll();
+                batches = repositoryBatchMapper.selectAll(null);
                 if (batches != null)
                     total = batches.size();
                 else
@@ -316,7 +316,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
             }
 
             //检查该批次状态是否为 完结
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
             String status = repositoryBatch.getStatus();
             if (!status.equals("完结"))
                 return false;

@@ -5,7 +5,7 @@ public class DetectStorage {
     private Integer goodsID;// 货物ID
     private String goodsName; //货物名称
     private Integer batchID; // 货物批次
-    private Integer batchCode; // 货物批次
+    private String batchCode; // 批次编号
     private Integer repositoryID;// 仓库ID
     private long number; // 未出库良品
     private long passed; // 良品数
@@ -36,11 +36,11 @@ public class DetectStorage {
         this.batchID = batchID;
     }
 
-    public Integer getBatchCode() {
+    public String getBatchCode() {
         return batchCode;
     }
 
-    public void setBatchCode(Integer batchCode) {
+    public void setBatchCode(String batchCode) {
         this.batchCode = batchCode;
     }
 

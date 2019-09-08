@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * 客户信息管理请求 Handler
  *
- * @author Ken
+ * @author huanyingcool
  */
 @RequestMapping(value = "/**/customerManage")
 @Controller

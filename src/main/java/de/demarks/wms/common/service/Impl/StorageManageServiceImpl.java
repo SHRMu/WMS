@@ -230,7 +230,7 @@ public class StorageManageServiceImpl implements StorageManageService {
 
             // validate
             Goods goods = goodsMapper.selectById(goodsID);
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
             Repository repository = repositoryMapper.selectByID(repositoryID);
             if (goods == null)
                 isAvailable = false;
@@ -276,7 +276,6 @@ public class StorageManageServiceImpl implements StorageManageService {
     public boolean updateStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
         try {
             boolean isUpdate = false;
-
             // validate
             List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (storageList != null && !storageList.isEmpty()) {
@@ -356,7 +355,7 @@ public class StorageManageServiceImpl implements StorageManageService {
 
                     // validate
                     goods = goodsMapper.selectById(storage.getGoodsID());
-                    repositoryBatch = repositoryBatchMapper.selectByID(storage.getBatchID());
+                    repositoryBatch = repositoryBatchMapper.selectByID(storage.getBatchID(),null);
                     repository = repositoryMapper.selectByID(storage.getRepositoryID());
                     if (goods == null)
                         isAvailable = false;

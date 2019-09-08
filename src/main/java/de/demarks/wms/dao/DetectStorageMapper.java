@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- *  已检测待发货库存映射器
+ *  已检测 待发货 库存映射器
  *
  * @author huanyingcool
  *
@@ -41,18 +41,8 @@ public interface DetectStorageMapper {
                                           @Param("batchID") Integer batchID,
                                           @Param("repositoryID") Integer repositoryID);
 
-
     /**
-     * 选择指定批次ID和仓库ID的库存信息
-     * @param batchCode 批次编号
-     * @param repositoryID 库存ID
-     * @return 返回所有指定货物ID和仓库ID的库存信息
-     */
-    List<DetectStorage> selectByBatchCodeAndRepositoryID(@Param("batchCode") String batchCode,
-                                                       @Param("repositoryID") Integer repositoryID);
-
-    /**
-     * 更新库存信息
+     * 更新库存信息，可单独更新良品数量
      * 该库存信息必需已经存在于数据库当中，否则更新无效
      * @param storage 库存信息
      */
@@ -71,22 +61,13 @@ public interface DetectStorageMapper {
     void insertBatch(List<DetectStorage> storages);
 
     /**
-     * 删除指定货物ID的库存信息
+     * 删除指定批次，仓库中的货物ID的库存
      * @param goodsID 货物ID
-     */
-    void deleteByGoodsID(Integer goodsID);
-
-    /**
-     * 删除指定仓库的库存信息
+     * @param batchID 批次ID
      * @param repositoryID 仓库ID
      */
-    void deleteByRepositoryID(Integer repositoryID);
-
-    /**
-     * 删除指定仓库中的指定货物的库存信息
-     * @param goodsID 货物ID
-     * @param repositoryID 仓库ID
-     */
-    void deleteByRepositoryIDAndGoodsID(@Param("goodsID") Integer goodsID, @Param("repositoryID") Integer repositoryID);
+    void delete(@Param("goodsID") Integer goodsID,
+                @Param("batchID") Integer batchID,
+                @Param("repositoryID") Integer repositoryID);
 
 }

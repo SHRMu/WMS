@@ -24,6 +24,9 @@
 			REPO_BATCH_REPOID
 		from
 			wms_repo_batch
+		<if test="repositoryID != null">
+			where REPO_BATCH_REPOID = #{repositoryID}
+		</if>
 	</select>
 	
 	<select id="selectByID" resultMap="repositoryBatch">
@@ -38,6 +41,9 @@
 			wms_repo_batch
 		where
 			REPO_BATCH_ID = #{id}
+		<if test="repositoryID != null">
+			and REPO_BATCH_REPOID = #{repositoryID}
+		</if>
 	</select>
 	
 	<select id="selectByCode" resultMap="repositoryBatch">
@@ -52,6 +58,9 @@
 			wms_repo_batch
 		where
 			REPO_BATCH_CODE like concat(concat("%",#{code},"%"))
+		<if test="repositoryID != null">
+			and REPO_BATCH_REPOID = #{repositoryID}
+		</if>
 	</select>
 
 	<select id="selectByStatus" resultMap="repositoryBatch">
@@ -66,21 +75,9 @@
 			wms_repo_batch
 		where
 			REPO_BATCH_STATUS like concat(concat("%",#{status},"%"))
-	</select>
-
-
-	<select id="selectByRepositoryID" resultMap="repositoryBatch">
-		select
-			REPO_BATCH_ID,
-			REPO_BATCH_CODE,
-			REPO_BATCH_STATUS,
-			REPO_BATCH_DESC,
-			REPO_BATCH_TIME,
-			REPO_BATCH_REPOID
-		from
-			wms_repo_batch
-		where
-			REPO_BATCH_REPOID = #{repositoryID}
+		<if test="repositoryID != null">
+			and REPO_BATCH_REPOID = #{repositoryID}
+		</if>
 	</select>
 	
 	<insert id="insert" keyProperty="id" useGeneratedKeys="true">

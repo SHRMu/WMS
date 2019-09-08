@@ -4,18 +4,19 @@
 <script>
 	var search_type_storage = "none";
 	var search_keyWord = "";
+	var search_batch = "";
 	var search_repository = "";
 	var select_goodsID;
 	var select_batchID;
 	var select_repositoryID;
 
 	$(function() {
-		bootstrapValidatorInit();
+		batchSelectorInit();
 		repositoryOptionInit();
-		validBatchOptionInit()
-		storageListInit();
 		optionAction();
 		searchAction();
+		detectStorageListInit();
+		bootstrapValidatorInit();
 
 		addStorageAction();
 		editStorageAction();
@@ -23,6 +24,201 @@
 		importStorageAction();
 		exportStorageAction()
 	})
+
+	//当前可用的批次初始化
+	function batchSelectorInit() {
+		$.ajax({
+			type : 'GET',
+			url : 'repositoryBatchManage/getRepositoryBatchList',
+			dataType : 'json',
+			contentType : 'application/json',
+			data : {
+				searchType : 'searchByActive',
+				keyWord : '',
+				offset : -1,
+				limit : -1
+			},
+			success : function(response){
+				$.each(response.rows,function(index,elem){
+					$('#search_input_batch').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
+				});
+			},
+			error : function(response){
+				$('#search_input_batch').append("<option value='-1'>加载失败</option>");
+			}
+		});
+		$('#search_input_batch').append("<option value='all'>请选择批次</option>");
+	}
+
+	// 仓库下拉框数据初始化，页面加载时完成
+	function repositoryOptionInit(){
+		$.ajax({
+			type : 'GET',
+			url : 'repositoryManage/getRepositoryList',
+			dataType : 'json',
+			contentType : 'application/json',
+			data:{
+				searchType : "searchAll",
+				keyWord : "",
+				offset : -1,
+				limit : -1
+			},
+			success : function(response){
+				//组装option
+				$.each(response.rows,function(index,elem){
+					$('#search_input_repository').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
+				})
+			},
+			error : function(response){
+			}
+		});
+	}
+
+	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
+	function optionAction() {
+		$(".dropOption").click(function() {
+			var type = $(this).text();
+			$("#search_input").val("");
+			if (type == "所有") {
+				$("#search_input_type").attr("readOnly", "true");
+				search_type_storage = "searchAll";
+			} else if (type == "货物ID") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsID";
+			} else if (type == "货物名称") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsName";
+			} else {
+				$("#search_input_type").removeAttr("readOnly");
+			}
+
+			$("#search_type").text(type);
+			$("#search_input_type").attr("placeholder", type);
+		})
+	}
+
+	// 表格初始化
+	function detectStorageListInit() {
+		$('#detectStorageList')
+				.bootstrapTable(
+						{
+							columns : [
+								{
+									field : 'goodsID',
+									title : '货物ID',
+									visible : false
+									//sortable: true
+								},
+								{
+									field : 'goodsName',
+									title : '货物名称'
+								},
+								{
+									field : 'batchID',
+									title : '批次ID',
+									visible : false
+								},
+								{
+									field : 'batchCode',
+									title : '批次编号'
+								},
+								{
+									field : 'repositoryID',
+									title : '仓库ID'
+								},
+								{
+									field : 'passed',
+									title : '待发良品'
+								},
+								{
+									field : 'scratch',
+									title : '划痕数量'
+								},
+								{
+									field : 'damage',
+									title : '故障数量'
+								},
+								{
+									field : 'operation',
+									title : '操作',
+									formatter : function(value, row, index) {
+										var s = '<button class="btn btn-info btn-sm edit"><span>编辑</span></button>';
+										var d = '<button class="btn btn-danger btn-sm delete"><span>删除</span></button>';
+										var fun = '';
+										return s + ' ' + d;
+									},
+									events : {
+										// 操作列中编辑按钮的动作，rowEditOperation(row)，传入row
+										'click .edit' : function(e, value,
+																 row, index) {
+											//selectID = row.id;
+											rowEditOperation(row);
+										},
+										'click .delete' : function(e,
+																   value, row, index) {
+											select_goodsID = row.goodsID;
+											select_batchID = row.batchID;
+											select_repositoryID = row.repositoryID
+											$('#deleteWarning_modal').modal(
+													'show');
+										}
+									}
+								} ],
+							url : 'detectStorageManage/getDetectStorageList',
+							method : 'GET',
+							queryParams : queryParams,
+							sidePagination : "server",
+							dataType : 'json',
+							pagination : true,
+							pageNumber : 1,
+							pageSize : 5,
+							pageList : [ 5, 10, 25, 50, 100 ],
+							clickToSelect : true
+						});
+	}
+
+	// 搜索动作
+	function searchAction() {
+		$('#search_button').click(function() {
+			search_keyWord = $('#search_input_type').val();
+			search_batch = $('#search_input_batch').val();
+			search_repository = $('#search_input_repository').val();
+			tableRefresh();
+		})
+	}
+
+	// 分页查询参数
+	function queryParams(params) {
+		var temp = {
+			limit : params.limit,
+			offset : params.offset,
+			searchType : search_type_storage,
+			batchBelong : search_batch,
+			repositoryBelong : search_repository,
+			keyword : search_keyWord
+		}
+		return temp;
+	}
+
+	// 表格刷新
+	function tableRefresh() {
+		$('#detectStorageList').bootstrapTable('refresh', {
+			query : {}
+		});
+	}
+
+	// 行编辑操作模态框展示与数据填充
+	function rowEditOperation(row) {
+		$('#edit_modal').modal("show");
+
+		// load info
+		$('#storage_form_edit').bootstrapValidator("resetForm", true);
+		$('#storage_goodsID_edit').text(row.goodsID);
+		$('#storage_batchID_edit').text(row.batchID);
+		$('#storage_repositoryID_edit').text(row.repositoryID);
+		$('#storage_number_edit').val(row.number);
+	}
+
 
 	// 添加检测库存模态框数据校验
 	function bootstrapValidatorInit() {
@@ -81,202 +277,6 @@
 		})
 	}
 
-	// 仓库下拉框数据初始化，页面加载时完成
-	function repositoryOptionInit(){
-		$.ajax({
-			type : 'GET',
-			url : 'repositoryManage/getRepositoryList',
-			dataType : 'json',
-			contentType : 'application/json',
-			data:{
-				searchType : "searchAll",
-				keyWord : "",
-				offset : -1,
-				limit : -1
-			},
-			success : function(response){
-				//组装option
-				$.each(response.rows,function(index,elem){
-					$('#search_input_repository').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
-				})
-			},
-			error : function(response){
-			}
-		});
-		$('#search_input_repository').append("<option value='all'>请选择仓库</option>");
-	}
-
-	//有效的批次信息出事话，页面加载时完成
-	function validBatchOptionInit() {
-		$.ajax({
-			type : 'GET',
-			url : 'repositoryBatchManage/getValidBatchList',
-			dataType: 'json',
-			contentType : 'application/json',
-			data:{
-				searchType : "searchAll",
-				keyWord : "",
-				offset : -1,
-				limit : -1
-			},
-			success : function(response){
-				//组装option
-				$.each(response.rows,function(index,elem){
-					$('#search_input_batch').append("<option value='" + elem.id + "'>" + elem.id +"号批次</option>");
-				})
-			},
-			error : function(response){
-			}
-		});
-		$('#search_input_batch').append("<option value='all'>请选择批次</option>");
-	}
-
-	// 表格初始化
-	function storageListInit() {
-		$('#storageList')
-				.bootstrapTable(
-						{
-							columns : [
-								{
-									field : 'goodsID',
-									title : '货物ID',
-									visible : false
-									//sortable: true
-								},
-								{
-									field : 'goodsName',
-									title : '货物名称'
-								},
-								{
-									field : 'batchID',
-									title : '批次ID',
-									visible : false
-								},
-								{
-									field : 'batchCode',
-									title : '批次编号'
-								},
-								{
-									field : 'repositoryID',
-									title : '仓库ID'
-								},
-								{
-									field : 'passed',
-									title : '良品数量'
-								},
-								{
-									field : 'scratch',
-									title : '划痕数量'
-								},
-								{
-									field : 'damage',
-									title : '故障数量'
-								},
-								{
-									field : 'operation',
-									title : '操作',
-									formatter : function(value, row, index) {
-										var s = '<button class="btn btn-info btn-sm edit"><span>编辑</span></button>';
-										var d = '<button class="btn btn-danger btn-sm delete"><span>删除</span></button>';
-										var fun = '';
-										return s + ' ' + d;
-									},
-									events : {
-										// 操作列中编辑按钮的动作，rowEditOperation(row)，传入row
-										'click .edit' : function(e, value,
-																 row, index) {
-											//selectID = row.id;
-											rowEditOperation(row);
-										},
-										'click .delete' : function(e,
-																   value, row, index) {
-											select_goodsID = row.goodsID;
-											select_batchID = row.batchID;
-											select_repositoryID = row.repositoryID
-											$('#deleteWarning_modal').modal(
-													'show');
-										}
-									}
-								} ],
-							url : 'storageManage/getStorageListWithRepository',
-							method : 'GET',
-							queryParams : queryParams,
-							sidePagination : "server",
-							dataType : 'json',
-							pagination : true,
-							pageNumber : 1,
-							pageSize : 5,
-							pageList : [ 5, 10, 25, 50, 100 ],
-							clickToSelect : true
-						});
-	}
-
-	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
-	function optionAction() {
-		$(".dropOption").click(function() {
-			var type = $(this).text();
-			$("#search_input").val("");
-			if (type == "所有") {
-				$("#search_input_type").attr("readOnly", "true");
-				search_type_storage = "searchAll";
-			} else if (type == "货物ID") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsID";
-			} else if (type == "批次ID") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByBatchID";
-			} else if(type = "货物类型"){
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsType";
-			}else {
-				$("#search_input_type").removeAttr("readOnly");
-			}
-
-			$("#search_type").text(type);
-			$("#search_input_type").attr("placeholder", type);
-		})
-	}
-
-	// 搜索动作
-	function searchAction() {
-		$('#search_button').click(function() {
-			search_keyWord = $('#search_input_type').val();
-			search_repository = $('#search_input_repository').val();
-			tableRefresh();
-		})
-	}
-
-	// 分页查询参数
-	function queryParams(params) {
-		var temp = {
-			limit : params.limit,
-			offset : params.offset,
-			searchType : search_type_storage,
-			repositoryBelong : search_repository,
-			keyword : search_keyWord
-		}
-		return temp;
-	}
-
-	// 表格刷新
-	function tableRefresh() {
-		$('#storageList').bootstrapTable('refresh', {
-			query : {}
-		});
-	}
-
-	// 行编辑操作模态框展示与数据填充
-	function rowEditOperation(row) {
-		$('#edit_modal').modal("show");
-
-		// load info
-		$('#storage_form_edit').bootstrapValidator("resetForm", true);
-		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_batchID_edit').text(row.batchID);
-		$('#storage_repositoryID_edit').text(row.repositoryID);
-		$('#storage_number_edit').val(row.number);
-	}
-
 	// 编辑库存信息，表单数据提交
 	function editStorageAction() {
 		$('#edit_modal_submit').click(
@@ -292,13 +292,15 @@
 						goodsID : $('#storage_goodsID_edit').text(),
 						batchID : $('#storage_batchID_edit').text(),
 						repositoryID : $('#storage_repositoryID_edit').text(),
-						number : $('#storage_number_edit').val(),
+						passed : $('#storage_passed_edit').val(),
+						scratch : $('#storage_scratch_edit').val(),
+						damage : $('#storage_damage_edit').val()
 					}
 
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'storageManage/updateStorageRecord',
+						url : 'detectStorageManage/updateDetectStorage',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -334,7 +336,7 @@
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "storageManage/deleteStorageRecord",
+				url : "detectStorageManage/deleteDetectStorage",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
@@ -370,12 +372,14 @@
 				goodsID : $('#storage_goodsID').val(),
 				batchID : $('#storage_batchID').val(),
 				repositoryID : $('#storage_repositoryID').val(),
-				number : $('#storage_number').val()
+				passed : $('#storage_passed').val(),
+				scratch : $('#storage_scratch').val(),
+				damage : $('#storage_damage').val()
 			}
 			// ajax
 			$.ajax({
 				type : "POST",
-				url : "storageManage/addStorageRecord",
+				url : "detectStorageManage/addDetectStorage",
 				dataType : "json",
 				contentType : "application/json",
 				data : JSON.stringify(data),
@@ -397,7 +401,9 @@
 					$('#storage_goodsID').val("");
 					$('#storage_batchID').val("");
 					$('#storage_repositoryID').val("");
-					$('#storage_number').val("");
+					$('#storage_passed').val("");
+					$('#storage_scratch').val("");
+					$('#storage_damage').val("");
 					$('#detectStorage_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
@@ -454,7 +460,7 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "storageManage/importStorageRecord",
+				url : "detectStorageManage/importDetectStorage",
 				secureuri: false,
 				dataType: 'json',
 				fileElementId:"file",
@@ -499,10 +505,11 @@
 		$('#export_storage_download').click(function(){
 			var data = {
 				searchType : search_type_storage,
+				batchBelong : search_batch,
 				repositoryBelong : search_repository,
 				keyword : search_keyWord
 			}
-			var url = "storageManage/exportStorageRecord?" + $.param(data)
+			var url = "detectStorageManage/exportStorageRecord?" + $.param(data)
 			window.open(url, '_blank');
 			$('#export_modal').modal("hide");
 		})
@@ -579,10 +586,9 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物类型</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
 			</div>
@@ -627,7 +633,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="storageList" class="table table-striped"></table>
+				<table id="detectStorageList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -676,27 +682,27 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>良品：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>良品数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="storage_passed"
-										name="storage_passed" placeholder="良品">
+										name="storage_passed" placeholder="良品数量">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="storage_scratch"
-										   name="storage_scratch" placeholder="数量">
+										   name="storage_scratch" placeholder="数量数量">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="storage_damage"
-										   name="storage_damage" placeholder="故障">
+										   name="storage_damage" placeholder="故障数量">
 								</div>
 							</div>
 						</form>
@@ -994,11 +1000,27 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>待发货良品：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_number_edit"
-										name="storage_number" placeholder="库存数量">
+									<input type="text" class="form-control" id="storage_passed_edit"
+										name="storage_passed" placeholder="待发货良品">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕数量：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_scratch_edit"
+										   name="storage_scratch" placeholder="划痕数量">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障数量：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_damage_edit"
+										   name="storage_damage" placeholder="故障数量">
 								</div>
 							</div>
 						</form>

@@ -1,5 +1,7 @@
 package de.demarks.wms.common.service.Impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.common.service.Interface.DetectManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
@@ -10,14 +12,18 @@ import de.demarks.wms.domain.Repository;
 import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.exception.DetectManageServiceException;
 import de.demarks.wms.exception.DetectStorageServiceException;
+import de.demarks.wms.exception.StockRecordManageServiceException;
 import de.demarks.wms.exception.StorageManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class DetectManageServiceImpl implements DetectManageService {
@@ -39,7 +45,6 @@ public class DetectManageServiceImpl implements DetectManageService {
 
     @Autowired
     private DetectMapper detectMapper;
-
 
     /**
      * 货物检测操作
@@ -68,13 +73,16 @@ public class DetectManageServiceImpl implements DetectManageService {
 
         try {
             // 更新库存记录
-            boolean isSuccess;
+            boolean deSuccess, inSuccess;
             long total = passed + scratch + damage; //检测总数
 
-            isSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total) && detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage );
+            //从待测数中扣除总数
+            deSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total);
+            //在已检测库存踪进行添加
+            inSuccess = detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage);
 
             // 保存入库记录
-            if (isSuccess) {
+            if (deSuccess && inSuccess) {
                 DetectDO detectDO = new DetectDO();
                 detectDO.setGoodsID(goodsID);
                 detectDO.setBatchID(batchID);
@@ -87,8 +95,7 @@ public class DetectManageServiceImpl implements DetectManageService {
                 detectDO.setPersonInCharge(personInCharge);
                 detectMapper.insert(detectDO);
             }
-
-            return isSuccess;
+            return deSuccess && inSuccess;
         } catch (PersistenceException | StorageManageServiceException | DetectStorageServiceException e) {
             throw new DetectManageServiceException(e);
         }
@@ -112,7 +119,7 @@ public class DetectManageServiceImpl implements DetectManageService {
     /**
      * 分页查询检测记录
      *
-     * @param batchID      批次
+     * @param batchID      批次ID
      * @param repositoryID 仓库ID
      * @param endDateStr   查询记录起始日期
      * @param startDateStr 查询记录结束日期
@@ -123,7 +130,62 @@ public class DetectManageServiceImpl implements DetectManageService {
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> selectDetectRecord(Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException{
-        return null;
+        // 初始化结果集
+        Map<String, Object> result = new HashMap<>();
+        List<DetectDO> detectDOS;
+        long total = 0;
+        boolean isPagination = true;
+
+        // 检查是否需要分页查询
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // 检查传入参数
+        if (batchID == null || repositoryID == null)
+            throw new DetectManageServiceException("exception");
+
+        // 转换 Date 对象
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = null;
+        Date endDate = null;
+        Date newEndDate = null;
+        try {
+            if (StringUtils.isNotEmpty(startDateStr))
+                startDate = dateFormat.parse(startDateStr);
+            if (StringUtils.isNotEmpty(endDateStr))
+            {
+                endDate = dateFormat.parse(endDateStr);
+                newEndDate = new Date(endDate.getTime()+(24*60*60*1000)-1);
+            }
+        } catch (ParseException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        // 查询记录
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                detectDOS = detectMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = new PageInfo<>(detectDOS).getTotal();
+                else
+                    detectDOS = new ArrayList<>(10);
+            } else {
+                detectDOS = detectMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = detectDOS.size();
+                else
+                    detectDOS = new ArrayList<>(10);
+            }
+        } catch (PersistenceException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        result.put("data", detectDOS);
+        result.put("total", total);
+        return result;
+
+
     }
 
 
@@ -150,13 +212,12 @@ public class DetectManageServiceImpl implements DetectManageService {
      */
     private boolean batchValidate(Integer batchID) throws DetectManageServiceException {
         try {
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
             return repositoryBatch != null;
         } catch (PersistenceException e) {
             throw new DetectManageServiceException(e);
         }
     }
-
 
     /**
      * 检查仓库ID对应的记录是否存在
@@ -172,8 +233,5 @@ public class DetectManageServiceImpl implements DetectManageService {
             throw new DetectManageServiceException(e);
         }
     }
-
-
-
 
 }

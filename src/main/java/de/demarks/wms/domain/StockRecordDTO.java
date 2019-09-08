@@ -53,7 +53,6 @@ public class StockRecordDTO {
      */
     private String personInCharge;
 
-
     public Integer getRecordID() {
         return recordID;
     }

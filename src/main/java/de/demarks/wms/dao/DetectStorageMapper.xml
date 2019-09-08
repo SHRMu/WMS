@@ -23,93 +23,76 @@
 	 
 	<select id="selectAll" resultMap="detectStorage">
 		select
-			g.GOOD_ID as detectSto_goodsID,
-			g.GOOD_NAME as detectSto_goodsName,
-			b.REPO_BATCH_ID as detectSto_batchID,
-			b.REPO_BATCH_CODE as detectSto_batchCode,
-			r.REPO_ID as detectSto_repositoryID,
+			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_BATCHID as detectSto_batchID,
+			ds.DETECT_REPOSITORY as detectSto_repositoryID,
 			ds.DETECT_NUMBER as detectSto_number,
 			ds.DETECT_PASSED as detectSto_passed,
 			ds.DETECT_SCRATCH as detectSto_scratch,
-			ds.DETECT_DAMAGE as detectSto_damage
+			ds.DETECT_DAMAGE as detectSto_damage,
+			g.GOOD_NAME as detectSto_goodsName,
+			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_respository r, wms_repo_batch b, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g
 		where
 		 	ds.DETECT_GOODID = g.GOOD_ID and
-		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-		 	ds.DETECT_REPOSITORY = r.REPO_ID
-			<if test="batchID != null">
-				and b.REPO_BATCH_ID = #{batchID}
-			</if>
-		 	<if test="repositoryID != null">
-		 		and r.REPO_ID = #{repositoryID}
-		 	</if>
+		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID
+		<if test="batchID != null">
+			and ds.DETECT_BATCHID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and ds.DETECT_REPOSITORY = #{repositoryID}
+		</if>
 	</select>
 	
 	<select id="selectByGoodsID" resultMap="detectStorage">
 		select
-			g.GOOD_ID as detectSto_goodsID,
-			g.GOOD_NAME as detectSto_goodsName,
-			b.REPO_BATCH_ID as detectSto_batchID,
-			b.REPO_BATCH_CODE as detectSto_batchCode,
-			r.REPO_ID as detectSto_repositoryID,
+			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_BATCHID as detectSto_batchID,
+			ds.DETECT_REPOSITORY as detectSto_repositoryID,
 			ds.DETECT_NUMBER as detectSto_number,
 			ds.DETECT_PASSED as detectSto_passed,
 			ds.DETECT_SCRATCH as detectSto_scratch,
-			ds.DETECT_DAMAGE as detectSto_damage
+			ds.DETECT_DAMAGE as detectSto_damage,
+			g.GOOD_NAME as detectSto_goodsName,
+			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_respository r, wms_repo_batch b, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-			ds.DETECT_REPOSITORY = r.REPO_ID and
-		 	g.GOOD_ID = #{goodsID}
-			<if test="batchID != null">
-				and b.REPO_BATCH_ID = #{batchID}
-			</if>
-			<if test="repositoryID != null">
-				and r.REPO_ID = #{repositoryID}
-			</if>
+			ds.DETECT_GOODID = #{goodsID}
+		<if test="batchID != null">
+			and ds.DETECT_BATCHID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and ds.DETECT_REPOSITORY = #{repositoryID}
+		</if>
 	</select>
 
-	<select id="selectByGoodsNameAndRepositoryID" resultMap="detectStorage">
+	<select id="selectByGoodsName" resultMap="detectStorage">
 		select
-			r.REPO_ID as repositoryID,
-			s.RECORD_NUMBER as number,
-			g.GOOD_ID as goodsID,
-			g.GOOD_NAME as goodsName,
-			g.GOOD_RYPE as goodsType,
-			g.GOOD_SIZE as goodsSize,
-			g.GOOD_VALUE as goodsValue
+			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_BATCHID as detectSto_batchID,
+			ds.DETECT_REPOSITORY as detectSto_repositoryID,
+			ds.DETECT_NUMBER as detectSto_number,
+			ds.DETECT_PASSED as detectSto_passed,
+			ds.DETECT_SCRATCH as detectSto_scratch,
+			ds.DETECT_DAMAGE as detectSto_damage,
+			g.GOOD_NAME as detectSto_goodsName,
+			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_record_storage s,wms_respository r, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g
 		where
-		 	s.RECORD_GOODID = g.GOOD_ID and
-		 	s.RECORD_REPOSITORY = r.REPO_ID and
+			ds.DETECT_GOODID = g.GOOD_ID and
+			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
 		 	g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
-		 	<if test="repositoryID != null">
-		 		and r.REPO_ID = #{repositoryID}
-		 	</if>
-	</select>
-
-	<select id="selectByGoodsTypeAndRepositoryID" resultMap="detectStorage">
-		select
-			r.REPO_ID as repositoryID,
-			s.RECORD_NUMBER as number,
-			g.GOOD_ID as goodsID,
-			g.GOOD_NAME as goodsName,
-			g.GOOD_RYPE as goodsType,
-			g.GOOD_SIZE as goodsSize,
-			g.GOOD_VALUE as goodsValue
-		from
-			wms_record_storage s,wms_respository r, wms_goods g
-		where
-		 	s.RECORD_GOODID = g.GOOD_ID and
-		 	s.RECORD_REPOSITORY = r.REPO_ID and
-		 	g.GOOD_RYPE like concat("%",concat(#{goodsType},"%"))
-		 	<if test="repositoryID != null">
-		 		and r.REPO_ID = #{repositoryID}
-		 	</if>
+		<if test="batchID != null">
+			and ds.DETECT_BATCHID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and ds.DETECT_REPOSITORY = #{repositoryID}
+		</if>
 	</select>
 
 	<update id="update">
@@ -117,30 +100,39 @@
 			wms_detect_storage
 		set
 			DETECT_GOODID = #{goodsID},
-			RECORD_BATCH = #{batch}
-			RECORD_REPOSITORY = #{repositoryID},
-			RECORD_
-			RECORD_NUMBER = #{number}
+			DETECT_BATCHID = #{batchID},
+			DETECT_REPOSITORY = #{repositoryID},
+			DETECT_NUMBER = #{number},
+			DETECT_PASSED = #{passed}
+		<if test="scratch != null" >
+			, DETECT_SCRATCH = #{scratch}
+		</if>
+		<if test="damage != null" >
+			, DETECT_DAMAGE = #{damage}
+		</if>
 		where
-			RECORD_GOODID = #{goodsID} and
-			RECORD_REPOSITORY = #{repositoryID}
+			DETECT_GOODID = #{goodsID} and
+			DETECT_BATCHID = #{batchID} and
+			DETECT_REPOSITORY = #{repositoryID}
 	</update>
 
 	<insert id="insert">
 		insert into wms_detect_storage
 		(
 			DETECT_GOODID,
-			DETECT_BATCH,
+			DETECT_BATCHID,
 			DETECT_REPOSITORY,
+			DETECT_NUMBER,
 			DETECT_PASSED,
 			DETECT_SCRATCH,
-			DETECT_DAMAGE,
+			DETECT_DAMAGE
 		)
 		values
 		(
 			#{goodsID},
-			#{batch},
+			#{batchID},
 			#{repositoryID},
+			#{number},
 			#{passed},
 			#{scratch},
 			#{damage}
@@ -148,33 +140,22 @@
 	</insert>
 
 	<insert id="insertBatch">
-		insert into wms_record_storage(RECORD_GOODID,RECORD_REPOSITORY,RECORD_NUMBER)
+		insert into wms_detect_storage(DETECT_GOODID,DETECT_BATCHID,DETECT_REPOSITORY,DETECT_NUMBER,DETECT_PASSED,DETECT_SCRATCH,DETECT_DAMAGE)
 		values
-		<foreach collection="list" item="storage" separator=",">
+		<foreach collection="list" item="detectStorage" separator=",">
 			(
-			#{storage.goodsID},#{storage.repositoryID},#{storage.number})
+			#{detectStorage.goodsID},#{detectStorage.batchID},#{detectStorage.repositoryID},
+			#{detectStorage.number},#{detectStorage.passed},#{detectStorage.scratch},#{detectStorage.damage}
+			)
 		</foreach>
 	</insert>
 
-	<delete id="deleteByGoodsID">
-		delete from
-			wms_record_storage
+	<delete id="delete">
+		delete from wms_detect_storage
 		where
-			RECORD_GOODID = #{goodsID}
+			DETECT_GOODID = #{goodsID} and
+			wms_detect_storage.DETECT_BATCHID = #{batchID} and
+			wms_detect_storage.DETECT_REPOSITORY = #{repositoryID}
 	</delete>
 
-	<delete id="deleteByRepositoryID">
-		delete from
-			wms_record_storage
-		where
-			wms_record_storage.RECORD_REPOSITORY = #{repositoryID}
-	</delete>
-
-	<delete id="deleteByRepositoryIDAndGoodsID">
-		delete from
-			wms_record_storage
-		where
-			RECORD_GOODID = #{goodsID} and
-			wms_record_storage.RECORD_REPOSITORY = #{repositoryID}
-	</delete>
 </mapper>

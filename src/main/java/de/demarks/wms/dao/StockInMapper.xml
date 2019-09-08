@@ -29,7 +29,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -51,7 +51,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -74,7 +74,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -97,7 +97,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -120,7 +120,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -143,7 +143,7 @@
 			r.RECORD_GOODID as stockin_goodsID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
-			r.RECORD_PERSON as stockin_person,
+			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
@@ -157,23 +157,30 @@
 			r.RECORD_REPOSITORYID = #{repositoryID}
 	</select>
 
-	<select id="selectByRepositoryIDAndDate" resultMap="stockInDO">
+	<select id="selectByBatchRepoIDAndDate" resultMap="stockInDO">
         select
-            r.RECORD_ID as STOCKIN_ID,
-            r.RECORD_SUPPLIERID as STOCKIN_SUPPLIER_ID,
-            s.SUPPLIER_NAME as STOCKIN_SUPPLIER_NAME,
-            r.RECORD_GOODID as STOCKIN_GOOD_ID,
-            g.GOOD_NAME as STOCKIN_GOOD_NAME,
-            r.RECORD_NUMBER as STOCKIN_NUMBER,
-            r.RECORD_TIME as STOCKIN_TIME,
-            r.RECORD_PERSON as STOCKIN_PERSON,
-            r.RECORD_REPOSITORYID as STOCKIN_REPOSITORY_ID
+			r.RECORD_ID as stockin_id,
+			r.RECORD_PACKET as stockin_packet,
+			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_CUSTOMERID as stockin_customerID,
+			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_NUMBER as stockin_number,
+			r.RECORD_TIME as stockin_time,
+			r.RECORD_PERSON as stockin_personInCharge,
+			r.RECORD_REPOSITORYID as stockin_repositoryID,
+			b.REPO_BATCH_CODE as stockin_batchCode,
+			cus.CUSTOMER_NAME as stockin_customerName,
+			g.GOOD_NAME as stockin_goodName
         from
-            wms_record_in r,wms_goods g,wms_supplier s
+			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
         where
-            r.RECORD_SUPPLIERID = s.SUPPLIER_ID and
-            r.RECORD_GOODID = g.GOOD_ID
-        <if test="repositoryID > 0">
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
+			r.RECORD_GOODID = g.GOOD_ID
+		<if test="batchID != null">
+			and r.RECORD_BATCHID = #{batchID}
+		</if>
+        <if test="repositoryID != null ">
             and r.RECORD_REPOSITORYID = #{repositoryID}
         </if>
         <if test="startDate != null">

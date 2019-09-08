@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <script>
-var stockin_packet = null; //入库包裹运单号
+
 var stockin_batch = null; //入库包裹批次
 var stockin_repository = null;// 入库仓库编号
 
@@ -15,18 +15,17 @@ var goodsCache = new Array();//货物信息缓存
 $(function(){
 	batchSelectorInit();
 	repositorySelectorInit();
-	dataValidateInit();
 	detilInfoToggle();
 
 	goodsAutocomplete();
 	customerAutocomplete();
 	fetchStorage();
+    dataValidateInit();
 
 	stockInOption();
 })
 
-
-//当前可用的批次初始化
+//可用批次下拉列表初始化
 function batchSelectorInit() {
 	$.ajax({
 		type : 'GET',
@@ -41,13 +40,12 @@ function batchSelectorInit() {
 		},
 		success : function(response){
 			$.each(response.rows,function(index,elem){
-				$('#batch_selector').append("<option value='" + elem.id + "'>" + elem.id +"号批次</option>");
+				$('#batch_selector').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
 			});
 		},
 		error : function(response){
 			$('#batch_selector').append("<option value='-1'>加载失败</option>");
 		}
-
 	})
 }
 
@@ -73,34 +71,6 @@ function repositorySelectorInit(){
 			$('#repository_selector').append("<option value='-1'>加载失败</option>");
 		}
 
-	})
-}
-
-// 数据校验
-function dataValidateInit(){
-	$('#stockin_form').bootstrapValidator({
-		message : 'This is not valid',
-
-		fields : {
-			packet_input : {
-				validators : {
-					notEmpty : {
-						message : '入库包裹运单号不能为空'
-					},
-				}
-			},
-			stockin_input : {
-				validators : {
-					notEmpty : {
-						message : '入库数量不能为空'
-					},
-					greaterThan: {
-                        value: 0,
-                        message: '入库数量不能小于0'
-                    }
-				}
-			}
-		}
 	})
 }
 
@@ -278,15 +248,15 @@ function goodsInfoSet(goodsID){
 
 // 获取仓库当前库存量
 function fetchStorage(){
-	$('#repository_selector').change(function(){
-		stockin_repository = $(this).val();
-		loadStorageInfo();
-	});
-
+    $('#batch_selector').change(function(){
+        stockin_batch = $(this).val();
+        loadStorageInfo();
+    });
 }
 
 function loadStorageInfo(){
-	if(stockin_repository != null && stockin_goods != null){
+    stockin_repository  = $(repository_selector).val();
+	if(stockin_batch != null && stockin_repository != null && stockin_goods != null){
 		$.ajax({
 			type : 'GET',
 			url : 'storageManage/getStorageListWithRepository',
@@ -296,6 +266,7 @@ function loadStorageInfo(){
 				offset : -1,
 				limit : -1,
 				searchType : 'searchByGoodsID',
+                batchBelong : stockin_batch,
 				repositoryBelong : stockin_repository,
 				keyword : stockin_goods
 			},
@@ -308,10 +279,36 @@ function loadStorageInfo(){
 				}
 			},
 			error : function(response){
-				
 			}
 		})
 	}
+}
+
+// 数据校验
+function dataValidateInit(){
+    $('#stockin_form').bootstrapValidator({
+        message : 'This is not valid',
+        fields : {
+            packet_input : {
+                validators : {
+                    notEmpty: {
+                        message: '运单号不能为空'
+                    }
+                }
+            },
+            stockin_input : {
+                validators : {
+                    notEmpty : {
+                        message : '入库数量不能为空'
+                    },
+                    greaterThan: {
+                        value: 0,
+                        message: '入库数量不能小于0'
+                    }
+                }
+            }
+        }
+    })
 }
 
 // 执行货物入库操作
@@ -322,17 +319,14 @@ function stockInOption(){
 		if (!$('#stockin_form').data('bootstrapValidator').isValid()) {
 			return;
 		}
-
 		data = {
-			packet : $('#packet_input').val(),
-			batch : $('#batch_input').val(),
-			repositoryID : stockin_repository,
-			customerID : stockin_customer,
-			goodsID : stockin_goods,
-			number : $('#stockin_input').val(),
-
-		}
-
+            packet: $('#packet_input').val(),
+            batchID: stockin_batch,
+            repositoryID: stockin_repository,
+            customerID: stockin_customer,
+            goodsID: stockin_goods,
+            number: $('#stockin_input').val()
+        }
 		$.ajax({
 			type : 'POST',
 			url : 'stockRecordManage/stockIn',
@@ -370,15 +364,12 @@ function inputReset(){
 	$('#stockin_input').val('');
 	$('#info_customer_ID').text('-');
 	$('#info_customer_name').text('-');
-	$('#info_customer_tel').text('-');
-	$('#info_customer_address').text('-');
-	$('#info_customer_email').text('-');
 	$('#info_customer_person').text('-');
 	$('#info_goods_ID').text('-');
 	$('#info_goods_name').text('-');
 	$('#info_goods_size').text('-');
 	$('#info_goods_type').text('-');
-	$('#info_goods_value').text('-');
+	$('#info_goods_weight').text('-');
 	$('#info_storage').text('-');
 	$('#stockin_form').bootstrapValidator("resetForm",true); 
 }
@@ -402,32 +393,16 @@ function infoModal(type, msg) {
 	<ol class="breadcrumb">
 		<li>货物入库</li>
 	</ol>
-	<div class="panel-body">
+	<div class="panel-body" id="stockin_div">
 		<div class="row" style="margin-bottom: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-10 col-sm-11">
-						<form action="" class="form-inline">
+						<form action="" class="form-inline" >
 							<div class="form-group">
 								<label for="" class="form-label">包裹运单：</label>
-								<input type="text" class="form-control" placeholder="请输入运单号信息" id="packet_input" name="">
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<div class="col-md-6 col-sm-6">
-				<div class="row">
-					<div class="col-md-1 col-sm-1"></div>
-					<div class="col-md-10 col-sm-11">
-						<form action="" class="form-inline">
-							<div class="form-group">
-								<label for="" class="form-label">包裹批次：</label>
-<%--								<input type="text" class="form-control" placeholder="请输入包裹批次" id="batch_input" name="">--%>
-								<select name="" id="batch_selector" class="form-control">
-									<option value="">请选择可用批次</option>
-								</select>
+								<input type="text" class="form-control" placeholder="请输入运单号信息" id="packet_input" name="packet_input">
 							</div>
 						</form>
 					</div>
@@ -524,9 +499,24 @@ function infoModal(type, msg) {
 					<div class="col-md-10 col-sm-11">
 						<form action="" class="form-inline">
 							<div class="form-group">
+								<label for="" class="form-label">包裹批次：</label>
+								<select name="" id="batch_selector" class="form-control">
+									<option value="">请选择批次</option>
+								</select>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-10 col-sm-11">
+						<form action="" class="form-inline">
+							<div class="form-group">
 								<label for="" class="form-label">入库仓库：</label>
 								<select name="" id="repository_selector" class="form-control">
-									<option value="">请选择仓库</option>
+<%--									<option value="">请选择仓库</option>--%>
 								</select>
 							</div>
 						</form>
@@ -543,7 +533,7 @@ function infoModal(type, msg) {
 							<div class="form-group">
 								<label for="" class="control-label">入库数量：</label>
 								<input type="text" class="form-control" placeholder="请输入数量" id="stockin_input" name="stockin_input">
-								<span>当前库存量：</span>
+								<span>待检测库存：</span>
 								<span id="info_storage">-</span>
 <%--								<span>)</span>--%>
 							</div>

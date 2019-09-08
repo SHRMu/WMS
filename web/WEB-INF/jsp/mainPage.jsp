@@ -98,15 +98,15 @@ pageEncoding="UTF-8"%>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectStorageManagement.jsp">已检测库存</a>
+                                           name="pagecomponent/detectStorageManagement.jsp">待发货库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectRecordManagement.html">检测记录</a>
+                                           name="pagecomponent/detectRecordManagement.jsp">检测记录</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/stockRecordManagement.html">出入库记录</a>
+                                           name="pagecomponent/stockRecordManagement.jsp">出入库记录</a>
                                     </li>
                                 </shiro:hasRole>
                             </ul>
@@ -195,11 +195,11 @@ pageEncoding="UTF-8"%>
                                 <ul class="list-group">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/goodsManagement.jsp">货物信息管理</a>
+                                           name="pagecomponent/repositoryBatchManagement.jsp">批次信息管理</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/repositoryBatchManagement.jsp">批次信息管理</a>
+                                           name="pagecomponent/goodsManagement.jsp">货物信息管理</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"

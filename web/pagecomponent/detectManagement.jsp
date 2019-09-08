@@ -7,26 +7,45 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script>
+
     var detect_goods = null;// 检测货物编号
     var detect_batch = null; // 检测货物批次
-    var detect_repository = null;// 所在仓库编号
-
-    var detect_passed = null;// 良品数量
-    var detect_scratch = null // 划痕数量
-    var detect_damage = null;// 故障数量
+    var detect_repository = null; //检测货物仓库
 
     var goodsCache = new Array();//货物信息缓存
 
     $(function(){
+        batchSelectorInit();
         repositorySelectorInit();
-        dataValidateInit();
-        // detilInfoToggle();
-        //
         goodsAutocomplete();
-        // customerAutocomplete();
         fetchStorage();
+        dataValidateInit();
         detectionOption();
     })
+
+    //当前可用的批次初始化
+    function batchSelectorInit() {
+        $.ajax({
+            type : 'GET',
+            url : 'repositoryBatchManage/getRepositoryBatchList',
+            dataType : 'json',
+            contentType : 'application/json',
+            data : {
+                searchType : 'searchByActive',
+                keyWord : '',
+                offset : -1,
+                limit : -1
+            },
+            success : function(response){
+                $.each(response.rows,function(index,elem){
+                    $('#batch_selector').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
+                });
+            },
+            error : function(response){
+                $('#batch_selector').append("<option value='-1'>加载失败</option>");
+            }
+        })
+    }
 
     // 仓库下拉列表初始化
     function repositorySelectorInit(){
@@ -48,59 +67,6 @@
             },
             error : function(response){
                 $('#repository_selector').append("<option value='-1'>加载失败</option>");
-            }
-
-        })
-    }
-
-    // 数据校验
-    function dataValidateInit(){
-        $('#passed_form').bootstrapValidator({
-            message : 'This is not valid',
-            fields : {
-                detect_passed : {
-                    validators : {
-                        notEmpty : {
-                            message : '良品数量不能为空'
-                        },
-                        greaterThan: {
-                            value: 0,
-                            message: '检测数量不能小于0'
-                        }
-                    }
-                }
-            }
-        })
-        $('#scratch_form').bootstrapValidator({
-            message : 'This is not valid',
-            fields : {
-                detect_passed : {
-                    validators : {
-                        notEmpty : {
-                            message : '划痕数量不能为空'
-                        },
-                        greaterThan: {
-                            value: 0,
-                            message: '检测数量不能小于0'
-                        }
-                    }
-                }
-            }
-        })
-        $('#damage_form').bootstrapValidator({
-            message : 'This is not valid',
-            fields : {
-                detect_passed : {
-                    validators : {
-                        notEmpty : {
-                            message : '故障数量不能为空'
-                        },
-                        greaterThan: {
-                            value: 0,
-                            message: '检测数量不能小于0'
-                        }
-                    }
-                }
             }
         })
     }
@@ -147,14 +113,20 @@
 
     // 获取仓库当前库存量
     function fetchStorage(){
+        $('#batch_selector').change(function(){
+            detect_batch = $(this).val();
+            detect_repository = $('#repository_selector').val();
+            loadStorageInfo();
+        });
         $('#repository_selector').change(function(){
+            detect_batch = $('#batch_selector').val();
             detect_repository = $(this).val();
             loadStorageInfo();
         });
 
     }
     function loadStorageInfo(){
-        if(detect_repository != null && detect_goods != null){
+        if(detect_batch != null && detect_repository != null && detect_goods != null){
             $.ajax({
                 type : 'GET',
                 url : 'storageManage/getStorageListWithRepository',
@@ -164,6 +136,7 @@
                     offset : -1,
                     limit : -1,
                     searchType : 'searchByGoodsID',
+                    batchBelong : detect_batch,
                     repositoryBelong : detect_repository,
                     keyword : detect_goods
                 },
@@ -182,6 +155,58 @@
         }
     }
 
+    // 数据校验
+    function dataValidateInit(){
+        $('#passed_form').bootstrapValidator({
+            message : 'This is not valid',
+            fields : {
+                passed_input : {
+                    validators : {
+                        notEmpty : {
+                            message : '良品数量不能为空'
+                        },
+                        greaterThan: {
+                            value: 0,
+                            message: '检测数量不能小于0'
+                        }
+                    }
+                }
+            }
+        })
+        $('#scratch_form').bootstrapValidator({
+            message : 'This is not valid',
+            fields : {
+                scratch_input : {
+                    validators : {
+                        notEmpty : {
+                            message : '划痕数量不能为空'
+                        },
+                        greaterThan: {
+                            value: 0,
+                            message: '检测数量不能小于0'
+                        }
+                    }
+                }
+            }
+        })
+        $('#damage_form').bootstrapValidator({
+            message : 'This is not valid',
+            fields : {
+                damage_input : {
+                    validators : {
+                        notEmpty : {
+                            message : '故障数量不能为空'
+                        },
+                        greaterThan: {
+                            value: 0,
+                            message: '检测数量不能小于0'
+                        }
+                    }
+                }
+            }
+        })
+    }
+
     // 执行货物检测操作
     function detectionOption(){
         $('#submit').click(function(){
@@ -198,20 +223,18 @@
             if (!$('#damage_form').data('bootstrapValidator').isValid()) {
                 return;
             }
-
             data = {
                 goodsID : detect_goods,
-                batch : $('#batch_input').val(),
-                repositoryID : detect_repository,
+                batchID : detect_batch,
+                repositoryID : $('#repository_selector').val(),
                 passed: $('#passed_input').val(),
                 scratch: $('#scratch_input').val(),
-                damage: $('#damage_input').val(),
-
+                damage: $('#damage_input').val()
             }
-
             $.ajax({
                 type : 'POST',
                 url : 'detectManage/detect',
+                // url : 'stockRecordManage/stockIn',
                 dataType : 'json',
                 content : 'application/json',
                 data : data,
@@ -240,8 +263,10 @@
 
     // 页面重置
     function inputReset(){
-        $('#batch_input').val('');
         $('#goods_input').val('');
+        $('#passed_input').val('');
+        $('#scratch_input').val('');
+        $('#damage_input').val('');
         $('#passed_form').bootstrapValidator("resetForm",true);
         $('#scratch_form').bootstrapValidator("resetForm",true);
         $('#damage_form').bootstrapValidator("resetForm",true);
@@ -282,19 +307,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6">
-                <div class="row">
-                    <div class="col-md-1 col-sm-1"></div>
-                    <div class="col-md-10 col-sm-11">
-                        <form action="" class="form-inline">
-                            <div class="form-group">
-                                <label for="" class="form-label">&ensp;批次号：</label>
-                                <input type="text" class="form-control" id="batch_input" placeholder="请输入货物批次号">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row" style="margin-top:20px">
             <div class="col-md-6 col-sm-6">
@@ -303,9 +315,23 @@
                     <div class="col-md-10 col-sm-11">
                         <form action="" class="form-inline">
                             <div class="form-group">
+                                <label for="" class="form-label">当前批次：</label>
+                                <select name="" id="batch_selector" class="form-control">
+                                    <option value="">请选择批次</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6">
+                <div class="row">
+                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-md-10 col-sm-11">
+                        <form action="" class="form-inline">
+                            <div class="form-group">
                                 <label for="" class="form-label">入库仓库：</label>
                                 <select name="" id="repository_selector" class="form-control">
-                                    <option value="">请选择仓库</option>
                                 </select>
                             </div>
                         </form>
@@ -322,7 +348,7 @@
                             <div class="form-group">
                                 <label for="" class="control-label">良品数量：</label>
                                 <input type="text" class="form-control" placeholder="请输入良品数量" id="passed_input" name="passed_input">
-                                <span>当前库存量：</span>
+                                <span>待测库存量：</span>
                                 <span id="info_storage">-</span>
                                 <%--								<span>)</span>--%>
                             </div>

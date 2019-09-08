@@ -5,10 +5,12 @@ import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.dao.DetectStorageMapper;
 import de.demarks.wms.dao.GoodsMapper;
+import de.demarks.wms.dao.RepositoryBatchMapper;
 import de.demarks.wms.dao.RepositoryMapper;
 import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.domain.Goods;
 import de.demarks.wms.domain.Repository;
+import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.exception.DetectStorageServiceException;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class DetectStorageServiceImpl implements DetectStorageService {
 
     @Autowired
     private GoodsMapper goodsMapper;
+
+    @Autowired
+    private RepositoryBatchMapper repositoryBatchMapper;
 
     @Autowired
     private RepositoryMapper repositoryMapper;
@@ -222,13 +227,13 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     public boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isAvailable = true;
-
             // validate
             Goods goods = goodsMapper.selectById(goodsID);
+            RepositoryBatch batch = repositoryBatchMapper.selectByID(batchID,null);
             Repository repository = repositoryMapper.selectByID(repositoryID);
             if (goods == null)
                 isAvailable = false;
-            if (batchID == null)
+            if (batch == null)
                 isAvailable = false;
             if (repository == null)
                 isAvailable = false;
@@ -237,13 +242,13 @@ public class DetectStorageServiceImpl implements DetectStorageService {
             List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (!(detectStorageList != null && detectStorageList.isEmpty()))
                 isAvailable = false;
-
             if (isAvailable) {
                 // insert
                 DetectStorage detectStorage = new DetectStorage();
                 detectStorage.setGoodsID(goodsID);
                 detectStorage.setBatchID(batchID);
                 detectStorage.setRepositoryID(repositoryID);
+                detectStorage.setNumber(passed+scratch+damage);
                 detectStorage.setPassed(passed);
                 detectStorage.setScratch(scratch);
                 detectStorage.setDamage(damage);
@@ -262,13 +267,14 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @param goodsID      指定的货物ID
      * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
+     * @param number       检测总数
      * @param passed       良品数量
      * @param scratch      划痕数量
      * @param damage       故障数量
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
     @Override
-    public boolean updateDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
+    public boolean updateDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isUpdate = false;
             // validate
@@ -277,6 +283,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                 if ( passed >= 0 && scratch > 0 && damage > 0) {
                     // update
                     DetectStorage detectStorage = detectStorageList.get(0);
+                    detectStorage.setNumber(number);
                     detectStorage.setPassed(passed);
                     detectStorage.setScratch(scratch);
                     detectStorage.setDamage(damage);
@@ -285,6 +292,36 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                 }
             }
 
+            return isUpdate;
+        } catch (PersistenceException e) {
+            throw new DetectStorageServiceException(e);
+        }
+    }
+
+    /**
+     * 只更新检测库存中的良品数量
+     *
+     * @param goodsID      指定的货物ID
+     * @param batchID      指定的批次ID
+     * @param repositoryID 指定的仓库ID
+     * @param passed       良品数量
+     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
+     */
+    @Override
+    public boolean updatePassedDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed) throws DetectStorageServiceException {
+        try {
+            boolean isUpdate = false;
+            // validate
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            if (detectStorageList != null && !detectStorageList.isEmpty()) {
+                if ( passed >= 0 ) {
+                    // update
+                    DetectStorage detectStorage = detectStorageList.get(0);
+                    detectStorage.setPassed(passed);
+                    detectStorageMapper.update(detectStorage);
+                    isUpdate = true;
+                }
+            }
             return isUpdate;
         } catch (PersistenceException e) {
             throw new DetectStorageServiceException(e);
@@ -306,7 +343,23 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     }
 
     /**
-     * 为指定的货物检测库存记录增加指定数目
+     * 获取指定货物ID，批次ID，仓库ID对应的检测库存
+     *
+     * @param goodsID      货物ID
+     * @param batchID      批次ID
+     * @param repositoryID 仓库ID
+     * @return 若存在则返回对应的记录，否则返回null
+     */
+    private DetectStorage getDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
+        DetectStorage detectStorage = null;
+        List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        if (!detectStorageList.isEmpty())
+            detectStorage = detectStorageList.get(0);
+        return detectStorage;
+    }
+
+    /**
+     * 为指定的检测库存记录增加指定数目
      *
      * @param goodsID      货物ID
      * @param batchID      批次ID
@@ -326,32 +379,16 @@ public class DetectStorageServiceImpl implements DetectStorageService {
             // 检查对应的库存记录是否存在
             DetectStorage detectStorage = getDetectStorage(goodsID, batchID, repositoryID);
             if (detectStorage != null) {
+                long newNumber = detectStorage.getNumber() + passed + scratch + damage;
                 long newPassed = detectStorage.getPassed() + passed;
                 long newScratch = detectStorage.getScratch() + scratch;
                 long newDamage = detectStorage.getDamage() + damage;
-                updateDetectStorage(goodsID, batchID, repositoryID, newPassed, newScratch, newDamage);
+                updateDetectStorage(goodsID, batchID, repositoryID, newNumber, newPassed, newScratch, newDamage);
             } else {
                 addDetectStorage(goodsID, batchID, repositoryID, passed, scratch, damage);
             }
         }
         return true;
-    }
-
-
-    /**
-     * 获取指定货物ID，仓库ID对应的检测库存记录
-     *
-     * @param goodsID      货物ID
-     * @param batchID      批次ID
-     * @param repositoryID 仓库ID
-     * @return 若存在则返回对应的记录，否则返回null
-     */
-    private DetectStorage getDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
-        DetectStorage detectStorage = null;
-        List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-        if (!detectStorageList.isEmpty())
-            detectStorage = detectStorageList.get(0);
-        return detectStorage;
     }
 
     /**
@@ -365,7 +402,20 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      */
     @Override
     public boolean passedDetectStorageDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws DetectStorageServiceException {
-        return false;
+        if (number < 0)
+            return false;
+        synchronized (this){
+            //检查检测库存是否存在该记录
+            DetectStorage detectStorage = getDetectStorage(goodsID, batchID, repositoryID);
+            if (detectStorage != null){
+                //检查需要出库量是否小于待出库库存
+                if ( number > detectStorage.getPassed())
+                    return false;
+                long newPassed = detectStorage.getPassed() - number;
+                updatePassedDetectStorage(goodsID, batchID, repositoryID, newPassed);
+            }
+        }
+        return true;
     }
 
     @Override

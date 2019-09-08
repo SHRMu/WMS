@@ -38,17 +38,18 @@ public class DetectManageHandler {
      * @param repositoryID 仓库ID
      * @param passed       良品数量
      * @param scratch      划痕数量
-     * @param damage       故障数量
+//     * @param damage       故障数量
      * @param request      http 请求
      * @return 返回一个map，key为result的值表示操作是否成功
      */
-    @RequestMapping(value = "detectOperation", method = RequestMethod.POST)
+    @RequestMapping(value = "detect", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockIn(@RequestParam("goodsID") Integer goodsID, @RequestParam("batchID") Integer batchID,
-                                @RequestParam("repositoryID") Integer repositoryID,
-                                @RequestParam("passed") long passed, @RequestParam("scratch") long scratch,
-                                @RequestParam("damage") long damage, HttpServletRequest request) throws DetectManageServiceException {
+    Map<String, Object> detect(@RequestParam("goodsID") Integer goodsID,
+                               @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
+                               @RequestParam("passed") long passed, @RequestParam("scratch") long scratch,
+                               @RequestParam("damage") long damage,
+                               HttpServletRequest request) throws DetectManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
@@ -77,12 +78,12 @@ public class DetectManageHandler {
     @SuppressWarnings({"SingleStatementInBlock", "unchecked"})
     @RequestMapping(value = "searchDetectRecord", method = RequestMethod.GET)
     public @ResponseBody
-    Map<String, Object> getStockRecord(@RequestParam("batchID") String batchIDStr,
-                                       @RequestParam("repositoryID") String repositoryIDStr,
-                                       @RequestParam("startDate") String startDateStr,
-                                       @RequestParam("endDate") String endDateStr,
-                                       @RequestParam("limit") int limit,
-                                       @RequestParam("offset") int offset) throws ParseException, DetectManageServiceException {
+    Map<String, Object> searchDetectRecord(@RequestParam("batchID") String batchIDStr,
+                                           @RequestParam("repositoryID") String repositoryIDStr,
+                                           @RequestParam("startDate") String startDateStr,
+                                           @RequestParam("endDate") String endDateStr,
+                                           @RequestParam("limit") int limit,
+                                           @RequestParam("offset") int offset) throws ParseException, DetectManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<DetectDO> rows = null;

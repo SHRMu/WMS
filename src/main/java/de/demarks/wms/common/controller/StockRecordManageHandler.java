@@ -40,9 +40,9 @@ public class StockRecordManageHandler {
      *
      * @param packet       包裹运单号
      * @param batchID      批次ID
+     * @param repositoryID 入库仓库ID
      * @param customerID   客户ID
      * @param goodsID      货物ID
-     * @param repositoryID 入库仓库ID
      * @param number       入库数量
      * @param request      http 请求
      * @return 返回一个map，key为result的值表示操作是否成功
@@ -50,9 +50,9 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "stockIn", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockIn(@RequestParam("packet") String packet, @RequestParam("batchID") Integer batchID,
-                                @RequestParam("customerID") Integer customerID,
-                                @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
+    Map<String, Object> stockIn(@RequestParam("packet") String packet,
+                                @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
+                                @RequestParam("customerID") Integer customerID, @RequestParam("goodsID") Integer goodsID,
                                 @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -72,7 +72,7 @@ public class StockRecordManageHandler {
      * 货物出库操作
      *
      * @param packet       包裹运单号
-     * @param batchID       批次ID
+     * @param batchID      批次ID
      * @param customerID   客户ID
      * @param goodsID      货物ID
      * @param repositoryID 仓库ID
@@ -83,8 +83,8 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "stockOut", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockOut(@RequestParam("packet") String packet, @RequestParam("batchID") Integer batchID,
-                                 @RequestParam("customerID") Integer customerID,
+    Map<String, Object> stockOut(@RequestParam("packet") String packet,
+                                 @RequestParam("batchID") Integer batchID, @RequestParam("customerID") Integer customerID,
                                  @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
                                  @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
         // 初始化 Response
@@ -105,6 +105,7 @@ public class StockRecordManageHandler {
      * 查询出入库记录
      *
      * @param searchType      查询类型（查询所有或仅查询入库记录或仅查询出库记录）
+     * @param batchIDStr      查询记录所对应的批次ID
      * @param repositoryIDStr 查询记录所对应的仓库ID
      * @param endDateStr      查询的记录起始日期
      * @param startDateStr    查询的记录结束日期
@@ -116,11 +117,12 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "searchStockRecord", method = RequestMethod.GET)
     public @ResponseBody
     Map<String, Object> getStockRecord(@RequestParam("searchType") String searchType,
-                                          @RequestParam("repositoryID") String repositoryIDStr,
-                                          @RequestParam("startDate") String startDateStr,
-                                          @RequestParam("endDate") String endDateStr,
-                                          @RequestParam("limit") int limit,
-                                          @RequestParam("offset") int offset) throws ParseException, StockRecordManageServiceException {
+                                      @RequestParam("batchID") String batchIDStr,
+                                      @RequestParam("repositoryID") String repositoryIDStr,
+                                      @RequestParam("startDate") String startDateStr,
+                                      @RequestParam("endDate") String endDateStr,
+                                      @RequestParam("limit") int limit,
+                                      @RequestParam("offset") int offset) throws ParseException, StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<StockRecordDTO> rows = null;
@@ -130,16 +132,21 @@ public class StockRecordManageHandler {
         String regex = "([0-9]{4})-([0-9]{2})-([0-9]{2})";
         boolean startDateFormatCheck = (StringUtils.isEmpty(startDateStr) || startDateStr.matches(regex));
         boolean endDateFormatCheck = (StringUtils.isEmpty(endDateStr) || endDateStr.matches(regex));
+        boolean batchIDStrCheck = (StringUtils.isEmpty(batchIDStr) || StringUtils.isNumeric(batchIDStr));
         boolean repositoryIDCheck = (StringUtils.isEmpty(repositoryIDStr) || StringUtils.isNumeric(repositoryIDStr));
 
-        if (startDateFormatCheck && endDateFormatCheck && repositoryIDCheck) {
+        if (startDateFormatCheck && endDateFormatCheck && batchIDStrCheck && repositoryIDCheck) {
+            Integer batchID = -1;
+            if (StringUtils.isNumeric(batchIDStr)) {
+                batchID = Integer.valueOf(batchIDStr);
+            }
             Integer repositoryID = -1;
             if (StringUtils.isNumeric(repositoryIDStr)) {
                 repositoryID = Integer.valueOf(repositoryIDStr);
             }
 
             // 转到 Service 执行查询
-            Map<String, Object> queryResult = stockRecordManageService.selectStockRecord(null, repositoryID, startDateStr, endDateStr, searchType, offset, limit);
+            Map<String, Object> queryResult = stockRecordManageService.selectStockRecord(batchID, repositoryID, startDateStr, endDateStr, searchType, offset, limit);
             if (queryResult != null) {
                 rows = (List<StockRecordDTO>) queryResult.get("data");
                 total = (long) queryResult.get("total");

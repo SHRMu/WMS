@@ -63,14 +63,16 @@ public interface StockOutMapper {
     List<StockOutDO> selectByRepositoryID(Integer repositoryID);
 
     /**
-     * 选择指定仓库ID以及指定日期范围内的出库记录
+     * 选择指定批次，仓库ID以及指定日期范围内的出库记录
      *
+     * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
      * @param startDate    记录起始日期
      * @param endDate      记录结束日期
      * @return 返回所有符合指定要求的出库记录
      */
-    List<StockOutDO> selectByRepositoryIDAndDate(@Param("repositoryID") Integer repositoryID,
+    List<StockOutDO> selectByBatchRepoIDAndDate(@Param("batchID") Integer batchID,
+                                                @Param("repositoryID") Integer repositoryID,
                                                  @Param("startDate") Date startDate,
                                                  @Param("endDate") Date endDate);
 

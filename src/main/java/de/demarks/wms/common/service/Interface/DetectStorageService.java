@@ -88,12 +88,24 @@ public interface DetectStorageService {
      * @param goodsID      指定的货物ID
      * @param batchID      指定的批次ID
      * @param repositoryID 指定的仓库ID
+     * @param number       检测总数
      * @param passed       良品数量
      * @param scratch      划痕数量
      * @param damage       故障数量
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
-    boolean updateDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+    boolean updateDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number ,long passed, long scratch, long damage) throws DetectStorageServiceException;
+
+    /**
+     * 只更新检测库存中的良品数量
+     *
+     * @param goodsID      指定的货物ID
+     * @param batchID      指定的批次ID
+     * @param repositoryID 指定的仓库ID
+     * @param passed       良品数量
+     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
+     */
+    boolean updatePassedDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed) throws DetectStorageServiceException;
 
     /**
      * 删除一条检测库存记录
@@ -134,6 +146,7 @@ public interface DetectStorageService {
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+
 
     /**
      * 从检测的良品库存中减去出库数量

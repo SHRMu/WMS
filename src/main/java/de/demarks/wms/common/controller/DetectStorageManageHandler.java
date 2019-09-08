@@ -238,7 +238,7 @@ public class DetectStorageManageHandler {
 
 
         if (isAvailable) {
-            result = detectStorageManageService.updateDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            result = detectStorageManageService.updateDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID), 0,
                     Integer.valueOf(passed),Integer.valueOf(scratch),Integer.valueOf(damage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
