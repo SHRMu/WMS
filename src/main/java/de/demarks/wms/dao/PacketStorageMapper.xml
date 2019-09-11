@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="de.demarks.wms.dao.PacketStorageMapper">
+	
+	<resultMap type="de.demarks.wms.domain.PacketStorage" id="packetStorage">
+		<id property="packetID" column="preStorage_packetID"/>
+		<id property="goodsID" column="preStorage_goodsID" />
+		<result property="customerID" column="preStorage_customerID" />
+		<result property="repositoryID" column="preStorage_repositoryID"/>
+		<result property="packetTrace" column="preStorage_packetTrace"/>
+		<result property="goodsName" column="preStorage_goodsName"/>
+		<result property="customerName" column="preStorage_customerName"/>
+		<result property="number" column="preStorage_number"/>
+		<result property="storage" column="preStorage_storage" />
+	</resultMap>
+	
+	<select id="selectAll" resultMap="packetStorage">
+		select
+			ps.PRE_PACKET_ID as preStorage_packetID,
+			ps.PRE_GOODID as preStorage_goodsID,
+			ps.PRE_CUSTOMERID as preStorage_customerID,
+			ps.PRE_REPOSITORYID as preStorage_repositoryID,
+			ps.PRE_NUMBER as preStorage_number,
+			ps.PRE_STORAGE as preStorage_storage,
+			p.PACKET_TRACE as preStorage_packetTrace,
+			g.GOOD_NAME as preStorage_goodsName,
+			cus.CUSTOMER_NAME as preStorage_customerName
+		from
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus, wms_respository rp
+		where
+			ps.PRE_PACKET_ID = p.PACKET_ID and
+			ps.PRE_GOODID =  g.GOOD_ID and
+			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID
+		<if test="repositoryID!=null">
+			and ps.PRE_REPOSITORYID = rp.REPO_ID
+		</if>
+	</select>
+
+	<select id="selectByPacketAndGoodsID" resultMap="packetStorage">
+		select
+			ps.PRE_PACKET_ID as preStorage_packetID,
+			ps.PRE_GOODID as preStorage_goodsID,
+			ps.PRE_CUSTOMERID as preStorage_customerID,
+			ps.PRE_REPOSITORYID as preStorage_repositoryID,
+			ps.PRE_NUMBER as preStorage_number,
+			ps.PRE_STORAGE as preStorage_storage,
+			p.PACKET_TRACE as preStorage_packetTrace,
+			g.GOOD_NAME as preStorage_goodsName,
+			cus.CUSTOMER_NAME as preStorage_customerName
+		from
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus, wms_respository rp
+		where
+			ps.PRE_PACKET_ID = p.PACKET_ID and
+			ps.PRE_GOODID =  g.GOOD_ID and
+			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
+			p.PACKET_ID = #{packetID} and
+			g.GOOD_ID = #{goodsID}
+		<if test="repositoryID!=null">
+			and ps.PRE_REPOSITORYID = rp.REPO_ID
+		</if>
+	</select>
+
+	<insert id="insert">
+		insert into wms_packet_storage(PRE_PACKET_ID,PRE_GOODID,PRE_CUSTOMERID,PRE_REPOSITORYID,PRE_NUMBER,PRE_STORAGE)
+		values(#{packetID},#{goodsID},#{customerID},#{repositoryID},#{number},#{storage})
+	</insert>
+	
+	<update id="update">
+		update 
+			wms_record_in
+		set
+			RECORD_PACKET = #{packet},
+			RECORD_BATCHID = #{batchID},
+			RECORD_CUSTOMERID = #{customerID},
+			RECORD_GOODID = #{goodsID},
+			RECORD_NUMBER = #{number},
+			RECORD_TIME = #{time},
+			RECORD_PERSON = #{personInCharge},
+			RECORD_REPOSITORYID = #{repositoryID}
+		where
+			RECORD_ID = #{id}
+	</update>
+	
+	<delete id="deleteByID">
+		delete from wms_record_in
+		where RECORD_ID = #{id}
+	</delete>
+</mapper>

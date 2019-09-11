@@ -11,7 +11,7 @@
 	var select_repositoryID;
 
 	$(function() {
-		batchSelectorInit();
+
 		repositoryOptionInit();
 		storageListInit();
 		optionAction();
@@ -24,31 +24,6 @@
 		importStorageAction();
 		exportStorageAction()
 	})
-
-	//当前可用的批次初始化
-	function batchSelectorInit() {
-		$.ajax({
-			type : 'GET',
-			url : 'repositoryBatchManage/getRepositoryBatchList',
-			dataType : 'json',
-			contentType : 'application/json',
-			data : {
-				searchType : 'searchByActive',
-				keyWord : '',
-				offset : -1,
-				limit : -1
-			},
-			success : function(response){
-				$.each(response.rows,function(index,elem){
-					$('#search_input_batch').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
-				});
-			},
-			error : function(response){
-				$('#search_input_batch').append("<option value='-1'>加载失败</option>");
-			}
-		});
-		$('#search_input_batch').append("<option value='all'>请选择批次</option>");
-	}
 
 	// 仓库下拉框数据初始化，页面加载时完成
 	function repositoryOptionInit(){
@@ -89,15 +64,6 @@
 								{
 									field : 'goodsName',
 									title : '货物名称'
-								},
-								{
-									field : 'batchID',
-									title : '批次ID'
-									// visible: false
-								},
-								{
-									field : 'batchCode',
-									title : '批次编号'
 								},
 								{
 									field : 'repositoryID',
@@ -545,7 +511,7 @@
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>库存信息管理</li>
+		<li>到货库存信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
@@ -570,7 +536,11 @@
 					</div>
 					<!--通过后台查询可用批次信息-->
 					<div class="col-md-3 col-sm-4">
-						<select class="form-control" id="search_input_batch">
+						<select class="form-control" id="search_input_packet">
+							<option value="">请选择包裹状态</option>
+							<option value="已发货">已发货</option>
+							<option value="部分到货">部分到货</option>
+							<option value="全部到货">全部到货</option>
 						</select>
 					</div>
 					<!--通过后台查询仓库信息-->

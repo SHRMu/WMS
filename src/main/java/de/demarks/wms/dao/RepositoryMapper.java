@@ -14,6 +14,7 @@ public interface RepositoryMapper {
 
 	/**
 	 * 选择全部的 Repository 记录
+	 *
 	 * @return 返回全部的 Repository
 	 */
 	List<Repository> selectAll();

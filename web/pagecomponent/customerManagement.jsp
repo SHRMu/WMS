@@ -494,6 +494,7 @@
 		$('#info_modal').modal("show");
 	}
 </script>
+
 <div class="panel panel-default">
 	<ol class="breadcrumb">
 		<li>客户信息管理</li>
@@ -507,9 +508,9 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">客户ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">客户名称</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
 			</div>

@@ -51,7 +51,6 @@ public class Storage {
 		this.goodsType = goodsType;
 	}
 
-
 	public double getGoodsWeight() {
 		return goodsWeight;
 	}

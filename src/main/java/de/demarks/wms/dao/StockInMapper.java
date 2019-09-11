@@ -47,14 +47,6 @@ public interface StockInMapper {
     List<StockInDO> selectByGoodsID(Integer goodsID);
 
     /**
-     * 选择指定批次ID相关的入库记录
-     *
-     * @param batchID 指定的批次ID
-     * @return 返回指定货物相关的入库记录
-     */
-    List<StockInDO> selectByBatchID(Integer batchID);
-
-    /**
      * 选择指定仓库ID相关的入库记录
      *
      * @param repositoryID 指定的仓库ID

@@ -58,7 +58,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     public boolean stockInOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
 
         // ID对应的记录是否存在
-        if (!(batchValidate(batchID) && customerValidate(customerID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
+        if (!(batchRepoValidate(batchID, repositoryID) && customerValidate(customerID) && goodsValidate(goodsID)))
             return false;
 
         if (personInCharge == null)
@@ -77,8 +77,6 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             // 保存入库记录
             if (isSuccess) {
                 StockInDO stockInDO = new StockInDO();
-                stockInDO.setPacket(packet);
-                stockInDO.setBatchID(batchID);
                 stockInDO.setGoodsID(goodsID);
                 stockInDO.setCustomerID(customerID);
                 stockInDO.setNumber(number);
@@ -109,7 +107,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     public boolean stockOutOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
 
         // 检查ID对应的记录是否存在
-        if (!(batchValidate(batchID) && customerValidate(customerID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
+        if (!(batchRepoValidate(batchID, repositoryID) && customerValidate(customerID) && goodsValidate(goodsID)))
             return false;
 
         // 检查出库数量范围是否有效
@@ -372,7 +370,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     private StockRecordDTO stockInRecordConvertToStockRecordDTO(StockInDO stockInDO) {
         StockRecordDTO stockRecordDTO = new StockRecordDTO();
         stockRecordDTO.setRecordID(stockInDO.getId());
-        stockRecordDTO.setBatchCode(stockInDO.getBatchCode());
+//        stockRecordDTO.setBatchCode(stockInDO.getBatchCode());
         stockRecordDTO.setSupplierOrCustomerName(stockInDO.getCustomerName());
         stockRecordDTO.setGoodsName(stockInDO.getGoodName());
         stockRecordDTO.setNumber(stockInDO.getNumber());
@@ -421,12 +419,13 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     /**
      * 检查批次ID对应的记录是否存在
      *
-     * @param batchID 批次ID
+     * @param batchID      批次ID
+     * @param repositoryID 仓库ID
      * @return 若存在则返回true，否则返回false
      */
-    private boolean batchValidate(Integer batchID) throws StockRecordManageServiceException {
+    private boolean batchRepoValidate(Integer batchID, Integer repositoryID) throws StockRecordManageServiceException {
         try {
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,repositoryID);
             return repositoryBatch != null;
         } catch (PersistenceException e) {
             throw new StockRecordManageServiceException(e);

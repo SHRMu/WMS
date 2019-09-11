@@ -40,7 +40,7 @@
 		from
 			wms_repo_batch
 		where
-			REPO_BATCH_ID = #{id}
+			REPO_BATCH_ID = #{batchID}
 		<if test="repositoryID != null">
 			and REPO_BATCH_REPOID = #{repositoryID}
 		</if>
@@ -57,7 +57,7 @@
 		from
 			wms_repo_batch
 		where
-			REPO_BATCH_CODE like concat(concat("%",#{code},"%"))
+			REPO_BATCH_CODE like concat(concat("%",#{batchCode},"%"))
 		<if test="repositoryID != null">
 			and REPO_BATCH_REPOID = #{repositoryID}
 		</if>

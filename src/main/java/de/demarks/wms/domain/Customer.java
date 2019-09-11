@@ -2,7 +2,8 @@ package de.demarks.wms.domain;
 
 /**
  * 客户信息
- * @author Ken
+ *
+ * @author huanyingcool
  *
  */
 public class Customer {

@@ -94,11 +94,11 @@ pageEncoding="UTF-8"%>
                                 <shiro:hasRole name="systemAdmin">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/storageManagement.jsp">待检测库存</a>
+                                           name="pagecomponent/storageManagement.jsp">到货库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectStorageManagement.jsp">待发货库存</a>
+                                           name="pagecomponent/detectStorageManagement.jsp">已检测库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
@@ -127,6 +127,10 @@ pageEncoding="UTF-8"%>
                         <div class="panel-body">
                             <shiro:hasRole name="systemAdmin">
                                 <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/preStock-inManagement.jsp">客户预报</a>
+                                    </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
                                            name="pagecomponent/stock-inManagement.jsp">货物入库</a>
@@ -193,6 +197,10 @@ pageEncoding="UTF-8"%>
                         <div id="collapse4" class="panel-collapse collapse collapseBody">
                             <div class="panel-body">
                                 <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="javascript:void(0)" id="" class="menu_item"
+                                           name="pagecomponent/packetManagement.jsp">预报信息管理</a>
+                                    </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
                                            name="pagecomponent/repositoryBatchManagement.jsp">批次信息管理</a>

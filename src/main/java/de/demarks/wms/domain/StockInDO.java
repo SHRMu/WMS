@@ -18,17 +18,7 @@ public class StockInDO {
     /**
      * 包裹号
      */
-    private String packet;
-
-    /**
-     * 批次ID
-     */
-    private Integer batchID;
-
-    /**
-     * 批次编号
-     */
-    private String batchCode;
+    private Integer packetID;
 
     /**
      * 客户ID
@@ -78,28 +68,12 @@ public class StockInDO {
         this.id = id;
     }
 
-    public String getPacket() {
-        return packet;
+    public Integer getPacketID() {
+        return packetID;
     }
 
-    public void setPacket(String packet) {
-        this.packet = packet;
-    }
-
-    public Integer getBatchID() {
-        return batchID;
-    }
-
-    public void setBatchID(Integer batchID) {
-        this.batchID = batchID;
-    }
-
-    public String getBatchCode() {
-        return batchCode;
-    }
-
-    public void setBatchCode(String batchCode) {
-        this.batchCode = batchCode;
+    public void setPacketID(Integer packetID) {
+        this.packetID = packetID;
     }
 
     public Integer getCustomerID() {
@@ -170,9 +144,7 @@ public class StockInDO {
     public String toString() {
         return "StockInDO{" +
                 "id=" + id +
-                ", packet='" + packet + '\'' +
-                ", batchID=" + batchID +
-                ", batchCode='" + batchCode + '\'' +
+                ", packetID=" + packetID +
                 ", customerID=" + customerID +
                 ", customerName='" + customerName + '\'' +
                 ", goodsID=" + goodsID +

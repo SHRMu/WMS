@@ -127,16 +127,20 @@
 									title : '仓库ID'
 								},
 								{
+									field : 'number',
+									title : '已测总数'
+								},
+								{
 									field : 'passed',
 									title : '待发良品'
 								},
 								{
 									field : 'scratch',
-									title : '划痕数量'
+									title : '划痕数'
 								},
 								{
 									field : 'damage',
-									title : '故障数量'
+									title : '故障数'
 								},
 								{
 									field : 'operation',
@@ -158,7 +162,7 @@
 																   value, row, index) {
 											select_goodsID = row.goodsID;
 											select_batchID = row.batchID;
-											select_repositoryID = row.repositoryID
+											select_repositoryID = row.repositoryID;
 											$('#deleteWarning_modal').modal(
 													'show');
 										}
