@@ -12,6 +12,8 @@
 		<result property="customerName" column="stockin_customerName"/>
 		<result property="goodsID" column="stockin_goodsID"/>
 		<result property="goodName" column="stockin_goodName"/>
+		<result property="batchID" column="stockin_batchID" />
+		<result property="batchCode" column="stockin_batchCode"/>
 		<result property="number" column="stockin_number"/>
 		<result property="time" column="stockin_time"/>
 		<result property="personInCharge" column="stockin_personInCharge"/>
@@ -24,18 +26,21 @@
 			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
 		from
-			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
 		where
 			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
-			r.RECORD_GOODID = g.GOOD_ID
+			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID
 	</select>
 
 	<select id="selectByID" resultMap="stockInDO">
@@ -44,18 +49,21 @@
 			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
 		from
-			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
 		where
 			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_ID = #{id}
 	</select>
 	
@@ -65,18 +73,21 @@
 			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
 		from
-			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
 		where
 			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_CUSTOMERID = #{customerID}
 	</select>
 	
@@ -86,64 +97,69 @@
 			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
 		from
-			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
 		where
 			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_GOODID = #{goodsID}
 	</select>
 	
 	<select id="selectByRepositoryID" resultMap="stockInDO">
 		select
 			r.RECORD_ID as stockin_id,
-			r.RECORD_PACKET as stockin_packet,
-			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
-			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
 		from
-			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
 		where
-			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_REPOSITORYID = #{repositoryID}
 	</select>
 
 	<select id="selectByBatchRepoIDAndDate" resultMap="stockInDO">
-        select
+		select
 			r.RECORD_ID as stockin_id,
-			r.RECORD_PACKET as stockin_packet,
-			r.RECORD_BATCHID as stockin_batchID,
+			r.RECORD_PACKETID as stockin_packetID,
 			r.RECORD_CUSTOMERID as stockin_customerID,
 			r.RECORD_GOODID as stockin_goodsID,
+			r.RECORD_BATCHID as stockin_batchID,
 			r.RECORD_NUMBER as stockin_number,
 			r.RECORD_TIME as stockin_time,
 			r.RECORD_PERSON as stockin_personInCharge,
 			r.RECORD_REPOSITORYID as stockin_repositoryID,
-			b.REPO_BATCH_CODE as stockin_batchCode,
 			cus.CUSTOMER_NAME as stockin_customerName,
-			g.GOOD_NAME as stockin_goodName
-        from
-			wms_record_in r, wms_repo_batch b, wms_customer cus, wms_goods g
-        where
-			r.RECORD_BATCHID = b.REPO_BATCH_ID and
+			g.GOOD_NAME as stockin_goodName,
+			b.REPO_BATCH_CODE as stsockin_batchCode
+		from
+			wms_record_in r, wms_customer cus, wms_goods g, wms_packet p, wms_repo_batch b
+		where
+			r.RECORD_PACKETID = p.PACKET_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
-			r.RECORD_GOODID = g.GOOD_ID
+			r.RECORD_GOODID = g.GOOD_ID and
+			r.RECORD_BATCHID = b.REPO_BATCH_ID
 		<if test="batchID != null">
 			and r.RECORD_BATCHID = #{batchID}
 		</if>
@@ -159,8 +175,8 @@
 	</select>
 	
 	<insert id="insert">
-		insert into wms_record_in(RECORD_PACKETID,RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
-		values(#{packetID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
+		insert into wms_record_in(RECORD_PACKETID,RECORD_BATCHID,RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
+		values(#{packetID},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
 	</insert>
 	
 	<update id="update">

@@ -3,17 +3,17 @@ package de.demarks.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.DetectStorageService;
+import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.service.Interface.StockRecordManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
 import de.demarks.wms.dao.*;
-import de.demarks.wms.exception.DetectStorageServiceException;
-import de.demarks.wms.exception.StockRecordManageServiceException;
-import de.demarks.wms.exception.StorageManageServiceException;
+import de.demarks.wms.exception.*;
 import de.demarks.wms.util.aop.UserOperation;
 import de.demarks.wms.domain.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,11 +29,15 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     @Autowired
     private CustomerMapper customerMapper;
     @Autowired
+    private PacketMapper packetMapper;
+    @Autowired
     private GoodsMapper goodsMapper;
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
     @Autowired
     private RepositoryMapper repositoryMapper;
+    @Autowired
+    private PacketStorageManageService packetStorageManageService;
     @Autowired
     private StorageManageService storageManageService;
     @Autowired
@@ -42,23 +46,31 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     private StockInMapper stockinMapper;
     @Autowired
     private StockOutMapper stockOutMapper;
+    @Autowired
+    private PacketStorageMapper packetStorageMapper;
 
     /**
-     * 货物入库操作
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 入库仓库ID
-     * @param number       入库数量
-     * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
+     *
+     * @param packetID
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param number
+     * @param personInCharge
+     * @return
+     * @throws StockRecordManageServiceException
      */
     @UserOperation(value = "货物入库")
     @Override
-    public boolean stockInOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
+    public boolean stockInOperation(@Param("packetID") Integer packetID,
+                                    @Param("goodsID") Integer goodsID,
+                                    @Param("batchID") Integer batchID,
+                                    @Param("repositoryID") Integer repositoryID,
+                                    @Param("number") long number,
+                                    @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException {
 
         // ID对应的记录是否存在
-        if (!(batchRepoValidate(batchID, repositoryID) && customerValidate(customerID) && goodsValidate(goodsID)))
+        if (!(packetValidate(packetID) &&  goodsValidate(goodsID) && repositoryValidate(repositoryID)))
             return false;
 
         if (personInCharge == null)
@@ -68,16 +80,27 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         if (number < 0)
             return false;
 
+        //客户未预报包裹
+        Integer customerID = -1;
+        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, null);
+        if (!packetStorageList.isEmpty()){
+            customerID = packetStorageList.get(0).getCustomerID();
+        }
+
         try {
-            // 更新库存记录
+            // 减少包裹预报库存
             boolean isSuccess;
+            isSuccess = packetStorageManageService.packetStorageDecrease(goodsID, packetID, repositoryID, number);
+
             // 增加待检测库存量
-            isSuccess = storageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
+            isSuccess = isSuccess && storageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
 
             // 保存入库记录
             if (isSuccess) {
                 StockInDO stockInDO = new StockInDO();
+                stockInDO.setPacketID(packetID);
                 stockInDO.setGoodsID(goodsID);
+                stockInDO.setBatchID(batchID);
                 stockInDO.setCustomerID(customerID);
                 stockInDO.setNumber(number);
                 stockInDO.setPersonInCharge(personInCharge);
@@ -86,7 +109,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
                 stockinMapper.insert(stockInDO);
             }
             return isSuccess;
-        } catch (PersistenceException | StorageManageServiceException e) {
+        } catch (PersistenceException | PacketStorageManageServiceException | StorageManageServiceException e) {
             throw new StockRecordManageServiceException(e);
         }
     }
@@ -399,6 +422,21 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         stockRecordDTO.setPersonInCharge(stockOutDO.getPersonInCharge());
         stockRecordDTO.setType("出库");
         return stockRecordDTO;
+    }
+
+    /**
+     *
+     * @param packetID
+     * @return
+     * @throws PacketStorageManageServiceException
+     */
+    private boolean packetValidate(Integer packetID) throws StockRecordManageServiceException {
+        try {
+            Packet packet = packetMapper.selectByID(packetID);
+            return packet != null;
+        } catch (PersistenceException e) {
+            throw new StockRecordManageServiceException(e);
+        }
     }
 
     /**

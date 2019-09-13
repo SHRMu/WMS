@@ -38,38 +38,15 @@
 		 	s.RECORD_GOODID = g.GOOD_ID and
 		 	s.RECORD_BATCHID = b.REPO_BATCH_ID and
 		 	s.RECORD_REPOSITORY = r.REPO_ID
-			<if test="batchID != null">
-				and b.REPO_BATCH_ID = #{batchID}
-			</if>
-		 	<if test="repositoryID != null">
-		 		and r.REPO_ID = #{repositoryID}
-		 	</if>
-	</select>
-	
-	<select id="selectByGoodsID" resultMap="storage">
-		select
-			g.GOOD_ID as storage_goodsID,
-			g.GOOD_NAME as storage_goodsName,
-			g.GOOD_TYPE as storage_goodsType,
-			g.GOOD_SIZE as storage_goodsSize,
-			g.GOOD_WEIGHT as storage_goodsWeight,
-			b.REPO_BATCH_ID as storage_batchID,
-			b.REPO_BATCH_CODE as storage_batchCode,
-			r.REPO_ID as storage_repositoryID,
-			s.RECORD_NUMBER as storage_number
-		from
-			wms_goods g, wms_repo_batch b, wms_respository r, wms_record_storage s
-		where
-			s.RECORD_GOODID = g.GOOD_ID and
-			s.RECORD_BATCHID = b.REPO_BATCH_ID and
-			s.RECORD_REPOSITORY = r.REPO_ID and
-		 	g.GOOD_ID = #{goodsID}
-			<if test="batchID != null">
-				and b.REPO_BATCH_ID = #{batchID}
-			</if>
-			<if test="repositoryID != null">
-				and r.REPO_ID = #{repositoryID}
-			</if>
+		<if test="goodsID != null">
+			and s.RECORD_GOODID = #{goodsID}
+		</if>
+		<if test="batchID != null">
+			and s.RECORD_BATCHID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and s.RECORD_REPOSITORY = #{repositoryID}
+		</if>
 	</select>
 	
 	<select id="selectByGoodsName" resultMap="storage">
@@ -90,12 +67,12 @@
 			s.RECORD_BATCHID = b.REPO_BATCH_ID and
 			s.RECORD_REPOSITORY = r.REPO_ID and
 		 	g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
-			<if test="batchID != null">
-				and b.REPO_BATCH_ID = #{batchID}
-			</if>
-			<if test="repositoryID != null">
-				and r.REPO_ID = #{repositoryID}
-			</if>
+		<if test="batchID != null">
+			and b.REPO_BATCH_ID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and r.REPO_ID = #{repositoryID}
+		</if>
 	</select>
 
 	<insert id="insert">

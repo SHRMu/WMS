@@ -1,18 +1,24 @@
 package de.demarks.wms.common.service.Impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.*;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
+import de.demarks.wms.exception.PacketStorageManageServiceException;
 import de.demarks.wms.exception.PreStockManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * 预报库存管理 Service
+ * @author huanyingcool
+ */
 @Service
 public class PacketStorageManageServiceImpl implements PacketStorageManageService {
 
@@ -28,102 +34,206 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
     private RepositoryMapper repositoryMapper;
 
     /**
-     * 客户操作包裹预入库操作
      *
-     * @param packetID     包裹ID
-     * @param goodsID      货物ID
-     * @param repositoryID 入库仓库ID
-     * @param number       入库数量
-     * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
+     * @param repositoryID
+     * @return
+     * @throws PacketStorageManageServiceException
      */
-    @UserOperation(value = "客户预报")
     @Override
-    public boolean preStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PreStockManageServiceException {
+    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectAll(repositoryID, -1, -1);
+    }
 
-        // 验证对应ID的记录是否存在
-        if (!(packetValidate(packetID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
-            return false;
+    /**
+     *
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketStorageManageServiceException
+     */
+    @Override
+    public Map<String, Object> selectAll(@Param("repository") Integer repositoryID,
+                                         @Param("offset") Integer offset,
+                                         @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+        long total = 0;
+        boolean isPagination = true;
 
-        if (personInCharge == null)
-            return false;
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
 
-        //必须用户账户登录下测试
-//        Customer customer = customerMapper.selectByName(personInCharge);
-//        if (customer == null)
-//            return false;
-
-        // 检查入库数量有效性
-        if (number < 0)
-            return false;
-
+        // query
         try {
-            //查看当前PacketID和GoodsID是否有预报
-            PacketStorage packetStorage = packetStorageMapper.selectByPacketAndGoodsID(packetID, goodsID, repositoryID);
-            if ( packetStorage != null){
-                Long num = packetStorage.getNumber();
-                packetStorage.setNumber(num + number);
-                packetStorageMapper.update(packetStorage);
-                return true;
-            }else {
-                //初次预报
-                packetStorage = new PacketStorage();
-                packetStorage.setPacketID(packetID);
-                packetStorage.setGoodsID(goodsID);
-                packetStorage.setCustomerID(2001);
-                packetStorage.setRepositoryID(repositoryID);
-                packetStorage.setNumber(number);
-                packetStorage.setStorage((long) 0);
-                packetStorageMapper.insert(packetStorage);
-                return true;
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectAll(null,null, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectAll(null,null, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
             }
         } catch (PersistenceException e) {
-            throw new PreStockManageServiceException(e);
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    /**
+     *
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @return
+     * @throws PacketStorageManageServiceException
+     */
+    @Override
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectByGoodsID(goodsID, packetID, repositoryID, -1 ,-1);
+    }
+
+    /**
+     *
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketStorageManageServiceException
+     */
+    @Override
+    public Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                               @Param("packetID") Integer packetID,
+                                               @Param("repositoryID") Integer repositoryID,
+                                               @Param("offset") Integer offset,
+                                               @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+
+    /**
+     *
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @param number
+     * @return
+     * @throws PacketStorageManageServiceException
+     */
+    @UserOperation(value = "更新包裹到货状态")
+    @Override
+    public boolean updatePacketStorage(Integer goodsID, Integer packetID, Integer repositoryID, long number, long storage) throws PacketStorageManageServiceException {
+        try {
+            boolean isUpdate = false;
+            // validate
+            List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+            if (packetStorageList != null && !packetStorageList.isEmpty()) {
+                // update
+                PacketStorage packetStorage = packetStorageList.get(0);
+                packetStorage.setNumber(number);
+                packetStorage.setStorage(storage); //设置新的未到货数量
+                packetStorageMapper.update(packetStorage);
+                isUpdate = true;
+            }
+
+            return isUpdate;
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
         }
     }
 
     /**
-     * 检查包裹ID对应的记录是否存在
      *
-     *
-     * @return 若存在则返回true，否则返回false
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @param number
+     * @return
+     * @throws PacketStorageManageServiceException
      */
-    private boolean packetValidate(Integer packetID) throws PreStockManageServiceException {
-        try {
-            Packet packet = packetMapper.selectByID(packetID);
-            return packet != null;
-        } catch (PersistenceException e) {
-            throw new PreStockManageServiceException(e);
+    @Override
+    public boolean packetStorageDecrease(@Param("goodsID") Integer goodsID,
+                                         @Param("packetID") Integer packetID,
+                                         @Param("repositoryID") Integer repositoryID,
+                                         @Param("number") long number) throws PacketStorageManageServiceException {
+        synchronized (this) {
+            // 检查对应的库存记录是否存在
+            PacketStorage packetStorage = getPacketStorage(goodsID, packetID, repositoryID);
+            if (null != packetStorage) {
+                // 检查库存减少数目的范围是否合理
+                if (number < 0 || packetStorage.getStorage() < number)
+                    return false;
+                long newNumber = packetStorage.getNumber();
+                long newStorage = packetStorage.getStorage() - number;
+                updatePacketStorage(goodsID, packetID, repositoryID, newNumber, newStorage);
+                return true;
+            } else
+                return false;
         }
     }
 
     /**
-     * 检查仓库ID对应的记录是否存在
      *
-     * @param repositoryID 仓库ID
-     * @return 若存在则返回true，否则返回false
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @return
      */
-    private boolean repositoryValidate(Integer repositoryID) throws PreStockManageServiceException {
-        try {
-            Repository repository = repositoryMapper.selectByID(repositoryID);
-            return repository != null;
-        } catch (PersistenceException e) {
-            throw new PreStockManageServiceException(e);
-        }
+    private PacketStorage getPacketStorage(@Param("goodsID") Integer goodsID,
+                                           @Param("packetID") Integer packetID,
+                                           @Param("repositoryID") Integer repositoryID) {
+        PacketStorage packetStorage = null;
+        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+        if (!packetStorageList.isEmpty())
+            packetStorage = packetStorageList.get(0);
+        return packetStorage;
     }
-
-    /**
-     * 检查货物ID对应的记录是否存在
-     *
-     * @param goodsID 货物ID
-     * @return 若存在则返回true，否则返回false
-     */
-    private boolean goodsValidate(Integer goodsID) throws PreStockManageServiceException {
-        try {
-            Goods goods = goodsMapper.selectById(goodsID);
-            return goods != null;
-        } catch (PersistenceException e) {
-            throw new PreStockManageServiceException(e);
-        }
-    }
-
 }

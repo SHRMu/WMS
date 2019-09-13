@@ -19,15 +19,15 @@ public interface PacketMapper {
     /**
      * 选择所有的包裹
      *
-     * @param status
+     * @param repositoryID
      * @return
      */
-    List<Packet> selectAll(@Param("status") String status);
+    List<Packet> selectAll(@Param("repositoryID") Integer repositoryID);
 
     /**
-     *返回指定包裹ID的信息
-     *
-     * @param packetID     包裹ID
+     * 精确查询 返回指定包裹ID的信息
+     * @param packetID
+     * @return
      */
     Packet selectByID(@Param("packetID") Integer packetID);
 
@@ -41,13 +41,14 @@ public interface PacketMapper {
 
     /**
      * 模糊查询 返回指定运单号以及状态的信息
-     * @param trace   包裹追踪号
-     * @param status        包裹状态
-     * @param repositoryID  仓库ID
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @return
      */
     List<Packet> selectByTraceApproximate(@Param("trace") String trace,
-                                           @Param("status") String status,
-                                           @Param("repositoryID") Integer repositoryID);
+                                          @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID);
 
     /**
      * 插入指定的包裹信息

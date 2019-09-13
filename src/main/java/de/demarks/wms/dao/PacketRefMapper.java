@@ -55,14 +55,14 @@ public interface PacketRefMapper {
                 @Param("refID") Integer refID);
 
     /**
-     * 更新包裹信息
-     * @param packet
-     */
-    void update(Packet packet);
-
-    /**
      * 删除指定ID号的包裹
      * @param packetID
      */
     void delete(Integer packetID);
+
+    /**
+     *
+     * @param refID
+     */
+    void deleteByRefID(Integer refID);
 }

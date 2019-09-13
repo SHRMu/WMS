@@ -40,6 +40,10 @@ public class StockInDO {
      */
     private String goodName;
 
+    private Integer batchID;
+
+    private String batchCode;
+
     /**
      * 入库仓库ID
      */
@@ -108,6 +112,22 @@ public class StockInDO {
         this.goodName = goodName;
     }
 
+    public Integer getBatchID() {
+        return batchID;
+    }
+
+    public void setBatchID(Integer batchID) {
+        this.batchID = batchID;
+    }
+
+    public String getBatchCode() {
+        return batchCode;
+    }
+
+    public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
     public Integer getRepositoryID() {
         return repositoryID;
     }
@@ -149,6 +169,8 @@ public class StockInDO {
                 ", customerName='" + customerName + '\'' +
                 ", goodsID=" + goodsID +
                 ", goodName='" + goodName + '\'' +
+                ", batchID=" + batchID +
+                ", batchCode='" + batchCode + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", time=" + time +

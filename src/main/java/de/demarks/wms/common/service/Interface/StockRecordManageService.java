@@ -1,6 +1,7 @@
 package de.demarks.wms.common.service.Interface;
 
 import de.demarks.wms.exception.StockRecordManageServiceException;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -12,17 +13,22 @@ import java.util.Map;
 public interface StockRecordManageService {
 
     /**
-     * 货物入库操作
      *
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 入库仓库ID
-     * @param number       入库数量
-     * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
+     * @param packetID
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param number
+     * @param personInCharge
+     * @return
+     * @throws StockRecordManageServiceException
      */
-    boolean stockInOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException;
+    boolean stockInOperation(@Param("packetID") Integer packetID,
+                             @Param("goodsID") Integer goodsID,
+                             @Param("batchID") Integer batchID,
+                             @Param("repositoryID") Integer repositoryID,
+                             @Param("number") long number,
+                             @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException;
 
     /**
      * 货物出库操作

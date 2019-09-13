@@ -4,8 +4,6 @@ import com.sun.tracing.dtrace.ProviderAttributes;
 import de.demarks.wms.domain.PacketStorage;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,37 +19,44 @@ public interface PacketStorageMapper {
      *
      * @return 返回全部的预报
      */
-    List<PacketStorage> selectAll(@Param("repositoryID") Integer repositoryID);
+    List<PacketStorage> selectAll(@Param("goodsID") Integer goodsID,
+                                  @Param("packetID") Integer packetID,
+                                  @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定 包裹ID 和 货物ID 的预报记录
      *
-     *
-     * @return 返回指定 包裹ID 和 货物ID 的预报记录
+     * @param goodsID
+     * @param packetStatus
+     * @param repositoryID
+     * @return
      */
-    PacketStorage selectByPacketAndGoodsID(@Param("packetID") Integer packetID,
-                                           @Param("goodsID") Integer goodsID,
-                                           @Param("repositoryID") Integer repositoryID);
+    List<PacketStorage> selectByPacketStatus(@Param("goodsID") Integer goodsID,
+                                             @Param("packetStatus") String packetStatus,
+                                             @Param("repositoryID") Integer repositoryID);
+
 
     /**
-     * 预报操作是 插入 一条预报记录
+     * 添加一条记录
      *
      * @param packetStorage 预报记录
      */
     void insert(PacketStorage packetStorage);
 
     /**
-     * 更新入库记录
+     * 更新预报库存记录
      *
-     * @param stockInDO 入库记录
+     * @param packetStorage 入库记录
      */
-    void update(PacketStorage stockInDO);
+    void update(PacketStorage packetStorage);
 
     /**
      * 删除指定ID的入库记录
-     *
-     * @param id 指定删除入库记录的ID
+     * @param packetID
+     * @param goodsID
+     * @param repositoryID
      */
-    void deleteByID(Integer id);
+    void delete(@Param("goodsID") Integer goodsID,
+                @Param("packetID") Integer packetID,
+                @Param("repositoryID") Integer repositoryID);
 
 }

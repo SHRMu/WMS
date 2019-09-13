@@ -301,7 +301,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     public boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException {
         try {
             //检查该批次下是否有待检测的库存
-            List<Storage> storages = storageMapper.selectAll(batchID, repositoryID);
+            List<Storage> storages = storageMapper.selectAll(null, batchID, repositoryID);
             if ( storages != null && !storages.isEmpty())
                 return  false;
 

@@ -24,8 +24,8 @@
 			PACKET_REPOID
 		from
 			wms_packet
-		<if test="status != null">
-			where PACKET_STATUS = #{status}
+		<if test="repositoryID != null">
+			where PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 	
@@ -88,7 +88,7 @@
 		set
 			PACKET_TRACE = #{trace},
 			PACKET_TIME = #{time},
-			PACKET_STATUS = #{status}
+			PACKET_STATUS = #{status},
 			PACKET_DESC = #{desc},
 			PACKET_REPOID = #{repositoryID}
 		where

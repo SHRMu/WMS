@@ -1,22 +1,23 @@
 package de.demarks.wms.domain;
 
 /**
- * 仓库库存
+ * 预报包裹库存
  * 
- * @author Shouran
+ * @author huanyingcool
  *
  */
 public class PacketStorage {
 
 	private Integer packetID;
 	private String packetTrace;
+	private String packetStatus;
 	private Integer goodsID;// 货物ID
 	private String goodsName;// 货物名称
 	private Integer customerID;
 	private String customerName;
 	private Integer repositoryID;// 仓库ID
 	private Long number; //预报数量
-	private Long storage; //到货后未处理数量
+	private Long storage; //未到货数量
 
 	public Integer getPacketID() {
 		return packetID;
@@ -32,6 +33,14 @@ public class PacketStorage {
 
 	public void setPacketTrace(String packetTrace) {
 		this.packetTrace = packetTrace;
+	}
+
+	public String getPacketStatus() {
+		return packetStatus;
+	}
+
+	public void setPacketStatus(String packetStatus) {
+		this.packetStatus = packetStatus;
 	}
 
 	public Integer getGoodsID() {
@@ -95,6 +104,7 @@ public class PacketStorage {
 		return "PacketStorage{" +
 				"packetID=" + packetID +
 				", packetTrace='" + packetTrace + '\'' +
+				", packetStatus='" + packetStatus + '\'' +
 				", goodsID=" + goodsID +
 				", goodsName='" + goodsName + '\'' +
 				", customerID=" + customerID +

@@ -3,7 +3,6 @@ package de.demarks.wms.common.service.Interface;
 import de.demarks.wms.domain.Packet;
 import de.demarks.wms.exception.PacketManageServiceException;
 import org.apache.ibatis.annotations.Param;
-import org.apache.tools.ant.taskdefs.Pack;
 
 import java.util.Map;
 
@@ -19,35 +18,37 @@ public interface PacketManageService {
      *
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    Map<String, Object> selectAll(@Param("status") String status) throws PacketManageServiceException;
+    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
-     * 分页查询所有包裹记录
+     * 分页 查询所有包裹记录
      *
      * @param offset 分页的偏移值
      * @param limit  分页的大小
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    Map<String, Object> selectAll(@Param("status") String status,
+    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
                                   @Param("offset")int offset,
                                   @Param("limit") int limit) throws PacketManageServiceException;
 
     /**
      * 查询指定包裹ID的记录
      *
-     * @param id 包裹ID
+     * @param packetID 包裹ID
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    Map<String, Object> selectByID(@Param("id") Integer id) throws PacketManageServiceException;
-
+    Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID) throws PacketManageServiceException;
 
     /**
      * 模糊查询 查询指定包裹号的记录
-     *
      * @param trace
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * @param status
+     * @return
+     * @throws PacketManageServiceException
      */
-    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace) throws PacketManageServiceException;
+    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
+                                                 @Param("status") String status,
+                                                 @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
      * 模糊查询 分页指定包裹号的记录
@@ -57,36 +58,58 @@ public interface PacketManageService {
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
+                                                 @Param("status") String status,
+                                                 @Param("repositoryID") Integer repositoryID,
                                                  @Param("offset")int offset,
                                                  @Param("limit") int limit) throws PacketManageServiceException;
 
     /**
-     * 添加附加包裹
+     * 添加附加包裹信息
      * @return
      * @throws PacketManageServiceException
      */
-    public boolean addPacketRef(String desc, Integer id) throws PacketManageServiceException;
+    boolean addPacketRef(String desc, Integer id) throws PacketManageServiceException;
 
     /**
      * 添加包裹信息
-     *
+     * @param packet
+     * @return
+     * @throws PacketManageServiceException
      */
-    public boolean addPacket(Packet packet) throws PacketManageServiceException;
+    boolean addPacket(Packet packet) throws PacketManageServiceException;
+
+    /**
+     * 删除附加包裹信息
+     * @param id
+     * @return
+     * @throws PacketManageServiceException
+     */
+    boolean deletePacketRef(Integer id) throws PacketManageServiceException;
 
     /**
      * 更新包裹信息
      * @param packet
      * @return
-     * @throws PacketManageServiceException
      */
-    public boolean updatePacket(Packet packet) throws PacketManageServiceException;
+    boolean updatePacket(Packet packet) throws PacketManageServiceException;
 
     /**
      * 删除指定包裹ID的信息
-     * @param id
+     * @param packetID
      * @return
      * @throws PacketManageServiceException
      */
-    public boolean deletePacket(Integer id) throws  PacketManageServiceException;
+    boolean deletePacket(Integer packetID) throws  PacketManageServiceException;
+
+    /**
+     * 客户预报操作
+     *
+     * @param packetID     包裹ID
+     * @param goodsID      货物ID
+     * @param repositoryID 入库仓库ID
+     * @param number       入库数量
+     * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
+     */
+    boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PacketManageServiceException;
 
 }

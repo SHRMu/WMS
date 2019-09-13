@@ -161,7 +161,7 @@ function preStockInOption(){
         }
 		$.ajax({
 			type : 'POST',
-			url : 'preStockManage/preStockIn',
+			url : 'packetManage/packetStockIn',
 			dataType : 'json',
 			content : 'application/json',
 			data : data,
@@ -171,11 +171,11 @@ function preStockInOption(){
 				
 				if(response.result == "success"){
 					type = 'success';
-					msg = '货物入库成功';
+					msg = '货物预报成功';
 					inputReset();
 				}else{
 					type = 'error';
-					msg = '货物入库失败'
+					msg = '货物预报失败'
 				}
 				infoModal(type, msg);
 			},

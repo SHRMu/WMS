@@ -6,6 +6,7 @@ import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.domain.StockRecordDTO;
 import de.demarks.wms.exception.StockRecordManageServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,11 +39,10 @@ public class StockRecordManageHandler {
     /**
      * 货物入库操作
      *
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param repositoryID 入库仓库ID
-     * @param customerID   客户ID
+     * @param packetID       包裹运单号
      * @param goodsID      货物ID
+     * @param batchID
+     * @param repositoryID 入库仓库ID
      * @param number       入库数量
      * @param request      http 请求
      * @return 返回一个map，key为result的值表示操作是否成功
@@ -50,9 +50,10 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "stockIn", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockIn(@RequestParam("packet") String packet,
-                                @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
-                                @RequestParam("customerID") Integer customerID, @RequestParam("goodsID") Integer goodsID,
+    Map<String, Object> stockIn(@RequestParam("packetID") Integer packetID,
+                                @RequestParam("goodsID") Integer goodsID,
+                                @RequestParam("batchID") Integer batchID,
+                                @RequestParam("repositoryID") Integer repositoryID,
                                 @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -60,7 +61,7 @@ public class StockRecordManageHandler {
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName");
 
-        String result = stockRecordManageService.stockInOperation(packet, batchID, customerID, goodsID, repositoryID, number, personInCharge) ?
+        String result = stockRecordManageService.stockInOperation(packetID, goodsID, batchID, repositoryID, number, personInCharge) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response

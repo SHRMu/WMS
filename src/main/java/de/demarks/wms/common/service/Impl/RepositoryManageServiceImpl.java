@@ -268,7 +268,7 @@ public class RepositoryManageServiceImpl implements RepositoryService {
                 return false;
 
             // 检查是否存在库存记录
-            List<Storage> storageRecords = storageMapper.selectAll(null, repositoryId);
+            List<Storage> storageRecords = storageMapper.selectAll(null,null, repositoryId);
             if (storageRecords != null && !storageRecords.isEmpty())
                 return false;
 

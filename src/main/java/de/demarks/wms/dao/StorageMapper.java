@@ -20,18 +20,9 @@ public interface StorageMapper {
 	 * 选择所有的库存信息
 	 * @return 返回所有的库存信息
 	 */
-	List<Storage> selectAll(@Param("batchID") Integer batchID,
+	List<Storage> selectAll(@Param("goodsID") Integer goodsID,
+							@Param("batchID") Integer batchID,
 							@Param("repositoryID") Integer repositoryID);
-	
-	/**
-	 * 选择指定货物ID和仓库ID的库存信息
-	 * @param goodsID 货物ID
-	 * @param repositoryID 库存ID
-	 * @return 返回所有指定货物ID和仓库ID的库存信息
-	 */
-	List<Storage> selectByGoodsID(@Param("goodsID") Integer goodsID,
-								  @Param("batchID") Integer batchID,
-								  @Param("repositoryID") Integer repositoryID);
 	
 	/**
 	 * 选择指定货物名的库存信息

@@ -87,23 +87,14 @@
 		values (#{trace},#{refID})
 	</insert>
 
-	<update id="update">
-		update
-			wms_packet
-		set
-			PACKET_TRACE = #{trace},
-			PACKET_TIME = #{time},
-			PACKET_SEND = #{send},
-			PACKET_RECEIVE = #{receive}
-			PACKET_DESC = #{desc},
-			PACKET_REPOID = #{repositoryID}
-		where
-			PACKET_ID = #{id}
-	</update>
-
 	<delete id="delete">
-		delete from wms_packet
+		delete from wms_packet_ref
 		where PACKET_ID = #{id}
+	</delete>
+	
+	<delete id="deleteByRefID">
+		delete from wms_packet_ref
+		where PACKET_REF_ID = #{refID}
 	</delete>
 
 </mapper>

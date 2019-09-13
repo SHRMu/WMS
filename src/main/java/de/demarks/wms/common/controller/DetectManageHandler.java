@@ -38,7 +38,7 @@ public class DetectManageHandler {
      * @param repositoryID 仓库ID
      * @param passed       良品数量
      * @param scratch      划痕数量
-//     * @param damage       故障数量
+     * @param damage       故障数量
      * @param request      http 请求
      * @return 返回一个map，key为result的值表示操作是否成功
      */

@@ -204,7 +204,8 @@
 						id : selectID,
 						trace : $('#packet_trace_edit').val(),
 						status : $('#packet_status_edit').val(),
-						desc :  $('#packet_desc_edit').val()
+						desc :  $('#packet_desc_edit').val(),
+						repositoryID : $('#repository_selector_edit').val()
 					}
 
 					// ajax
@@ -240,7 +241,7 @@
 			var data = {
 				"packetID" : selectID
 			}
-			
+
 			// ajax
 			$.ajax({
 				type : "GET",
@@ -876,8 +877,8 @@
 							style="width: 70px; height: 70px; margin-top: 20px;">
 					</div>
 					<div class="col-md-8 col-sm-8">
-						<h3>是否确认删除该条货物信息</h3>
-						<p>(注意：若该货物已经有仓库进出库记录或有仓存记录，则该货物信息将不能删除成功。如需删除该货物的信息，请先确保该货物没有关联的仓库进出库记录或有仓存记录)</p>
+						<h3>是否确认删除该条包裹信息</h3>
+						<p>(注意：若该包裹下还有未签收的货物，则该包裹信息将不能删除成功。如需删除该包裹的信息，请先确保该该包裹下的所有货物都已签收)</p>
 					</div>
 				</div>
 			</div>

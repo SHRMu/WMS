@@ -77,14 +77,14 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                storageList = storageMapper.selectAll(batchID, repositoryID);
+                storageList = storageMapper.selectAll(null, batchID, repositoryID);
                 if (storageList != null) {
                     PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
                     total = pageInfo.getTotal();
                 } else
                     storageList = new ArrayList<>();
             } else {
-                storageList = storageMapper.selectAll(batchID,repositoryID);
+                storageList = storageMapper.selectAll(null, batchID,repositoryID);
                 if (storageList != null)
                     total = storageList.size();
                 else
@@ -134,14 +134,14 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
                 if (storageList != null) {
                     PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
                     total = pageInfo.getTotal();
                 } else
                     storageList = new ArrayList<>();
             } else {
-                storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
                 if (storageList != null)
                     total = storageList.size();
                 else
@@ -242,7 +242,7 @@ public class StorageManageServiceImpl implements StorageManageService {
                 isAvailable = false;
             if (number < 0)
                 isAvailable = false;
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            List<Storage> storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
             if (!(storageList != null && storageList.isEmpty()))
                 isAvailable = false;
 
@@ -277,7 +277,7 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            List<Storage> storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
             if (storageList != null && !storageList.isEmpty()) {
                 if (number >= 0) {
                     // update
@@ -310,7 +310,7 @@ public class StorageManageServiceImpl implements StorageManageService {
             boolean isDelete = false;
 
             // validate
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            List<Storage> storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
             if (storageList != null && !storageList.isEmpty()) {
                 // delete
                 storageMapper.delete(goodsID, batchID, repositoryID);
@@ -365,7 +365,7 @@ public class StorageManageServiceImpl implements StorageManageService {
                         isAvailable = false;
                     if (storage.getNumber() < 0)
                         isAvailable = false;
-                    List<Storage> temp = storageMapper.selectByGoodsID(storage.getGoodsID(), storage.getBatchID(), storage.getRepositoryID());
+                    List<Storage> temp = storageMapper.selectAll(storage.getGoodsID(), storage.getBatchID(), storage.getRepositoryID());
                     if (!(temp != null && temp.isEmpty()))
                         isAvailable = false;
 
@@ -469,7 +469,7 @@ public class StorageManageServiceImpl implements StorageManageService {
      */
     private Storage getStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
         Storage storage = null;
-        List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        List<Storage> storageList = storageMapper.selectAll(goodsID, batchID, repositoryID);
         if (!storageList.isEmpty())
             storage = storageList.get(0);
         return storage;
