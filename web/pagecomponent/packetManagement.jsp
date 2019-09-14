@@ -49,9 +49,12 @@
 		$(".dropOption").click(function() {
 			var type = $(this).text();
 			$("#search_input").val("");
-			if (type == "未签收") {
+			if (type == "所有") {
 				$("#search_input").attr("readOnly","true");
-				search_type_packet = "searchAllActive";
+				search_type_packet = "searchAll";
+			} else if (type == "已发货") {
+				$("#search_input").attr("readOnly","true");
+				search_type_packet = "searchActive";
 			} else if (type == "包裹ID") {
 				$("#search_input").removeAttr("readOnly");
 				search_type_packet = "searchByID";
@@ -101,16 +104,16 @@
 										title : '运单号'
 									},
 									{
+										field : 'time',
+										title : '发货日期'
+									},
+									{
 										field : 'status',
 										title : '包裹状态'
 									},
 									{
-										field : 'repositoryID',
-										title : '仓库ID'
-									},
-									{
 										field : 'desc',
-										title : '包含子运单'
+										title : '子运单'
 									},
 									{
 										field : 'operation',
@@ -489,16 +492,17 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">未签收</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">已发货</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
 			</div>
 			<div class="col-md-9 col-sm-9">
 				<div>
 					<div class="col-md-3 col-sm-4">
-						<input id="search_input" type="text" class="form-control" placeholder="包裹ID">
+						<input id="search_input" type="text" class="form-control" placeholder="已发货">
 					</div>
 					<div class="col-md-2 col-sm-2">
 						<button id="search_button" class="btn btn-success">

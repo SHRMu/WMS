@@ -70,7 +70,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
                                     @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException {
 
         // ID对应的记录是否存在
-        if (!(packetValidate(packetID) &&  goodsValidate(goodsID) && repositoryValidate(repositoryID)))
+        if (!(packetValidate(packetID) && batchValidate(batchID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
             return false;
 
         if (personInCharge == null)
@@ -88,15 +88,15 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         }
 
         try {
-            // 减少包裹预报库存
-            boolean isSuccess;
-            isSuccess = packetStorageManageService.packetStorageDecrease(goodsID, packetID, repositoryID, number);
+            // 减少包裹未到货storage
+            boolean  packetSuccess, storageSuccess;
+            packetSuccess = packetStorageManageService.packetStorageDecrease(goodsID, packetID, repositoryID, number);
 
             // 增加待检测库存量
-            isSuccess = isSuccess && storageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
+            storageSuccess = storageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
 
             // 保存入库记录
-            if (isSuccess) {
+            if (packetSuccess && storageSuccess ) {
                 StockInDO stockInDO = new StockInDO();
                 stockInDO.setPacketID(packetID);
                 stockInDO.setGoodsID(goodsID);
@@ -108,7 +108,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
                 stockInDO.setRepositoryID(repositoryID);
                 stockinMapper.insert(stockInDO);
             }
-            return isSuccess;
+            return packetSuccess && storageSuccess;
         } catch (PersistenceException | PacketStorageManageServiceException | StorageManageServiceException e) {
             throw new StockRecordManageServiceException(e);
         }
@@ -130,7 +130,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     public boolean stockOutOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
 
         // 检查ID对应的记录是否存在
-        if (!(batchRepoValidate(batchID, repositoryID) && customerValidate(customerID) && goodsValidate(goodsID)))
+        if (!(batchValidate(batchID) && customerValidate(customerID) && goodsValidate(goodsID)))
             return false;
 
         // 检查出库数量范围是否有效
@@ -458,12 +458,11 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
      * 检查批次ID对应的记录是否存在
      *
      * @param batchID      批次ID
-     * @param repositoryID 仓库ID
      * @return 若存在则返回true，否则返回false
      */
-    private boolean batchRepoValidate(Integer batchID, Integer repositoryID) throws StockRecordManageServiceException {
+    private boolean batchValidate(Integer batchID) throws StockRecordManageServiceException {
         try {
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,repositoryID);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
             return repositoryBatch != null;
         } catch (PersistenceException e) {
             throw new StockRecordManageServiceException(e);

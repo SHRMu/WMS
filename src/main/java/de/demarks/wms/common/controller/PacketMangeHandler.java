@@ -4,6 +4,7 @@ import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
+import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.dao.PacketMapper;
 import de.demarks.wms.domain.Packet;
 import de.demarks.wms.exception.PacketManageServiceException;
@@ -11,6 +12,7 @@ import de.demarks.wms.exception.PreStockManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.apache.tools.ant.taskdefs.Pack;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -41,9 +43,9 @@ public class PacketMangeHandler {
     private PacketManageService packetManageService;
 
     private static final String SEARCH_BY_ID = "searchByID";
+    private static final String SEARCH_BY_REF = "searchByRef"; //返回所有没收件的packetRef信息
     private static final String SEARCH_BY_TRACE = "searchByTrace";
-    private static final String SEARCH_ACTIVE_BY_TRACE = "searchActiveByTrace";
-    private static final String SEARCH_ALL_ACTIVE = "searchAllActive";
+    private static final String SEARCH_ACTIVE = "searchActive";
     private static final String SEARCH_ALL = "searchAll";
 
     /**
@@ -57,8 +59,7 @@ public class PacketMangeHandler {
      */
     private Map<String, Object> query(@Param("searchType") String searchType,
                                       @Param("keyWord") String keyWord,
-                                      @Param("offset") int offset,
-                                      @Param("limit") int limit) throws PacketManageServiceException {
+                                      @Param("offset") int offset, @Param("limit") int limit) throws PacketManageServiceException {
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
@@ -66,14 +67,17 @@ public class PacketMangeHandler {
                 if (StringUtils.isNumeric(keyWord))
                     queryResult = packetManageService.selectByPacketID(Integer.valueOf(keyWord));
                 break;
-            case SEARCH_ACTIVE_BY_TRACE:
-                queryResult = packetManageService.selectByTraceApproximate(keyWord, "已发货", null, offset, limit);
+            case SEARCH_BY_REF:
+                queryResult = packetManageService.selectRefApproximate(keyWord, StatusUtil.PACKET_STATUS_SEND,-1);
                 break;
             case SEARCH_BY_TRACE:
-                queryResult = packetManageService.selectByTraceApproximate(keyWord,null, null, offset, limit);
+                queryResult = packetManageService.selectApproximate(keyWord, "", -1);
                 break;
-            case SEARCH_ALL_ACTIVE:
-                queryResult = packetManageService.selectAll(null, offset, limit);
+            case SEARCH_ACTIVE:
+                queryResult = packetManageService.selectByStatus(StatusUtil.PACKET_STATUS_SEND, -1, offset, limit);
+                break;
+            case SEARCH_ALL:
+                queryResult = packetManageService.selectAll(-1, offset, limit);
                 break;
             default:
                 // do other thing
@@ -83,7 +87,7 @@ public class PacketMangeHandler {
     }
 
     /**
-     * 搜索匹配未到货的包裹信息
+     * 搜索匹配的包裹信息
      *
      * @param searchType 搜索类型
      * @param offset     如有多条记录时分页的偏移值
@@ -96,8 +100,8 @@ public class PacketMangeHandler {
     public
     @ResponseBody
     Map<String, Object> getPacketList(@RequestParam("searchType") String searchType,
-                                     @RequestParam("offset") int offset, @RequestParam("limit") int limit,
-                                     @RequestParam("keyWord") String keyWord) throws PacketManageServiceException {
+                                      @RequestParam("keyWord") String keyWord,
+                                      @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<Packet> rows = null;
@@ -179,27 +183,6 @@ public class PacketMangeHandler {
         return responseContent.generateResponse();
     }
 
-
-    private Integer packetSingleStockIn(String packetTrace, Integer repositoryID) throws PacketManageServiceException{
-        //精确查询packetTrace是否存在
-        Packet packet = packetMapper.selectByTrace(packetTrace);
-        Integer packetID = null;
-        if ( packet != null){
-            packetID = packet.getId();
-        }else {
-            //如果不存在输入的packetTrace，首先创建Packet
-            packet = new Packet();
-            packet.setTrace(packetTrace);
-            packet.setStatus("已发货");
-            packet.setRepositoryID(repositoryID);
-            packet.setTime(new Date());
-            boolean isSuccess = packetManageService.addPacket(packet);
-            if (isSuccess)
-                packetID = packet.getId();
-        }
-        return packetID;
-    }
-
     /**
      *  客户预报操作
      * @param trace
@@ -218,14 +201,13 @@ public class PacketMangeHandler {
     Map<String, Object> preStockIn(@RequestParam("trace") String trace,
                                    @RequestParam("goodsID") Integer goodsID,
                                    @RequestParam("repositoryID") Integer repositoryID,
-                                   @Param("desc") String desc,
-                                   @RequestParam("number") long number, HttpServletRequest request) throws PacketManageServiceException, PreStockManageServiceException {
+                                   @Param("desc") String desc, @RequestParam("number") long number, HttpServletRequest request) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName"); //默认获取的userName取锁定客户ID
 
-        Packet packet = packetMapper.selectByTrace(trace);
+        Packet packet = packetMapper.selectByTrace(trace,repositoryID); //验证是否有过该包裹预报
         Integer packetID;
         if (packet != null){
             //如果包裹已有预报信息
@@ -239,7 +221,7 @@ public class PacketMangeHandler {
             packet.setRepositoryID(repositoryID);
             //TODO : addPacket怎样能够直接返回id值
             packetManageService.addPacket(packet);
-            packetID = packetMapper.selectByTrace(trace).getId();
+            packetID = packetMapper.selectByTrace(trace,repositoryID).getId();
         }
 
         //执行包裹预报入库操作

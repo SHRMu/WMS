@@ -4,7 +4,6 @@
 <script>
 	var search_type_storage = "none";
 	var search_keyWord = "";
-	var search_packet = "";
 	var search_repository = "";
 
 	var select_goodsID;
@@ -15,7 +14,6 @@
 
 	$(function() {
 		repositoryOptionInit();
-		packetAutocomplete();
 		storageListInit();
 		optionAction();
 		searchAction();
@@ -52,46 +50,6 @@
 		});
 	}
 
-	// 包裹信息自动匹配
-	function packetAutocomplete(){
-		$('#packet_input').autocomplete({
-			minLength : 0,
-			delay : 200,
-			source : function(request, response){
-				$.ajax({
-					type : 'GET',
-					url : 'packetManage/getPacketList',
-					dataType : 'json',
-					contentType : 'application/json',
-					data : {
-						offset : -1,
-						limit : -1,
-						keyWord : request.term,
-						repositoryID:$('#repository_selector').val(),
-						searchType:'searchActiveByTrace'
-					},
-					success : function(data){
-						var autoCompleteInfo = new Array();
-						$.each(data.rows, function(index,elem){
-							packetCache.push(elem);
-							autoCompleteInfo.push({label:elem.trace,value:elem.id});
-						});
-						response(autoCompleteInfo);
-					}
-				});
-			},
-			focus : function(event, ui){
-				$('#packet_input').val(ui.item.label);
-				return false;
-			},
-			select : function(event, ui){
-				$('#packet_input').val(ui.item.label);
-				select_packetID = ui.item.value;
-				return false;
-			}
-		})
-	}
-
 	// 表格初始化
 	function storageListInit() {
 		$('#storageList')
@@ -110,17 +68,13 @@
 
 								},
 								{
-									field : 'goodsID',
-									title : '货物ID'
+									field : 'packetStatus',
+									title : '状态'
 
 								},
 								{
 									field : 'goodsName',
 									title : '货物名称'
-								},
-								{
-									field : 'repositoryID',
-									title : '仓库ID'
 								},
 								{
 									field : 'number',
@@ -156,7 +110,7 @@
 										}
 									}
 								} ],
-							url : 'storageManage/getStorageListWithRepository',
+							url : 'packetStorageManage/getStorageListWithPacket',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -175,14 +129,17 @@
 			var type = $(this).text();
 			$("#search_input").val("");
 			if (type == "所有") {
-				$("#search_input_type").attr("readOnly", "true");
+				$("#search_input_type").attr("readOnly","true");
 				search_type_storage = "searchAll";
-			} else if (type == "货物ID") {
+			}else if (type == "未到货") {
+				$("#search_input_type").attr("readOnly","true");
+				search_type_storage = "searchActive";
+			} else if (type == "包裹ID") {
 				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsID";
-			} else if (type == "货物名称") {
+				search_type_storage = "searchByPacketID";
+			} else if (type == "运单号") {
 				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByGoodsName";
+				search_type_storage = "searchByTrace";
 			} else {
 				$("#search_input_type").removeAttr("readOnly");
 			}
@@ -195,7 +152,6 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
-			search_packet = $('#search_input_batch').val();
 			search_repository = $('#search_input_repository').val();
 			tableRefresh();
 		})
@@ -214,8 +170,7 @@
 			limit : params.limit,
 			offset : params.offset,
 			searchType : search_type_storage,
-			batchBelong : search_packet,
-			repositoryBelong : search_repository,
+			repositoryID : search_repository,
 			keyword : search_keyWord
 		}
 		return temp;
@@ -228,7 +183,7 @@
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
 		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_batchID_edit').text(row.batchID);
+		$('#storage_packetID_edit').text(row.packetID);
 		$('#storage_repositoryID_edit').text(row.repositoryID);
 		$('#storage_number_edit').val(row.number);
 	}
@@ -251,10 +206,10 @@
 						}
 					}
 				},
-				storage_batchID : {
+				storage_packetID : {
 					validators : {
 						notEmpty : {
-							message : '批次ID不能为空'
+							message : '包裹ID不能为空'
 						}
 					}
 				},
@@ -289,7 +244,7 @@
 
 					var data = {
 						goodsID : $('#storage_goodsID_edit').text(),
-						batchID : $('#storage_batchID_edit').text(),
+						packetID : $('#storage_packetID_edit').text(),
 						repositoryID : $('#storage_repositoryID_edit').text(),
 						number : $('#storage_number_edit').val(),
 					}
@@ -330,7 +285,7 @@
 		$('#add_modal_submit').click(function() {
 			var data = {
 				goodsID : $('#storage_goodsID').val(),
-				batchID : $('#storage_batchID').val(),
+				packetID : $('#storage_packetID').val(),
 				repositoryID : $('#storage_repositoryID').val(),
 				number : $('#storage_number').val()
 			}
@@ -357,7 +312,7 @@
 
 					// reset
 					$('#storage_goodsID').val("");
-					$('#storage_batchID').val("");
+					$('#storage_packetID').val("");
 					$('#storage_repositoryID').val("");
 					$('#storage_number').val("");
 					$('#storage_form').bootstrapValidator("resetForm", true);
@@ -373,7 +328,7 @@
 		$('#delete_confirm').click(function(){
 			var data = {
 				"goodsID" : select_goodsID,
-				"batchID" : select_packetID,
+				"packetID" : select_packetID,
 				"repositoryID" : select_repositoryID
 			}
 			
@@ -568,7 +523,7 @@
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>到货库存信息管理</li>
+		<li>预报库存信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
@@ -580,8 +535,9 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">未到货</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
 					</ul>
 				</div>
 			</div>
@@ -589,11 +545,7 @@
 				<div>
 					<div class="col-md-3 col-sm-3">
 						<input id="search_input_type" type="text" class="form-control"
-							placeholder="货物ID">
-					</div>
-					<!--通过后台查询库存信息-->
-					<div class="col-md-3 col-sm-4">
-						<input type="text" class="form-control" placeholder="运单号信息" id="packet_input" name="packet_input">
+							placeholder="包裹ID">
 					</div>
 					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">
@@ -612,7 +564,7 @@
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-5">
 				<button class="btn btn-sm btn-default" id="add_storage">
-					<span class="glyphicon glyphicon-plus"></span> <span>添加包裹预报信息</span>
+					<span class="glyphicon glyphicon-plus"></span> <span>添加预报信息</span>
 				</button>
 				<button class="btn btn-sm btn-default" id="import_storage">
 					<span class="glyphicon glyphicon-import"></span> <span>导入</span>
@@ -971,10 +923,10 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>包裹ID：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
-									<p id="storage_batchID_edit" class="form-control-static"></p>
+									<p id="storage_packetID_edit" class="form-control-static"></p>
 								</div>
 							</div>
 							<div class="form-group">

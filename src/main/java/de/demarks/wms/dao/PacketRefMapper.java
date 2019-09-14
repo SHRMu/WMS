@@ -1,6 +1,5 @@
 package de.demarks.wms.dao;
 
-import de.demarks.wms.domain.Packet;
 import de.demarks.wms.domain.PacketRef;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -18,14 +17,15 @@ import java.util.List;
 public interface PacketRefMapper {
 
     /**
-     * 选择所有的附加包裹
+     * 指定refID
+     * @param refID
      * @return
      */
-    List<Packet> selectAll();
+    List<PacketRef> selectAll(@Param("refID") Integer refID);
 
     /**
-     *返回指定包裹ID的信息
-     * @param packetID     包裹ID
+     * 指定packetID
+     * @param packetID
      */
     PacketRef selectByID(@Param("packetID") Integer packetID);
 
@@ -37,17 +37,18 @@ public interface PacketRefMapper {
     PacketRef selectByTrace(@Param("packetTrace") String packetTrace);
 
     /**
-     * 模糊查询 返回指定运单号的信息
-     * @param trace   包裹追踪号
-     * @param repositoryID  仓库ID
+     *
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @return
      */
-    List<PacketRef> selectByTraceApproximate(@Param("trace") String trace,
-                                            @Param("status") String status,
-                                            @Param("repositoryID") Integer repositoryID);
-
+    List<PacketRef> selectApproximate(@Param("trace") String trace,
+                                      @Param("status") String status,
+                                      @Param("repositoryID") Integer repositoryID);
 
     /**
-     *
+     * 添加附加包裹
      * @param trace
      * @param refID
      */
@@ -58,11 +59,11 @@ public interface PacketRefMapper {
      * 删除指定ID号的包裹
      * @param packetID
      */
-    void delete(Integer packetID);
+    void deleteByID(@Param("packetID") Integer packetID);
 
     /**
-     *
+     * 删除指定refID的包裹
      * @param refID
      */
-    void deleteByRefID(Integer refID);
+    void deleteByRefID(@Param("refID") Integer refID);
 }

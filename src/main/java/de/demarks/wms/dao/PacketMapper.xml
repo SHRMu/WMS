@@ -24,8 +24,8 @@
 			PACKET_REPOID
 		from
 			wms_packet
-		<if test="repositoryID != null">
-			where PACKET_REPOID = #{repositoryID}
+		<if test="repositoryID > 0">
+		where PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 	
@@ -55,9 +55,30 @@
 			wms_packet
 		where
 			PACKET_TRACE = #{packetTrace}
+		<if test="repositoryID > 0 ">
+			and PACKET_REPOID = #{repositoryID}
+		</if>
 	</select>
 
-	<select id="selectByTraceApproximate" resultMap="packet">
+	<select id="selectByStatus" resultMap="packet">
+		select
+			PACKET_ID,
+			PACKET_TRACE,
+			PACKET_TIME,
+			PACKET_STATUS,
+			PACKET_DESC,
+			PACKET_REPOID
+		from
+			wms_packet
+		where
+			PACKET_STATUS = #{status}
+		<if test="repositoryID > 0">
+			and PACKET_REPOID = #{repositoryID}
+		</if>
+	</select>
+
+
+	<select id="selectApproximate" resultMap="packet">
 		select
 			PACKET_ID,
 			PACKET_TRACE,
@@ -69,10 +90,10 @@
 			wms_packet
 		where
 			PACKET_TRACE like concat ('%',#{trace},'%')
-		<if test="status != null">
+		<if test="status != ''">
 			and PACKET_STATUS = #{status}
 		</if>
-		<if test="repositoryID != null">
+		<if test="repositoryID > 0">
 			and PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>

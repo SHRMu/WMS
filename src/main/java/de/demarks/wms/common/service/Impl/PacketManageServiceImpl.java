@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import de.demarks.wms.common.service.Interface.PacketManageService;
+import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.PacketManageServiceException;
@@ -14,6 +15,8 @@ import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -36,34 +39,31 @@ public class PacketManageServiceImpl implements PacketManageService {
     @Autowired
     private PacketStorageMapper packetStorageMapper;
 
-    private static String PACKET_STATUS_SEND = "已发货";
-    private static String PACKET_STATUS_RECEIVE = "已签收";
-
     /**
-     * 查询所有的包裹记录
+     * 模糊查询 查询指定包裹号的记录
      * @param repositoryID
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * @return
+     * @throws PacketManageServiceException
      */
     @Override
-    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketManageServiceException {
-        return selectAll(repositoryID,-1,-1);
+    public Map<String, Object> selectAll(Integer repositoryID) throws PacketManageServiceException {
+        return selectAll(repositoryID, -1, -1);
     }
 
     /**
-     * 分页查询所有包裹记录
-     *
+     * 模糊查询 分页指定包裹号的记录
      * @param repositoryID
      * @param offset 分页的偏移值
      * @param limit  分页的大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * @return
+     * @throws PacketManageServiceException
      */
     @Override
-    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
-                                         @Param("offset")int offset,
-                                         @Param("limit") int limit) throws PacketManageServiceException {
+    public Map<String, Object> selectAll(Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<Packet> packetList;
+
         long total = 0;
         boolean isPagination = true;
 
@@ -92,10 +92,13 @@ public class PacketManageServiceImpl implements PacketManageService {
             throw new PacketManageServiceException(e);
         }
 
-        resultSet.put("data", packetList);
+        List<PacketDTO> packetDTOS = new ArrayList<>();
+        if (!packetList.isEmpty()){}
+            packetList.forEach(packet -> packetDTOS.add(packetConvertToPacketDTO(packet)));
+
+        resultSet.put("data", packetDTOS);
         resultSet.put("total", total);
         return resultSet;
-
     }
 
     /**
@@ -129,31 +132,19 @@ public class PacketManageServiceImpl implements PacketManageService {
     }
 
     /**
-     * 模糊查询 查询指定包裹号的记录
-     * @param trace
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     *
+     * @param status
+     * @param repositoryID
+     * @return
+     * @throws PacketManageServiceException
      */
     @Override
-    public Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
-                                                        @Param("status") String status,
-                                                        @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException {
-        return selectByTraceApproximate(trace, status, repositoryID, -1, -1);
+    public Map<String, Object> selectByStatus(String status, Integer repositoryID) throws PacketManageServiceException {
+        return selectByStatus(status, repositoryID, -1, -1);
     }
 
-    /**
-     * 模糊查询 分页指定包裹号的记录
-     * @param trace  包裹号
-     * @param status
-     * @param offset 分页的偏移值
-     * @param limit  分页的大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
     @Override
-    public Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
-                                                        @Param("status") String status,
-                                                        @Param("repositoryID") Integer repositoryID,
-                                                        @Param("offset")int offset,
-                                                        @Param("limit") int limit) throws PacketManageServiceException {
+    public Map<String, Object> selectByStatus(String status, Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<Packet> packetList;
@@ -168,14 +159,14 @@ public class PacketManageServiceImpl implements PacketManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetList = packetMapper.selectByTraceApproximate(trace, status, repositoryID);
+                packetList = packetMapper.selectByStatus(status, repositoryID);
                 if (packetList != null) {
                     PageInfo<Packet> pageInfo = new PageInfo<>(packetList);
                     total = pageInfo.getTotal();
                 } else
                     packetList = new ArrayList<>();
             } else {
-                packetList = packetMapper.selectByTraceApproximate(trace, status, repositoryID);
+                packetList = packetMapper.selectByStatus(status, repositoryID);
                 if (packetList != null)
                     total = packetList.size();
                 else
@@ -190,27 +181,140 @@ public class PacketManageServiceImpl implements PacketManageService {
         return resultSet;
     }
 
+    @Override
+    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID) throws PacketManageServiceException {
+        return  selectApproximate(trace, status, repositoryID, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketRef> packetRefList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                if (packetRefList != null) {
+                    PageInfo<PacketRef> pageInfo = new PageInfo<>(packetRefList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetRefList = new ArrayList<>();
+            } else {
+                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                if (packetRefList != null)
+                    total = packetRefList.size();
+                else
+                    packetRefList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketManageServiceException(e);
+        }
+
+        List<Packet> packetList = new ArrayList<>();
+        if (!packetRefList.isEmpty()){
+            for (PacketRef packetRef:
+                    packetRefList) {
+                Integer refid = packetRef.getRefid();
+                Packet packet = packetMapper.selectByID(refid);
+                if (!packetList.contains(packet))
+                    packetList.add(packet);
+            }
+
+        }
+
+        List<PacketDTO> packetDTOS = new ArrayList<>();
+        packetList.forEach(packet -> packetDTOS.add(packetConvertToPacketDTO(packet)));
+
+        resultSet.put("data", packetDTOS);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    @Override
+    public Map<String, Object> selectRefApproximate(String trace, String status, Integer repositoryID) throws PacketManageServiceException {
+        return  selectRefApproximate(trace, status, repositoryID, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectRefApproximate(String trace, String status, Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketRef> packetRefList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                if (packetRefList != null) {
+                    PageInfo<PacketRef> pageInfo = new PageInfo<>(packetRefList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetRefList = new ArrayList<>();
+            } else {
+                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                if (packetRefList != null)
+                    total = packetRefList.size();
+                else
+                    packetRefList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketManageServiceException(e);
+        }
+
+        List<PacketDTO> packetDTOS = new ArrayList<>();
+        packetRefList.forEach(packetRef -> packetDTOS.add(packetRefConvertToPacketDTO(packetRef)));
+
+        resultSet.put("data", packetDTOS);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
     /**
      * 添加附加包裹
      * @return
      * @throws PacketManageServiceException
      */
     @Override
-    public boolean addPacketRef(String desc, Integer id) throws PacketManageServiceException {
+    public boolean addPacketRef(Packet packet) throws PacketManageServiceException {
         try{
-            if ( id != null && desc!= null){
+            if ( packet!= null){
+                Integer refID = packet.getId();
+                String desc = packet.getDesc();
+                List<PacketRef> packetRefList = packetRefMapper.selectAll(refID);
+                if (!packetRefList.isEmpty()){
+                    deletePacketRefByRefID(refID);
+                }
+                packetRefMapper.insert(packet.getTrace(),refID); //添加主单信息
                 if (desc.contains(",")){
                     String[] traces = desc.split(",");
                     for (String trace:
                             traces) {
                         PacketRef packetRef = packetRefMapper.selectByTrace(trace);
                         if (packetRef == null)
-                            packetRefMapper.insert(trace, id);
+                            packetRefMapper.insert(trace, refID);
                     }
                 }else{
                     PacketRef packetRef = packetRefMapper.selectByTrace(desc);
                     if ( packetRef == null)
-                        packetRefMapper.insert(desc, id);
+                        packetRefMapper.insert(desc, refID);
                 }
                 return true;
             }
@@ -222,15 +326,15 @@ public class PacketManageServiceImpl implements PacketManageService {
 
     /**
      * 删除附加包裹信息
-     * @param id
+     * @param refID
      * @return
      * @throws PacketManageServiceException
      */
     @Override
-    public boolean deletePacketRef(Integer id) throws PacketManageServiceException {
+    public boolean deletePacketRefByRefID(Integer refID) throws PacketManageServiceException {
         try{
-            if (id != null){
-                packetRefMapper.deleteByRefID(id);
+            if (refID != null){
+                packetRefMapper.deleteByRefID(refID);
                 return true;
             }
             return false;
@@ -253,18 +357,21 @@ public class PacketManageServiceImpl implements PacketManageService {
                 // 验证
                 if (packetCheck(packet)) {
                     // 通过单号验证包裹信息是否存在
-                    Packet p = packetMapper.selectByTrace(packet.getTrace());
-                    if (p != null){
-                        addPacketRef(packet.getDesc(), packet.getId()); //如果已经存在该单号
+                    Packet p = packetMapper.selectByTrace(packet.getTrace(),packet.getRepositoryID());
+                    if (p != null){ //如果已经存在该单号
+                        updatePacket(packet);
                         return true;
                     }
                     packet.setTime(new Date());
                     packetMapper.insert(packet);
-                    Packet packetID = packetMapper.selectByTrace(packet.getTrace());
+                    Packet packetID = packetMapper.selectByTrace(packet.getTrace(),packet.getRepositoryID());
                     //添加附加包裹信息
                     String desc = packetID.getDesc();
-                    if (!desc.equals(""))
-                        addPacketRef(desc, packetID.getId());
+                    if (desc.equals("")){
+                        packetRefMapper.insert(packetID.getTrace(), packetID.getId());
+                        return true;
+                    }
+                    addPacketRef(packetID);
                     return true;
                 }
             }
@@ -286,8 +393,8 @@ public class PacketManageServiceImpl implements PacketManageService {
             if (packet != null) {
                 // 检验附加包裹修改
                 if (packetRefCheck(packet)){
-                    deletePacketRef(packet.getId());
-                    addPacketRef(packet.getDesc(), packet.getId());
+                    deletePacketRefByRefID(packet.getId());
+                    addPacketRef(packet);
                 }
                 if (packetCheck(packet)) {
                     packet.setTime(new Date());
@@ -312,9 +419,9 @@ public class PacketManageServiceImpl implements PacketManageService {
             //检查该包裹是否已签收
             Packet packet = packetMapper.selectByID(packetID);
             String status = packet.getStatus();
-            if(status.equals(PACKET_STATUS_RECEIVE)){
+            if(status.equalsIgnoreCase(StatusUtil.PACKET_STATUS_RECEIVE)){
                 //先删除相关依赖的PacketRef
-                deletePacketRef(packetID);
+                deletePacketRefByRefID(packetID);
                 packetMapper.deleteByID(packetID);
                 return true;
             }
@@ -345,11 +452,35 @@ public class PacketManageServiceImpl implements PacketManageService {
      * @return
      */
     private boolean packetRefCheck(Packet packet){
-        if (packet != null){
-            if (packet.getDesc() == packetMapper.selectByID(packet.getId()).getDesc())
-                return false;
-        }
+        String desc = packet.getDesc();
+        String oldDesc = packetMapper.selectByID(packet.getId()).getDesc();
+        if (desc.equalsIgnoreCase(oldDesc))
+            return false;
         return true;
+    }
+
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+
+    private PacketDTO packetConvertToPacketDTO(Packet packet){
+        PacketDTO packetDTO = new PacketDTO();
+        packetDTO.setId(packet.getId());
+        packetDTO.setTrace(packet.getTrace());
+        packetDTO.setTime(dateFormat.format(packet.getTime()));
+        packetDTO.setStatus(packet.getStatus());
+        packetDTO.setDesc(packet.getDesc());
+        return packetDTO;
+    }
+
+    private PacketDTO packetRefConvertToPacketDTO(PacketRef packetRef){
+        PacketDTO packetDTO = new PacketDTO();
+        packetDTO.setId(packetRef.getRefid()); //只返回主单单号
+        packetDTO.setTrace(packetRef.getTrace());
+        packetDTO.setTime(dateFormat.format(packetRef.getTime()));
+        packetDTO.setStatus(packetRef.getStatus());
+        if (packetRef.getTrace().equalsIgnoreCase(packetRef.getReftrace()))
+            packetDTO.setDesc(packetRef.getDesc()); //只有主单保留子单描述信息
+        packetDTO.setRepositoryID(packetRef.getRepositoryID());
+        return packetDTO;
     }
 
     /**

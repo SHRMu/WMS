@@ -1,13 +1,12 @@
 package de.demarks.wms.domain;
 
-import java.util.Date;
+public class PacketDTO {
 
-public class PacketRef {
     private Integer id;
     private String trace;
     private Integer refid;
     private String reftrace;
-    private Date time; //包裹发货时间
+    private String time; //包裹发货时间
     private String status;
     private String desc;
     private Integer repositoryID; //包裹所属仓库
@@ -44,11 +43,11 @@ public class PacketRef {
         this.reftrace = reftrace;
     }
 
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -78,12 +77,12 @@ public class PacketRef {
 
     @Override
     public String toString() {
-        return "PacketRef{" +
+        return "PacketDTO{" +
                 "id=" + id +
                 ", trace='" + trace + '\'' +
                 ", refid=" + refid +
                 ", reftrace='" + reftrace + '\'' +
-                ", time=" + time +
+                ", time='" + time + '\'' +
                 ", status='" + status + '\'' +
                 ", desc='" + desc + '\'' +
                 ", repositoryID=" + repositoryID +

@@ -53,7 +53,7 @@ create table wms_action
 )engine=innodb;
 
 # 导入URL权限信息
-INSERT INTO `wms_action` VALUES (1,'addSupplier',NULL,'/supplierManage/addSupplier'),(2,'deleteSupplier',NULL,'/supplierManage/deleteSupplier'),(3,'updateSupplier',NULL,'/supplierManage/updateSupplier'),(4,'selectSupplier',NULL,'/supplierManage/getSupplierList'),(5,'getSupplierInfo',NULL,'/supplierManage/getSupplierInfo'),(6,'importSupplier',NULL,'/supplierManage/importSupplier'),(7,'exportSupplier',NULL,'/supplierManage/exportSupplier'),(8,'selectCustomer',NULL,'/customerManage/getCustomerList'),(9,'addCustomer',NULL,'/customerManage/addCustomer'),(10,'getCustomerInfo',NULL,'/customerManage/getCustomerInfo'),(11,'updateCustomer',NULL,'/customerManage/updateCustomer'),(12,'deleteCustomer',NULL,'/customerManage/deleteCustomer'),(13,'importCustomer',NULL,'/customerManage/importCustomer'),(14,'exportCustomer',NULL,'/customerManage/exportCustomer'),(15,'selectGoods',NULL,'/goodsManage/getGoodsList'),(16,'addGoods',NULL,'/goodsManage/addGoods'),(17,'getGoodsInfo',NULL,'/goodsManage/getGoodsInfo'),(18,'updateGoods',NULL,'/goodsManage/updateGoods'),(19,'deleteGoods',NULL,'/goodsManage/deleteGoods'),(20,'importGoods',NULL,'/goodsManage/importGoods'),(21,'exportGoods',NULL,'/goodsManage/exportGoods'),(22,'selectRepository',NULL,'/repositoryManage/getRepositoryList'),(23,'addRepository',NULL,'/repositoryManage/addRepository'),(24,'getRepositoryInfo',NULL,'/repositoryManage/getRepository'),(25,'updateRepository',NULL,'/repositoryManage/updateRepository'),(26,'deleteRepository',NULL,'/repositoryManage/deleteRepository'),(27,'importRepository',NULL,'/repositoryManage/importRepository'),(28,'exportRepository',NULL,'/repositoryManage/exportRepository'),(29,'selectRepositoryAdmin',NULL,'/repositoryAdminManage/getRepositoryAdminList'),(30,'addRepositoryAdmin',NULL,'/repositoryAdminManage/addRepositoryAdmin'),(31,'getRepositoryAdminInfo',NULL,'/repositoryAdminManage/getRepositoryAdminInfo'),(32,'updateRepositoryAdmin',NULL,'/repositoryAdminManage/updateRepositoryAdmin'),(33,'deleteRepositoryAdmin',NULL,'/repositoryAdminManage/deleteRepositoryAdmin'),(34,'importRepositoryAd,om',NULL,'/repositoryAdminManage/importRepositoryAdmin'),(35,'exportRepository',NULL,'/repositoryAdminManage/exportRepositoryAdmin'),(36,'getUnassignRepository',NULL,'/repositoryManage/getUnassignRepository'),(37,'getStorageListWithRepository',NULL,'/storageManage/getStorageListWithRepository'),(38,'getStorageList',NULL,'/storageManage/getStorageList'),(39,'addStorageRecord',NULL,'/storageManage/addStorageRecord'),(40,'updateStorageRecord',NULL,'/storageManage/updateStorageRecord'),(41,'deleteStorageRecord',NULL,'/storageManage/deleteStorageRecord'),(42,'importStorageRecord',NULL,'/storageManage/importStorageRecord'),(43,'exportStorageRecord',NULL,'/storageManage/exportStorageRecord'),(44,' stockIn',NULL,'/stockRecordManage/stockIn'),(45,'stockOut',NULL,'/stockRecordManage/stockOut'),(46,'searchStockRecord',NULL,'/stockRecordManage/searchStockRecord'),(47,'getAccessRecords',NULL,'/systemLog/getAccessRecords'),(48,'selectUserOperationRecords',null,'/systemLog/selectUserOperationRecords');
+INSERT INTO `wms_action` VALUES (8,'selectCustomer',NULL,'/customerManage/getCustomerList'),(9,'addCustomer',NULL,'/customerManage/addCustomer'),(10,'getCustomerInfo',NULL,'/customerManage/getCustomerInfo'),(11,'updateCustomer',NULL,'/customerManage/updateCustomer'),(12,'deleteCustomer',NULL,'/customerManage/deleteCustomer'),(13,'importCustomer',NULL,'/customerManage/importCustomer'),(14,'exportCustomer',NULL,'/customerManage/exportCustomer'),(15,'selectGoods',NULL,'/goodsManage/getGoodsList'),(16,'addGoods',NULL,'/goodsManage/addGoods'),(17,'getGoodsInfo',NULL,'/goodsManage/getGoodsInfo'),(18,'updateGoods',NULL,'/goodsManage/updateGoods'),(19,'deleteGoods',NULL,'/goodsManage/deleteGoods'),(20,'importGoods',NULL,'/goodsManage/importGoods'),(21,'exportGoods',NULL,'/goodsManage/exportGoods'),(22,'selectRepository',NULL,'/repositoryManage/getRepositoryList'),(23,'addRepository',NULL,'/repositoryManage/addRepository'),(24,'getRepositoryInfo',NULL,'/repositoryManage/getRepository'),(25,'updateRepository',NULL,'/repositoryManage/updateRepository'),(26,'deleteRepository',NULL,'/repositoryManage/deleteRepository'),(27,'importRepository',NULL,'/repositoryManage/importRepository'),(28,'exportRepository',NULL,'/repositoryManage/exportRepository'),(29,'selectRepositoryAdmin',NULL,'/repositoryAdminManage/getRepositoryAdminList'),(30,'addRepositoryAdmin',NULL,'/repositoryAdminManage/addRepositoryAdmin'),(31,'getRepositoryAdminInfo',NULL,'/repositoryAdminManage/getRepositoryAdminInfo'),(32,'updateRepositoryAdmin',NULL,'/repositoryAdminManage/updateRepositoryAdmin'),(33,'deleteRepositoryAdmin',NULL,'/repositoryAdminManage/deleteRepositoryAdmin'),(34,'importRepositoryAd,om',NULL,'/repositoryAdminManage/importRepositoryAdmin'),(35,'exportRepository',NULL,'/repositoryAdminManage/exportRepositoryAdmin'),(36,'getUnassignRepository',NULL,'/repositoryManage/getUnassignRepository'),(37,'getStorageListWithRepository',NULL,'/storageManage/getStorageListWithRepository'),(38,'getStorageList',NULL,'/storageManage/getStorageList'),(39,'addStorageRecord',NULL,'/storageManage/addStorageRecord'),(40,'updateStorageRecord',NULL,'/storageManage/updateStorageRecord'),(41,'deleteStorageRecord',NULL,'/storageManage/deleteStorageRecord'),(42,'importStorageRecord',NULL,'/storageManage/importStorageRecord'),(43,'exportStorageRecord',NULL,'/storageManage/exportStorageRecord'),(44,' stockIn',NULL,'/stockRecordManage/stockIn'),(45,'stockOut',NULL,'/stockRecordManage/stockOut'),(46,'searchStockRecord',NULL,'/stockRecordManage/searchStockRecord'),(47,'getAccessRecords',NULL,'/systemLog/getAccessRecords'),(48,'selectUserOperationRecords',null,'/systemLog/selectUserOperationRecords');
 
 # 角色 - URL权限关联表
 create table wms_role_action
@@ -66,11 +66,18 @@ create table wms_role_action
 )engine=innodb;
 
 # 导入 角色 - URL权限 信息
-INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(46,1),(47,1),(48,1),(4,2),(38,2),(43,2);
+INSERT INTO `wms_role_action` VALUES (8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(46,1),(47,1),(48,1),(38,2),(43,2);
 
 # 增加Batch权限
 INSERT INTO `wms_action` VALUES (49,'getRepositoryBatchList',NULL,'/repositoryBatchManage/getRepositoryBatchList'), (50,'getActiveBatchList',NULL,'/repositoryBatchManage/getActiveBatchList'), (51,'addRepositoryBatch',NULL,'/repositoryBatchManage/addRepositoryBatch'), (52,'updateRepositoryBatch',NULL,'/repositoryBatchManage/updateRepositoryBatch'),  (53,'deleteRepositoryBatch',NULL,'/repositoryBatchManage/deleteRepositoryBatch');
 INSERT INTO `wms_role_action` VALUES (49,1),(50,1),(51,1),(52,1),(53,1);
+
+
+INSERT INTO `wms_action` VALUES (1,'getPacketList',NULL,'/packetManage/getPacketList'), (2,'addPacket',NULL,'/packetManage/addPacket'), (3,'updatePacket',NULL,'/packetManage/updatePacket'), (4,'deletePacket',NULL,'/packetManage/deletePacket'),  (5,'packetStockIn',NULL,'/packetManage/packetStockIn');
+INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1);
+
+INSERT INTO `wms_action` VALUES (6,'getStorageListWithPacket',NULL,'/packetStorageManage/getStorageListWithPacket');
+INSERT INTO `wms_role_action` VALUES (6,1);
 
 # 系统登入登出记录表
 create table wms_access_record
@@ -93,8 +100,6 @@ create table wms_operation_record
     OPERATION_TIME datetime not null,
     OPERATION_RESULT varchar(15) not null
 );
-
-#### 修改表格 ################################################################################################################
 
  # 创建货物信息表
  create table wms_goods
@@ -136,8 +141,44 @@ INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888
     primary key(REPO_ID)
  )engine=innodb;
 
+ create table wms_packet
+ (
+	PACKET_ID int not null auto_increment,
+    PACKET_TRACE varchar(30) not null,
+    PACKET_TIME datetime not null,
+    PACKET_STATUS varchar(10) not null,
+    PACKET_DESC varchar(50),
+    PACKET_REPOID int not null,
+    primary key(PACKET_ID),
+    foreign key(PACKET_REPOID) references wms_respository(REPO_ID)
+ )engine=innodb;
+
+ create table wms_packet_ref
+(
+    PACKET_ID int not null auto_increment,
+    PACKET_TRACE varchar(30) not null,
+    PACKET_REF_ID int not null,
+    primary key(PACKET_ID),
+    foreign key(PACKET_REF_ID) references wms_packet(PACKET_ID)
+)engine=innodb;
+
+create table wms_packet_storage
+(
+    PRE_PACKETID int not null,
+    PRE_GOODID int not null,
+    PRE_CUSTOMERID int not null,
+    PRE_REPOSITORYID int not null,
+    PRE_NUMBER int not null,
+    PRE_STORAGE int not null,
+    primary key(PRE_PACKETID,PRE_GOODID),
+    foreign key(PRE_PACKETID) references wms_packet(PACKET_ID),
+    foreign key(PRE_GOODID) references  wms_goods(GOOD_ID),
+    foreign key(PRE_CUSTOMERID) references wms_customer(CUSTOMER_ID),
+    foreign key(PRE_REPOSITORYID) references wms_respository(REPO_ID)
+)engine=innodb;
+
  # 导入仓库信息
-INSERT INTO `wms_respository` VALUES (3001,'德国','可用','11000㎡','提供服务完整'),(3002,'广州白云石井','可用','1000㎡','物流极为便利'),(3003,' 香港北区文锦渡路','可用','5000.00㎡',NULL);
+INSERT INTO `wms_respository` VALUES (3001,'德国','可用','11000㎡','提供服务完整');
 
   # 创建仓库管理员信息表
  create table wms_repo_admin
@@ -170,7 +211,7 @@ create table wms_repo_batch
 create table wms_record_in
 (
 	RECORD_ID int not null auto_increment,
-	RECORD_PACKET varchar(30) not null,
+	RECORD_PACKETID int not null,
 	RECORD_BATCHID int not null,
     RECORD_CUSTOMERID int not null,
     RECORD_GOODID int not null,
@@ -180,6 +221,7 @@ create table wms_record_in
     RECORD_REPOSITORYID int not null,
     primary key(RECORD_ID),
     foreign key(RECORD_GOODID) references wms_goods(GOOD_ID),
+    foreign key(RECORD_PACKETID) references wms_packet(PACKET_ID),
     foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
     foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_REPOSITORYID) references wms_respository(REPO_ID)

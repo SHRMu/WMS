@@ -17,8 +17,7 @@ import java.util.List;
 public interface PacketMapper {
 
     /**
-     * 选择所有的包裹
-     *
+     * 模糊查询 根据运单号 状态 仓库信息
      * @param repositoryID
      * @return
      */
@@ -37,21 +36,31 @@ public interface PacketMapper {
      * @param packetTrace
      * @return
      */
-    Packet selectByTrace(@Param("packetTrace") String packetTrace);
+    Packet selectByTrace(@Param("packetTrace") String packetTrace,
+                         @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 模糊查询 返回指定运单号以及状态的信息
+     *
+     * @param status
+     * @param repositoryID
+     * @return
+     */
+    List<Packet> selectByStatus(@Param("status") String status,
+                                @Param("repositoryID") Integer repositoryID);
+
+    /**
+     *
      * @param trace
      * @param status
      * @param repositoryID
      * @return
      */
-    List<Packet> selectByTraceApproximate(@Param("trace") String trace,
-                                          @Param("status") String status,
-                                          @Param("repositoryID") Integer repositoryID);
+    List<Packet> selectApproximate(@Param("trace") String trace,
+                                   @Param("status") String status,
+                                   @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 插入指定的包裹信息
+     * 添加包裹信息
      * @return
      */
     Integer insert(Packet packet);
@@ -63,7 +72,7 @@ public interface PacketMapper {
     void update(Packet packet);
 
     /**
-     * 删除指定ID号的包裹
+     * 删除指定packetID号的包裹
      * @param packetID
      */
     void deleteByID(Integer packetID);

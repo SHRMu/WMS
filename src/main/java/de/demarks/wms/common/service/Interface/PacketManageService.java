@@ -13,23 +13,107 @@ import java.util.Map;
  */
 public interface PacketManageService {
 
+
     /**
-     * 查询所有的包裹记录
-     *
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 模糊查询 查询指定包裹号的记录
+     * @param repositoryID
+     * @return
+     * @throws PacketManageServiceException
      */
     Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
-     * 分页 查询所有包裹记录
-     *
+     * 模糊查询 分页指定包裹号的记录
+     * @param repositoryID
      * @param offset 分页的偏移值
      * @param limit  分页的大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * @return
+     * @throws PacketManageServiceException
      */
     Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
                                   @Param("offset")int offset,
                                   @Param("limit") int limit) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param status
+     * @param repositoryID
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectByStatus(@Param("status") String status,
+                                       @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param status
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectByStatus(@Param("status") String status,
+                                       @Param("repositoryID") Integer repositoryID,
+                                       @Param("offset")int offset,
+                                       @Param("limit") int limit) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectApproximate(@Param("trace") String trace,
+                                          @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectApproximate(@Param("trace") String trace,
+                                          @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID,
+                                          @Param("offset")int offset,
+                                          @Param("limit") int limit) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectRefApproximate(@Param("trace") String trace,
+                                             @Param("status") String status,
+                                             @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> selectRefApproximate(@Param("trace") String trace,
+                                             @Param("status") String status,
+                                             @Param("repositoryID") Integer repositoryID,
+                                             @Param("offset")int offset,
+                                             @Param("limit") int limit) throws PacketManageServiceException;
+
 
     /**
      * 查询指定包裹ID的记录
@@ -40,35 +124,19 @@ public interface PacketManageService {
     Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID) throws PacketManageServiceException;
 
     /**
-     * 模糊查询 查询指定包裹号的记录
-     * @param trace
-     * @param status
-     * @return
-     * @throws PacketManageServiceException
-     */
-    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
-                                                 @Param("status") String status,
-                                                 @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
-
-    /**
-     * 模糊查询 分页指定包裹号的记录
-     * @param trace  包裹号
-     * @param offset 分页的偏移值
-     * @param limit  分页的大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
-                                                 @Param("status") String status,
-                                                 @Param("repositoryID") Integer repositoryID,
-                                                 @Param("offset")int offset,
-                                                 @Param("limit") int limit) throws PacketManageServiceException;
-
-    /**
      * 添加附加包裹信息
      * @return
      * @throws PacketManageServiceException
      */
-    boolean addPacketRef(String desc, Integer id) throws PacketManageServiceException;
+    boolean addPacketRef(Packet packet) throws PacketManageServiceException;
+
+    /**
+     * 删除附加包裹信息
+     * @param refID
+     * @return
+     * @throws PacketManageServiceException
+     */
+    boolean deletePacketRefByRefID(Integer refID) throws PacketManageServiceException;
 
     /**
      * 添加包裹信息
@@ -77,14 +145,6 @@ public interface PacketManageService {
      * @throws PacketManageServiceException
      */
     boolean addPacket(Packet packet) throws PacketManageServiceException;
-
-    /**
-     * 删除附加包裹信息
-     * @param id
-     * @return
-     * @throws PacketManageServiceException
-     */
-    boolean deletePacketRef(Integer id) throws PacketManageServiceException;
 
     /**
      * 更新包裹信息

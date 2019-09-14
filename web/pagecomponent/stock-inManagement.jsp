@@ -90,7 +90,7 @@ function packetAutocomplete(){
 					limit : -1,
 					keyWord : request.term,
 					repositoryID:$('#repository_selector').val(),
-					searchType:'searchByTrace'
+					searchType:'searchByRef'
 				},
 				success : function(data){
 					var autoCompleteInfo = new Array();

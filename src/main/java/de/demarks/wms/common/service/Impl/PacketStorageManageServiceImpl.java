@@ -44,16 +44,9 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         return  selectAll(repositoryID, -1, -1);
     }
 
-    /**
-     *
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws PacketStorageManageServiceException
-     */
+
     @Override
-    public Map<String, Object> selectAll(@Param("repository") Integer repositoryID,
+    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
                                          @Param("offset") Integer offset,
                                          @Param("limit") Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
@@ -101,8 +94,8 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectByGoodsID(goodsID, packetID, repositoryID, -1 ,-1);
+    public Map<String, Object> selectByID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectByID(goodsID, packetID, repositoryID, -1 ,-1);
     }
 
     /**
@@ -116,11 +109,11 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                               @Param("packetID") Integer packetID,
-                                               @Param("repositoryID") Integer repositoryID,
-                                               @Param("offset") Integer offset,
-                                               @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+                                          @Param("packetID") Integer packetID,
+                                          @Param("repositoryID") Integer repositoryID,
+                                          @Param("offset") Integer offset,
+                                          @Param("limit") Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -131,6 +124,13 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         // validate
         if (offset < 0 || limit < 0)
             isPagination = false;
+
+        if (goodsID < 0)
+            goodsID = null;
+        if (packetID < 0)
+            packetID = null;
+        if (repositoryID < 0)
+            repositoryID = null;
 
         // query
         try {
@@ -158,6 +158,56 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         return resultSet;
     }
 
+    @Override
+    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID) throws PacketStorageManageServiceException {
+        return selectApproximate(trace,status,repositoryID, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        if (trace.equals(""))
+            trace = null;
+        if (status.equals(""))
+            status = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectApproximate(trace, status, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectApproximate(trace, status, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
 
     /**
      *
@@ -227,9 +277,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @param repositoryID
      * @return
      */
-    private PacketStorage getPacketStorage(@Param("goodsID") Integer goodsID,
-                                           @Param("packetID") Integer packetID,
-                                           @Param("repositoryID") Integer repositoryID) {
+    private PacketStorage getPacketStorage(Integer goodsID, Integer packetID, Integer repositoryID) {
         PacketStorage packetStorage = null;
         List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
         if (!packetStorageList.isEmpty())

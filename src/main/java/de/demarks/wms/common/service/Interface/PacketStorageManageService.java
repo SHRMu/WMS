@@ -41,9 +41,9 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                       @Param("packetID") Integer packetID,
-                                       @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+   Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+                                  @Param("packetID") Integer packetID,
+                                  @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -55,11 +55,39 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
+   Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
                                        @Param("packetID") Integer packetID,
                                        @Param("repositoryID") Integer repositoryID,
                                        @Param("offset") Integer offset,
                                        @Param("limit") Integer limit) throws PacketStorageManageServiceException;
+
+   /**
+    *
+    * @param trace
+    * @param status
+    * @param repositoryID
+    * @return
+    * @throws PacketStorageManageServiceException
+    */
+   Map<String, Object> selectApproximate(@Param("trace") String trace,
+                                         @Param("status") String status,
+                                         @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+
+   /**
+    *
+    * @param trace
+    * @param status
+    * @param repositoryID
+    * @param offset
+    * @param limit
+    * @return
+    * @throws PacketStorageManageServiceException
+    */
+   Map<String, Object> selectApproximate(@Param("trace") String trace,
+                                         @Param("status") String status,
+                                         @Param("repositoryID") Integer repositoryID,
+                                         @Param("offset") Integer offset,
+                                         @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
 
    /**

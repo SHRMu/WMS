@@ -47,32 +47,34 @@
 		</if>
 	</select>
 
-	<select id="selectByPacketStatus" resultMap="packetStorage">
-		select
-			ps.PRE_PACKETID as preStorage_packetID,
-			ps.PRE_GOODID as preStorage_goodsID,
-			ps.PRE_CUSTOMERID as preStorage_customerID,
-			ps.PRE_REPOSITORYID as preStorage_repositoryID,
-			ps.PRE_NUMBER as preStorage_number,
-			ps.PRE_STORAGE as preStorage_storage,
-			p.PACKET_TRACE as preStorage_packetTrace,
-			p.PACKET_STATUS as preStorage_packetStatus,
-			g.GOOD_NAME as preStorage_goodsName,
-			cus.CUSTOMER_NAME as preStorage_customerName
-		from
-			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus
-		where
-			ps.PRE_PACKETID = p.PACKET_ID and
-			ps.PRE_GOODID =  g.GOOD_ID and
-			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
-			ps.PACKET_STATUS = #{packetStatus}
-		<if test="goodsID!=null">
-			and ps.PRE_GOODID = #{goodsID}
-		</if>
-		<if test="repositoryID!=null">
-			and ps.PRE_REPOSITORYID = #{repositoryID}
-		</if>
-	</select>
+    <select id="selectApproximate" resultMap="packetStorage">
+        select
+            ps.PRE_PACKETID as preStorage_packetID,
+            ps.PRE_GOODID as preStorage_goodsID,
+            ps.PRE_CUSTOMERID as preStorage_customerID,
+            ps.PRE_REPOSITORYID as preStorage_repositoryID,
+            ps.PRE_NUMBER as preStorage_number,
+            ps.PRE_STORAGE as preStorage_storage,
+            p.PACKET_TRACE as preStorage_packetTrace,
+            p.PACKET_STATUS as preStorage_packetStatus,
+            g.GOOD_NAME as preStorage_goodsName,
+            cus.CUSTOMER_NAME as preStorage_customerName
+        from
+            wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus
+        where
+            ps.PRE_PACKETID = p.PACKET_ID and
+            ps.PRE_GOODID =  g.GOOD_ID and
+            ps.PRE_CUSTOMERID = cus.CUSTOMER_ID
+        <if test="trace!=null">
+            and p.PACKET_TRACE like concat ('%',#{trace},'%')
+        </if>
+        <if test="status!=null">
+            and p.PACKET_STATUS = #{status}
+        </if>
+        <if test="repositoryID!=null">
+            and ps.PRE_REPOSITORYID = #{repositoryID}
+        </if>
+    </select>
 
 	<insert id="insert">
 		insert into wms_packet_storage(PRE_PACKETID,PRE_GOODID,PRE_CUSTOMERID,PRE_REPOSITORYID,PRE_NUMBER,PRE_STORAGE)
@@ -83,14 +85,12 @@
 		update 
 			wms_packet_storage
 		set
-			PRE_CUSTOMERID = #{customerID},
 			PRE_NUMBER = #{number},
-			PRE_STORAGE = #{storage},
-			PRE_STATUS = #{status}
+			PRE_STORAGE = #{storage}
 		where
 			PRE_PACKETID = #{packetID} and
 			PRE_GOODID = #{goodsID}
-		<if test="repositoryID!=null">
+		<if test="repositoryID != null">
 			and PRE_REPOSITORYID = #{repositoryID}
 		</if>
 	</update>

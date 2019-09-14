@@ -23,18 +23,9 @@ public interface PacketStorageMapper {
                                   @Param("packetID") Integer packetID,
                                   @Param("repositoryID") Integer repositoryID);
 
-    /**
-     *
-     * @param goodsID
-     * @param packetStatus
-     * @param repositoryID
-     * @return
-     */
-    List<PacketStorage> selectByPacketStatus(@Param("goodsID") Integer goodsID,
-                                             @Param("packetStatus") String packetStatus,
-                                             @Param("repositoryID") Integer repositoryID);
-
-
+    List<PacketStorage> selectApproximate(@Param("trace") String trace,
+                                          @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID);
     /**
      * 添加一条记录
      *
