@@ -1,4 +1,5 @@
 package de.demarks.wms.common.controller;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
@@ -39,10 +40,9 @@ public class PacketStorageManageHandler {
     @Autowired
     private PacketStorageManageService packetStorageManageService;
 
-    private static final String SEARCH_BY_PACKET_ID = "searchByPacketID";
+    private static final String SEARCH_BY_GOODID = "searchByGoodsID";
+    private static final String SEARCH_BY_PACKETID = "searchByPacketID";
     private static final String SEARCH_BY_TRACE = "searchByTrace";
-    private static final String SEARCH_ACTIVE = "searchActive";
-    private static final String SEARCH_ALL = "searchAll";
 
     /**
      *  查询预报包裹库存信息
@@ -54,26 +54,27 @@ public class PacketStorageManageHandler {
      * @param limit            分页大小
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    private Map<String, Object> query(String searchType, String keyword, Integer repositoryID,
+    private Map<String, Object> query(String searchType, String keyword, String packetInfo, Integer repositoryID,
                                       int offset, int limit) throws PacketStorageManageServiceException {
 
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
-            case SEARCH_BY_PACKET_ID:
-                if (StringUtils.isNumeric(keyword)) {
+            case SEARCH_BY_GOODID:
+                if (StringUtils.isNumeric(keyword)){
+                    Integer goodsID = Integer.valueOf(keyword);
+                    Integer packetID = Integer.valueOf(packetInfo);
+                    queryResult = packetStorageManageService.selectByGoodsID(goodsID, packetID, repositoryID);
+                }
+                break;
+            case SEARCH_BY_PACKETID:
+                if (StringUtils.isNumeric(keyword)){
                     Integer packetID = Integer.valueOf(keyword);
-                    queryResult = packetStorageManageService.selectByID(-1, packetID, repositoryID);
+                    queryResult = packetStorageManageService.selectByPacketID(packetID, packetInfo, repositoryID);
                 }
                 break;
             case SEARCH_BY_TRACE:
-                queryResult = packetStorageManageService.selectApproximate(keyword, "", repositoryID);
-                break;
-            case SEARCH_ACTIVE:
-                queryResult = packetStorageManageService.selectApproximate("", StatusUtil.PACKET_STATUS_SEND,repositoryID);
-                break;
-            case SEARCH_ALL:
-                queryResult = packetStorageManageService.selectAll(repositoryID);
+                queryResult = packetStorageManageService.selectApproximate(keyword, packetInfo, repositoryID);
                 break;
             default:
                 break;
@@ -95,9 +96,8 @@ public class PacketStorageManageHandler {
     @RequestMapping(value = "getStorageListWithPacket", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> getStorageListWithPacket(@RequestParam("searchType") String searchType,
-                                                 @RequestParam("keyword") String keyword,
-                                                 @RequestParam("repositoryID") Integer repositoryID,
+    Map<String, Object> getStorageListWithPacket(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
+                                                 @RequestParam("packetID") String packetID, @RequestParam("repositoryID") Integer repositoryID,
                                                  @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketStorageManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -105,7 +105,43 @@ public class PacketStorageManageHandler {
         long total = 0;
 
         // query
-        Map<String, Object> queryResult = query(searchType, keyword, repositoryID, offset, limit);
+        Map<String, Object> queryResult = query(searchType, keyword, packetID, repositoryID, offset, limit);
+        if (queryResult != null) {
+            rows = (List<PacketStorage>) queryResult.get("data");
+            total = (long) queryResult.get("total");
+        } else
+            rows = new ArrayList<>();
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 指定包裹信息对预报库存查询
+     *
+     * @param keyword          查询关键字
+     * @param searchType       查询类型
+     * @param repositoryID     查询所属的仓库
+     * @param offset           分页偏移值
+     * @param limit            分页大小
+     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "getStorageListWithStatus", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getStorageListWithStatus(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
+                                                 @RequestParam("status") String status, @RequestParam("repositoryID") Integer repositoryID,
+                                                 @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketStorageManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        List<PacketStorage> rows;
+        long total = 0;
+
+        // query
+        Map<String, Object> queryResult = query(searchType, keyword, status, repositoryID, offset, limit);
         if (queryResult != null) {
             rows = (List<PacketStorage>) queryResult.get("data");
             total = (long) queryResult.get("total");

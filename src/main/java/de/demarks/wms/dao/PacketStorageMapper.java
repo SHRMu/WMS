@@ -19,9 +19,11 @@ public interface PacketStorageMapper {
      *
      * @return 返回全部的预报
      */
-    List<PacketStorage> selectAll(@Param("goodsID") Integer goodsID,
-                                  @Param("packetID") Integer packetID,
+    List<PacketStorage> selectAll(@Param("packetID") Integer packetID, @Param("status") String status,
                                   @Param("repositoryID") Integer repositoryID);
+
+    List<PacketStorage> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
+                                        @Param("repositoryID") Integer repositoryID);
 
     List<PacketStorage> selectApproximate(@Param("trace") String trace,
                                           @Param("status") String status,

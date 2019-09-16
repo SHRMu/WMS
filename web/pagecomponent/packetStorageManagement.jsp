@@ -4,6 +4,7 @@
 <script>
 	var search_type_storage = "none";
 	var search_keyWord = "";
+	var search_status = "";
 	var search_repository = "";
 
 	var select_goodsID;
@@ -60,7 +61,6 @@
 									field : 'packetID',
 									title : '包裹ID'
 									//sortable: true
-
 								},
 								{
 									field : 'packetTrace',
@@ -110,7 +110,7 @@
 										}
 									}
 								} ],
-							url : 'packetStorageManage/getStorageListWithPacket',
+							url : 'packetStorageManage/getStorageListWithStatus',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -128,19 +128,13 @@
 		$(".dropOption").click(function() {
 			var type = $(this).text();
 			$("#search_input").val("");
-			if (type == "所有") {
-				$("#search_input_type").attr("readOnly","true");
-				search_type_storage = "searchAll";
-			}else if (type == "未到货") {
-				$("#search_input_type").attr("readOnly","true");
-				search_type_storage = "searchActive";
+			if (type == "运单号") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByTrace";
 			} else if (type == "包裹ID") {
 				$("#search_input_type").removeAttr("readOnly");
 				search_type_storage = "searchByPacketID";
-			} else if (type == "运单号") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByTrace";
-			} else {
+			} {
 				$("#search_input_type").removeAttr("readOnly");
 			}
 			$("#search_type").text(type);
@@ -152,6 +146,7 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
+			search_status = $('#search_packet_status').val();
 			search_repository = $('#search_input_repository').val();
 			tableRefresh();
 		})
@@ -170,6 +165,7 @@
 			limit : params.limit,
 			offset : params.offset,
 			searchType : search_type_storage,
+			status : search_status,
 			repositoryID : search_repository,
 			keyword : search_keyWord
 		}
@@ -534,9 +530,6 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">未到货</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
 					</ul>
 				</div>
@@ -546,6 +539,12 @@
 					<div class="col-md-3 col-sm-3">
 						<input id="search_input_type" type="text" class="form-control"
 							placeholder="包裹ID">
+					</div>
+					<div class="col-md-3 col-sm-4">
+						<select class="form-control" id="search_packet_status">
+							<option value="">所有</option>
+							<option value="已发货">未签收</option>
+						</select>
 					</div>
 					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">

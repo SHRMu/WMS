@@ -49,10 +49,7 @@
 		$(".dropOption").click(function() {
 			var type = $(this).text();
 			$("#search_input").val("");
-			if (type == "所有") {
-				$("#search_input").attr("readOnly","true");
-				search_type_packet = "searchAll";
-			} else if (type == "已发货") {
+			if (type == "未签收") {
 				$("#search_input").attr("readOnly","true");
 				search_type_packet = "searchActive";
 			} else if (type == "包裹ID") {
@@ -492,17 +489,16 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">已发货</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">未签收</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 					</ul>
 				</div>
 			</div>
 			<div class="col-md-9 col-sm-9">
 				<div>
 					<div class="col-md-3 col-sm-4">
-						<input id="search_input" type="text" class="form-control" placeholder="已发货">
+						<input id="search_input" type="text" class="form-control" placeholder="运单号">
 					</div>
 					<div class="col-md-2 col-sm-2">
 						<button id="search_button" class="btn btn-success">
@@ -565,8 +561,6 @@
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>收货仓库：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-<%--									<input type="text" class="form-control" id="packet_repository"--%>
-<%--										name="packet_repository" placeholder="收货仓库">--%>
 									<select name="" id="repository_selector" class="form-control">
 									</select>
 								</div>

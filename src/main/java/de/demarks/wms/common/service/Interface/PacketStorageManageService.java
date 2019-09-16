@@ -4,6 +4,7 @@ import de.demarks.wms.exception.PacketStorageManageServiceException;
 import de.demarks.wms.exception.PreStockManageServiceException;
 import de.demarks.wms.exception.StockRecordManageServiceException;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -35,15 +36,16 @@ public interface PacketStorageManageService {
                                  @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
    /**
+    *
     * @param goodsID
     * @param packetID
     * @param repositoryID
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
-                                  @Param("packetID") Integer packetID,
-                                  @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+   Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                    @Param("packetID") Integer packetID,
+                                    @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -55,11 +57,35 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+   Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
                                        @Param("packetID") Integer packetID,
                                        @Param("repositoryID") Integer repositoryID,
                                        @Param("offset") Integer offset,
                                        @Param("limit") Integer limit) throws PacketStorageManageServiceException;
+
+   /**
+    *
+    * @param packetID
+    * @param status
+    * @param repositoryID
+    * @return
+    * @throws PacketStorageManageServiceException
+    */
+   Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID, @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+
+   /**
+    *
+    * @param packetID
+    * @param status
+    * @param repositoryID
+    * @param offset
+    * @param limit
+    * @return
+    * @throws PacketStorageManageServiceException
+    */
+   Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID, @Param("status") String status,
+                                          @Param("repositoryID") Integer repositoryID, @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
    /**
     *

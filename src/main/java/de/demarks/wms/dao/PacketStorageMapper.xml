@@ -31,40 +31,72 @@
 			g.GOOD_NAME as preStorage_goodsName,
 			cus.CUSTOMER_NAME as preStorage_customerName
 		from
-			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus, wms_repository r
 		where
 			ps.PRE_PACKETID = p.PACKET_ID and
 			ps.PRE_GOODID =  g.GOOD_ID and
-			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID
-		<if test="goodsID!=null">
-			and ps.PRE_GOODID = #{goodsID}
-		</if>
-		<if test="packetID!=null">
+			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
+			ps.PRE_REPOSITORYID = r.REPO_ID
+		<if test="packetID !=null">
 			and ps.PRE_PACKETID = #{packetID}
 		</if>
-		<if test="repositoryID!=null">
+		<if test="status !=null">
+			and p.PACKET_STATUS = #{status}
+		</if>
+		<if test="repositoryID !=null">
+			and ps.PRE_REPOSITORYID = #{repositoryID}
+		</if>
+	</select>
+
+	<select id="selectByGoodsID" resultMap="packetStorage">
+		select
+			ps.PRE_PACKETID as preStorage_packetID,
+			ps.PRE_GOODID as preStorage_goodsID,
+			ps.PRE_CUSTOMERID as preStorage_customerID,
+			ps.PRE_REPOSITORYID as preStorage_repositoryID,
+			ps.PRE_NUMBER as preStorage_number,
+			ps.PRE_STORAGE as preStorage_storage,
+			p.PACKET_TRACE as preStorage_packetTrace,
+			p.PACKET_STATUS as preStorage_packetStatus,
+			g.GOOD_NAME as preStorage_goodsName,
+			cus.CUSTOMER_NAME as preStorage_customerName
+		from
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus, wms_repository r
+		where
+			ps.PRE_PACKETID = p.PACKET_ID and
+			ps.PRE_GOODID =  g.GOOD_ID and
+			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
+			ps.PRE_REPOSITORYID = r.REPO_ID
+		<if test="goodsID !=null">
+			and ps.PRE_GOODID = #{goodsID}
+		</if>
+		<if test="packetID !=null">
+			and ps.PRE_PACKETID = #{packetID}
+		</if>
+		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>
 	</select>
 
     <select id="selectApproximate" resultMap="packetStorage">
-        select
-            ps.PRE_PACKETID as preStorage_packetID,
-            ps.PRE_GOODID as preStorage_goodsID,
-            ps.PRE_CUSTOMERID as preStorage_customerID,
-            ps.PRE_REPOSITORYID as preStorage_repositoryID,
-            ps.PRE_NUMBER as preStorage_number,
-            ps.PRE_STORAGE as preStorage_storage,
-            p.PACKET_TRACE as preStorage_packetTrace,
-            p.PACKET_STATUS as preStorage_packetStatus,
-            g.GOOD_NAME as preStorage_goodsName,
-            cus.CUSTOMER_NAME as preStorage_customerName
-        from
-            wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus
-        where
-            ps.PRE_PACKETID = p.PACKET_ID and
-            ps.PRE_GOODID =  g.GOOD_ID and
-            ps.PRE_CUSTOMERID = cus.CUSTOMER_ID
+		select
+			ps.PRE_PACKETID as preStorage_packetID,
+			ps.PRE_GOODID as preStorage_goodsID,
+			ps.PRE_CUSTOMERID as preStorage_customerID,
+			ps.PRE_REPOSITORYID as preStorage_repositoryID,
+			ps.PRE_NUMBER as preStorage_number,
+			ps.PRE_STORAGE as preStorage_storage,
+			p.PACKET_TRACE as preStorage_packetTrace,
+			p.PACKET_STATUS as preStorage_packetStatus,
+			g.GOOD_NAME as preStorage_goodsName,
+			cus.CUSTOMER_NAME as preStorage_customerName
+		from
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_customer cus, wms_repository r
+		where
+			ps.PRE_PACKETID = p.PACKET_ID and
+			ps.PRE_GOODID =  g.GOOD_ID and
+			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
+			ps.PRE_REPOSITORYID = r.REPO_ID
         <if test="trace!=null">
             and p.PACKET_TRACE like concat ('%',#{trace},'%')
         </if>

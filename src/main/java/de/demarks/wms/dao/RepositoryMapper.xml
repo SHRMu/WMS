@@ -23,7 +23,7 @@
 			r.REPO_DESC,
 			ra.REPO_ADMIN_NAME
 		from
-			wms_respository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
+			wms_repository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
 	</select>
 	
 	<select id="selectUnassign" resultMap="repository">
@@ -34,7 +34,7 @@
 			r.REPO_AREA,
 			r.REPO_DESC
 		from
-			wms_respository r
+			wms_repository r
 		where not exists
 		(
 			select *
@@ -54,7 +54,7 @@
 			r.REPO_DESC,
 			ra.REPO_ADMIN_NAME
 		from
-			wms_respository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
+			wms_repository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
 		where
 			r.REPO_ID = #{repositoryID}
 	</select>
@@ -68,18 +68,18 @@
 			r.REPO_DESC,
 			ra.REPO_ADMIN_NAME
 		from
-			wms_respository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
+			wms_repository r left join wms_repo_admin ra on(r.REPO_ID = ra.REPO_ADMIN_REPOID)
 		where
 			r.REPO_ADDRESS like concat(concat("%",#{address},"%"))
 	</select>
 	
 	<insert id="insert" keyProperty="id" useGeneratedKeys="true">
-		insert into wms_respository(REPO_ADDRESS,REPO_STATUS,REPO_AREA,REPO_DESC)
+		insert into wms_repository(REPO_ADDRESS,REPO_STATUS,REPO_AREA,REPO_DESC)
 		values(#{address},#{status},#{area},#{desc})
 	</insert>
 	
 	<insert id="insertbatch">
-		insert into wms_respository(REPO_ADDRESS,REPO_STATUS,REPO_AREA,REPO_DESC)
+		insert into wms_repository(REPO_ADDRESS,REPO_STATUS,REPO_AREA,REPO_DESC)
 		values
 		<foreach collection="list" item="repository" separator=",">
 			(#{repository.address},#{repository.status},#{repository.area},#{repository.desc})
@@ -88,7 +88,7 @@
 	
 	<update id="update">
 		update
-			wms_respository
+			wms_repository
 		set
 			REPO_ADDRESS = #{address},
 			REPO_STATUS = #{status},
@@ -99,7 +99,7 @@
 	</update>
 	
 	<delete id="deleteByID">
-		delete from wms_respository
+		delete from wms_repository
 		where REPO_ID = #{id}
 	</delete>
 </mapper>

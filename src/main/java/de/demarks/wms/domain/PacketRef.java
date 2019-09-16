@@ -2,6 +2,11 @@ package de.demarks.wms.domain;
 
 import java.util.Date;
 
+/**
+ * 主单和附属单都会添加进ref中
+ *
+ * @author huanyingcool
+ */
 public class PacketRef {
     private Integer id;
     private String trace;

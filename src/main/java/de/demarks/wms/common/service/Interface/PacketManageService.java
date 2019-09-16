@@ -15,7 +15,7 @@ public interface PacketManageService {
 
 
     /**
-     * 模糊查询 查询指定包裹号的记录
+     * 选择全部信息
      * @param repositoryID
      * @return
      * @throws PacketManageServiceException
@@ -23,7 +23,7 @@ public interface PacketManageService {
     Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
-     * 模糊查询 分页指定包裹号的记录
+     * 分页 选择全部信息
      * @param repositoryID
      * @param offset 分页的偏移值
      * @param limit  分页的大小
@@ -35,31 +35,15 @@ public interface PacketManageService {
                                   @Param("limit") int limit) throws PacketManageServiceException;
 
     /**
-     *
-     * @param status
-     * @param repositoryID
+     * 选择指定包裹ID的记录
+     * @param packetID
      * @return
      * @throws PacketManageServiceException
      */
-    Map<String, Object> selectByStatus(@Param("status") String status,
-                                       @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
+    Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID) throws PacketManageServiceException;
 
     /**
-     *
-     * @param status
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws PacketManageServiceException
-     */
-    Map<String, Object> selectByStatus(@Param("status") String status,
-                                       @Param("repositoryID") Integer repositoryID,
-                                       @Param("offset")int offset,
-                                       @Param("limit") int limit) throws PacketManageServiceException;
-
-    /**
-     *
+     * 模糊搜索 返回指定运单号的信息
      * @param trace
      * @param status
      * @param repositoryID
@@ -71,7 +55,7 @@ public interface PacketManageService {
                                           @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
-     *
+     * 模糊搜索 分页 返回指定运单号的信息
      * @param trace
      * @param status
      * @param repositoryID
@@ -85,58 +69,6 @@ public interface PacketManageService {
                                           @Param("repositoryID") Integer repositoryID,
                                           @Param("offset")int offset,
                                           @Param("limit") int limit) throws PacketManageServiceException;
-
-    /**
-     *
-     * @param trace
-     * @param status
-     * @param repositoryID
-     * @return
-     * @throws PacketManageServiceException
-     */
-    Map<String, Object> selectRefApproximate(@Param("trace") String trace,
-                                             @Param("status") String status,
-                                             @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
-
-    /**
-     *
-     * @param trace
-     * @param status
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws PacketManageServiceException
-     */
-    Map<String, Object> selectRefApproximate(@Param("trace") String trace,
-                                             @Param("status") String status,
-                                             @Param("repositoryID") Integer repositoryID,
-                                             @Param("offset")int offset,
-                                             @Param("limit") int limit) throws PacketManageServiceException;
-
-
-    /**
-     * 查询指定包裹ID的记录
-     *
-     * @param packetID 包裹ID
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID) throws PacketManageServiceException;
-
-    /**
-     * 添加附加包裹信息
-     * @return
-     * @throws PacketManageServiceException
-     */
-    boolean addPacketRef(Packet packet) throws PacketManageServiceException;
-
-    /**
-     * 删除附加包裹信息
-     * @param refID
-     * @return
-     * @throws PacketManageServiceException
-     */
-    boolean deletePacketRefByRefID(Integer refID) throws PacketManageServiceException;
 
     /**
      * 添加包裹信息

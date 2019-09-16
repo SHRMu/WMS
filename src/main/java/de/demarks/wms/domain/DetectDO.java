@@ -4,64 +4,17 @@ import java.util.Date;
 
 public class DetectDO {
 
-    /**
-     *  检测记录
-     */
     private Integer id;
-
-    /**
-     *  检测货物ID
-     */
     private Integer goodsID;
-
-    /**
-     *  检测货物名称
-     */
     private String goodsName;
-
-    /**
-     *  检测货物批次ID
-     */
     private Integer batchID;
-
-    /**
-     *  检测货物批次编号
-     */
     private String batchCode;
-
-    /**
-     *  入库仓库ID
-     */
     private Integer repositoryID;
-
-    /**
-     *  检测总数
-     */
     private long number;
-
-    /**
-     *  良品数量
-     */
     private long passed;
-
-    /**
-     *  划痕数量
-     */
     private long scratch;
-
-    /**
-     *  故障数量
-     */
     private long damage;
-
-    /**
-     *  检测日期
-     */
     private Date time;
-
-    /**
-     *  入库经手人
-     */
     private String personInCharge;
 
     public Integer getId() {

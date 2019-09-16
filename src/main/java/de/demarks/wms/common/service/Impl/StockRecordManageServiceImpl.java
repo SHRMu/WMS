@@ -82,7 +82,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
 
         //客户未预报包裹
         Integer customerID = -1;
-        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, null);
+        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, null);
         if (!packetStorageList.isEmpty()){
             customerID = packetStorageList.get(0).getCustomerID();
         }
@@ -432,7 +432,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
      */
     private boolean packetValidate(Integer packetID) throws StockRecordManageServiceException {
         try {
-            Packet packet = packetMapper.selectByID(packetID);
+            Packet packet = packetMapper.selectByPacketID(packetID);
             return packet != null;
         } catch (PersistenceException e) {
             throw new StockRecordManageServiceException(e);

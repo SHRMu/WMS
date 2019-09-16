@@ -35,17 +35,38 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
-			d.DETECT_GOODID = g.GOOD_ID
-		<if test="batchID != null">
-			and d.DETECT_BATCHID = #{batchID}
-		</if>
-		<if test="repositoryID != null ">
+			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_REPOSITORYID = r.REPO_ID
+		<if test="repositoryID != null">
 			and d.DETECT_REPOSITORYID = #{repositoryID}
 		</if>
     </select>
+
+	<select id="selectByRecordID" resultMap="detectDO">
+		 select
+			d.DETECT_ID as detect_id,
+			d.DETECT_GOODID as detect_goodsID,
+			d.DETECT_BATCHID as detect_batchID,
+			d.DETECT_REPOSITORYID as detect_repositoryID,
+			d.DETECT_NUMBER as detect_number,
+			d.DETECT_PASSED as detect_passed,
+			d.DETECT_SCRATCH as detect_scratch,
+			d.DETECT_DAMAGE as detect_damage,
+			d.DETECT_TIME as detect_time,
+			d.DETECT_PERSON as detect_personInCharge,
+			g.GOOD_NAME as detect_goodsName,
+			b.REPO_BATCH_CODE as detect_batchCode
+		from
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
+		where
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
+			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_REPOSITORYID = r.REPO_ID and
+			d.DETECT_ID = #{recordID}
+	</select>
 
 	<select id="selectByID" resultMap="detectDO">
 		select
@@ -62,39 +83,14 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
-			d.DETECT_ID = #{id}
-		<if test="batchID != null">
-			and d.DETECT_BATCHID = #{batchID}
+			d.DETECT_REPOSITORYID = r.REPO_ID
+		<if test="goodsID != null">
+			and d.DETECT_GOODID = #{goodsID}
 		</if>
-		<if test="repositoryID != null">
-			and d.DETECT_REPOSITORYID = #{repositoryID}
-		</if>
-	</select>
-
-	<select id="selectByGoodsID" resultMap="detectDO">
-		select
-			d.DETECT_ID as detect_id,
-			d.DETECT_GOODID as detect_goodsID,
-			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_REPOSITORYID as detect_repositoryID,
-			d.DETECT_NUMBER as detect_number,
-			d.DETECT_PASSED as detect_passed,
-			d.DETECT_SCRATCH as detect_scratch,
-			d.DETECT_DAMAGE as detect_damage,
-			d.DETECT_TIME as detect_time,
-			d.DETECT_PERSON as detect_personInCharge,
-			g.GOOD_NAME as detect_goodsName,
-			b.REPO_BATCH_CODE as detect_batchCode
-		from
-			wms_detect d, wms_repo_batch b, wms_goods g
-		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
-			d.DETECT_GOODID = g.GOOD_ID and
-			d.DETECT_GOODID = #{goodsID}
 		<if test="batchID != null">
 			and d.DETECT_BATCHID = #{batchID}
 		</if>
@@ -103,7 +99,7 @@
 		</if>
 	</select>
 
-	<select id="selectByBatchRepoIDAndDate" resultMap="detectDO">
+	<select id="selectByDate" resultMap="detectDO">
 		select
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
@@ -118,10 +114,14 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
-			d.DETECT_GOODID = g.GOOD_ID
+			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_REPOSITORYID = r.REPO_ID
+		<if test="goodsID != null">
+			and d.DETECT_GOODID = #{goodsID}
+		</if>
 		<if test="batchID != null">
 			and d.DETECT_BATCHID = #{batchID}
 		</if>
@@ -135,8 +135,6 @@
 			<![CDATA[and d.DETECT_TIME <= #{endDate}]]>
 		</if>
 	</select>
-
-
 
     <insert id="insert">
 		insert into wms_detect
@@ -182,9 +180,9 @@
 			DETECT_ID = #{id}
 	</update>
 
-	<delete id="deleteByID">
+	<delete id="deleteByRecordID">
 		delete from wms_detect
-		where DETECT_ID = #{id}
+		where DETECT_ID = #{recordID}
 	</delete>
 
 </mapper>

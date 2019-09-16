@@ -21,17 +21,8 @@ import java.util.*;
  */
 @Service
 public class PacketStorageManageServiceImpl implements PacketStorageManageService {
-
-    @Autowired
-    private GoodsMapper goodsMapper;
-    @Autowired
-    private CustomerMapper customerMapper;
-    @Autowired
-    private PacketMapper packetMapper;
     @Autowired
     private PacketStorageMapper packetStorageMapper;
-    @Autowired
-    private RepositoryMapper repositoryMapper;
 
     /**
      *
@@ -94,8 +85,8 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectByID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectByID(goodsID, packetID, repositoryID, -1 ,-1);
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectByGoodsID(goodsID, packetID, repositoryID, -1 ,-1);
     }
 
     /**
@@ -109,11 +100,9 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
-                                          @Param("packetID") Integer packetID,
-                                          @Param("repositoryID") Integer repositoryID,
-                                          @Param("offset") Integer offset,
-                                          @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
+                                               @Param("repositoryID") Integer repositoryID,
+                                               @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -136,14 +125,64 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    @Override
+    public Map<String, Object> selectByPacketID(Integer packetID, String status, Integer repositoryID) throws PacketStorageManageServiceException {
+        return selectByPacketID(packetID, status, repositoryID, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectByPacketID(Integer packetID, String status, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+        if (packetID < 0)
+            packetID = null;
+        if (status.equals(""))
+            status = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectAll(packetID, status, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectAll(packetID, status, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else
@@ -224,7 +263,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             boolean isUpdate = false;
             // validate
-            List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+            List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
             if (packetStorageList != null && !packetStorageList.isEmpty()) {
                 // update
                 PacketStorage packetStorage = packetStorageList.get(0);
@@ -279,7 +318,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      */
     private PacketStorage getPacketStorage(Integer goodsID, Integer packetID, Integer repositoryID) {
         PacketStorage packetStorage = null;
-        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(goodsID, packetID, repositoryID);
+        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
         if (!packetStorageList.isEmpty())
             packetStorage = packetStorageList.get(0);
         return packetStorage;

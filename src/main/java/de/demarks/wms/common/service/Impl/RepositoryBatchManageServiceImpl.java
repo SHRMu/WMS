@@ -306,7 +306,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
                 return  false;
 
             //检查该批次下所有已测良品均已发货
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectAll(batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectAll(repositoryID);
             if ( detectStorageList != null && !detectStorageList.isEmpty()){
                 for (DetectStorage detectStorage:
                      detectStorageList) {

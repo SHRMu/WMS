@@ -60,16 +60,16 @@ public class DetectStorageManageHandler {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
                     if (StringUtils.isNumeric(batchBelong)){
                         Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = detectStorageManageService.selectAll(batchID, repositoryID, offset, limit);
+                        queryResult = detectStorageManageService.selectAll(repositoryID, offset, limit);
                     }else {
-                        queryResult = detectStorageManageService.selectAll(null, repositoryID, offset, limit);
+                        queryResult = detectStorageManageService.selectAll(repositoryID, offset, limit);
                     }
                 } else {
                     if (StringUtils.isNumeric(batchBelong)){
                         Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = detectStorageManageService.selectAll(batchID, null, offset, limit);
+                        queryResult = detectStorageManageService.selectByID(null,batchID, null, offset, limit);
                     }else {
-                        queryResult = detectStorageManageService.selectAll(null, null, offset, limit);
+                        queryResult = detectStorageManageService.selectByID(null,null, null, offset, limit);
                     }
                 }
                 break;
@@ -80,16 +80,16 @@ public class DetectStorageManageHandler {
                         Integer repositoryID = Integer.valueOf(repositoryBelong);
                         if (StringUtils.isNumeric(batchBelong)) {
                             Integer batchID = Integer.valueOf(batchBelong);
-                            queryResult = detectStorageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
+                            queryResult = detectStorageManageService.selectByID(goodsID, batchID, repositoryID, offset, limit);
                         }else {
-                            queryResult = detectStorageManageService.selectByGoodsID(goodsID, null, repositoryID, offset, limit);
+                            queryResult = detectStorageManageService.selectByID(goodsID, null, repositoryID, offset, limit);
                         }
                     } else
                     if (StringUtils.isNumeric(batchBelong)) {
                         Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, batchID, null, offset, limit);
+                        queryResult = detectStorageManageService.selectByID(goodsID, batchID, null, offset, limit);
                     }else {
-                        queryResult = detectStorageManageService.selectByGoodsID(goodsID, null, null, offset, limit);
+                        queryResult = detectStorageManageService.selectByID(goodsID, null, null, offset, limit);
                     }
                 }
                 break;
@@ -98,16 +98,16 @@ public class DetectStorageManageHandler {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
                     if (StringUtils.isNumeric(batchBelong)) {
                         Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = detectStorageManageService.selectByGoodsName(keyword, batchID, repositoryID, offset, limit);
+                        queryResult = detectStorageManageService.selectApproximate(keyword, batchID, repositoryID, offset, limit);
                     }else{
-                        queryResult = detectStorageManageService.selectByGoodsName(keyword, null, repositoryID, offset, limit);
+                        queryResult = detectStorageManageService.selectApproximate(keyword, null, repositoryID, offset, limit);
                     }
                 } else
                 if (StringUtils.isNumeric(batchBelong)) {
                     Integer batchID = Integer.valueOf(batchBelong);
-                    queryResult = detectStorageManageService.selectByGoodsName(keyword, batchID, null, offset, limit);
+                    queryResult = detectStorageManageService.selectApproximate(keyword, batchID, null, offset, limit);
                 }else
-                    queryResult = detectStorageManageService.selectByGoodsName(keyword, null, null, offset, limit);
+                    queryResult = detectStorageManageService.selectApproximate(keyword, null, null, offset, limit);
                 break;
             default:
                 // do other thing
@@ -284,39 +284,6 @@ public class DetectStorageManageHandler {
         return responseContent.generateResponse();
     }
 
-    /**
-     * 导入检测记录信息
-     *
-     * @param file 保存有库存信息的文件
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
-     * error；key为total表示导入的总条数；key为available表示有效的条数
-     */
-    @RequestMapping(value = "importDetectStorage", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    Map<String, Object> importDetectStorage(@RequestParam("file") MultipartFile file) throws DetectStorageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-        String result = Response.RESPONSE_RESULT_ERROR;
-
-        int total = 0;
-        int available = 0;
-
-        if (file != null) {
-            Map<String, Object> importInfo = detectStorageManageService.importDetectStorage(file);
-            if (importInfo != null) {
-                total = (int) importInfo.get("total");
-                available = (int) importInfo.get("available");
-                result = Response.RESPONSE_RESULT_SUCCESS;
-            }
-        }
-
-        // 设置 Response
-        responseContent.setResponseResult(result);
-        responseContent.setResponseTotal(total);
-        responseContent.setCustomerInfo("available", available);
-        return responseContent.generateResponse();
-    }
 
     /**
      * 查询库存信息，查询所属的仓库为session保存的信息
@@ -356,53 +323,6 @@ public class DetectStorageManageHandler {
         responseContent.setCustomerInfo("rows", rows);
         responseContent.setResponseTotal(total);
         return responseContent.generateResponse();
-    }
-
-    /**
-     * 导出库存信息
-     *
-     * @param searchType       查询类型
-     * @param keyword          查询关键字
-     * @param batchBelong      查询所属仓库
-     * @param repositoryBelong 查询所属仓库
-     * @param request          请求
-     * @param response         响应
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "exportStorageRecord", method = RequestMethod.GET)
-    public void exportStorageRecord(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
-                                    @RequestParam("batchBelong") String batchBelong, @RequestParam(value = "repositoryBelong", required = false) String repositoryBelong,
-                                    HttpServletRequest request, HttpServletResponse response) throws DetectStorageServiceException, IOException {
-        String fileName = "storageRecord.xlsx";
-
-        HttpSession session = request.getSession();
-        Integer sessionRepositoryBelong = (Integer) session.getAttribute("repositoryBelong");
-        if (sessionRepositoryBelong != null && !sessionRepositoryBelong.equals("none"))
-            repositoryBelong = sessionRepositoryBelong.toString();
-
-        List<DetectStorage> detectStorageList = null;
-        Map<String, Object> queryResult = query(searchType, keyword, null, repositoryBelong, -1, -1);
-        if (queryResult != null)
-            detectStorageList = (List<DetectStorage>) queryResult.get("data");
-
-        File file = detectStorageManageService.exportDetectStorage(detectStorageList);
-        if (file != null) {
-            // 设置响应头
-            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
-            FileInputStream inputStream = new FileInputStream(file);
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[8192];
-
-            int len;
-            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
-                outputStream.write(buffer, 0, len);
-                outputStream.flush();
-            }
-
-            inputStream.close();
-            outputStream.close();
-
-        }
     }
 
 

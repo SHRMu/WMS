@@ -1,16 +1,26 @@
 package de.demarks.wms.domain;
 
-public class DetectStorage {
+public class DetectDTO {
+    private Integer id;
+    private Integer goodsID;
+    private String goodsName;
+    private Integer batchID;
+    private String batchCode;
+    private Integer repositoryID;
+    private long number;
+    private long passed;
+    private long scratch;
+    private long damage;
+    private String time;
+    private String personInCharge;
 
-    private Integer goodsID;// 货物ID
-    private String goodsName; //货物名称
-    private Integer batchID; // 货物批次
-    private String batchCode; // 批次编号
-    private Integer repositoryID;// 仓库ID
-    private long number; // 检测总数
-    private long passed; // 待出库良品数
-    private long scratch; // 划痕数
-    private long damage; // 故障数
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getGoodsID() {
         return goodsID;
@@ -84,18 +94,37 @@ public class DetectStorage {
         this.damage = damage;
     }
 
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getPersonInCharge() {
+        return personInCharge;
+    }
+
+    public void setPersonInCharge(String personInCharge) {
+        this.personInCharge = personInCharge;
+    }
+
     @Override
     public String toString() {
-        return "DetectStorage{" +
-                "goodsID=" + goodsID +
+        return "DetectDTO{" +
+                "id=" + id +
+                ", goodsID=" + goodsID +
                 ", goodsName='" + goodsName + '\'' +
                 ", batchID=" + batchID +
-                ", batchCode=" + batchCode +
+                ", batchCode='" + batchCode + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", passed=" + passed +
                 ", scratch=" + scratch +
                 ", damage=" + damage +
+                ", time='" + time + '\'' +
+                ", personInCharge='" + personInCharge + '\'' +
                 '}';
     }
 }

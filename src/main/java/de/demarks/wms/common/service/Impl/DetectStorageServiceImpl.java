@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  已检测待发货库存Service实现类
+ *  已检测库存 Service
  *
  * @author huanyingcool
  */
@@ -44,24 +44,26 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     private DetectStorageMapper detectStorageMapper;
 
     /**
-     * 返回所有的检测库存记录
-     *
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 选择所有记录
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectAll(Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
-        return selectAll(batchID, repositoryID, -1, -1);
+    public Map<String, Object> selectAll(Integer repositoryID) throws DetectStorageServiceException {
+        return selectAll(repositoryID, -1, -1);
     }
 
     /**
-     * 分页返回所有的检测库存记录
-     *
-     * @param offset 分页偏移值
-     * @param limit  分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 选择所有记录
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectAll(Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectAll(Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -72,18 +74,21 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         if (offset < 0 || limit < 0)
             isPagination = false;
 
+        if (repositoryID < 0)
+            repositoryID = null;
+
         // query
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectAll(batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectAll(repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectAll(batchID,repositoryID);
+                detectStorageList = detectStorageMapper.selectAll(repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -99,26 +104,30 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     }
 
     /**
-     * 返回指定货物ID的检测库存记录
-     *
-     * @param goodsID 指定的货物ID
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 选择指定ID的记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
-        return selectByGoodsID(goodsID, batchID, repositoryID, -1, -1);
+    public Map<String, Object> selectByID(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
+        return selectByID(goodsID, batchID, repositoryID, -1, -1);
     }
 
     /**
-     * 分页返回指定货物ID的检测库存记录
-     *
-     * @param goodsID 指定的货物ID
-     * @param offset  分页偏移值
-     * @param limit   分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 选择指定ID的记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectByID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -129,18 +138,25 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         if (offset < 0 || limit < 0)
             isPagination = false;
 
+        if (goodsID < 0)
+            goodsID = null;
+        if (batchID <0)
+            batchID = null;
+        if (repositoryID <0)
+            repositoryID = null;
+
         // query
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -156,26 +172,30 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     }
 
     /**
-     * 返回指定货物名称的检测库存记录
-     *
-     * @param goodsName 货物名称
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 模糊查询 返回指定名称的记录
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
-        return selectByGoodsName(goodsName, batchID, repositoryID, -1, -1);
+    public Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
+        return selectApproximate(goodsName, batchID, repositoryID, -1, -1);
     }
 
     /**
-     * 分页返回指定货物名称的检测库存记录
-     *
-     * @param goodsName 货物名称
-     * @param offset    分页偏移值
-     * @param limit     分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 模糊查询 返回指定名称的记录
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -190,14 +210,14 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectApproximate(goodsName, batchID, repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectApproximate(goodsName, batchID, repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -213,34 +233,28 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     }
 
     /**
-     * 添加一条检测库存记录
-     *
-     * @param goodsID      指定的货物ID
-     * @param batchID      指定的批次ID
-     * @param repositoryID 指定的仓库ID
-     * @param passed       良品数量
-     * @param scratch      划痕数量
-     * @param damage       故障数量
-     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
+     * 添加一条记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param passed
+     * @param scratch
+     * @param damage
+     * @return
+     * @throws DetectStorageServiceException
      */
     @Override
     public boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isAvailable = true;
-            // validate
-            Goods goods = goodsMapper.selectById(goodsID);
-            RepositoryBatch batch = repositoryBatchMapper.selectByID(batchID,null);
-            Repository repository = repositoryMapper.selectByID(repositoryID);
-            if (goods == null)
-                isAvailable = false;
-            if (batch == null)
-                isAvailable = false;
-            if (repository == null)
+            // ID对应的记录是否存在
+            if (!(goodsValidate(goodsID) && batchValidate(batchID) && repositoryValidate(repositoryID)))
                 isAvailable = false;
             if (passed<0 || scratch<0 || damage<0)
                 isAvailable = false;
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-            if (!(detectStorageList != null && detectStorageList.isEmpty()))
+            Long total = passed + scratch + damage;
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+            if (detectStorageList!= null || !detectStorageList.isEmpty())
                 isAvailable = false;
             if (isAvailable) {
                 // insert
@@ -248,7 +262,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                 detectStorage.setGoodsID(goodsID);
                 detectStorage.setBatchID(batchID);
                 detectStorage.setRepositoryID(repositoryID);
-                detectStorage.setNumber(passed+scratch+damage);
+                detectStorage.setNumber(total);
                 detectStorage.setPassed(passed);
                 detectStorage.setScratch(scratch);
                 detectStorage.setDamage(damage);
@@ -278,7 +292,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
             if (detectStorageList != null && !detectStorageList.isEmpty()) {
                 if ( passed >= 0 && scratch > 0 && damage > 0) {
                     // update
@@ -291,7 +305,6 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                     isUpdate = true;
                 }
             }
-
             return isUpdate;
         } catch (PersistenceException e) {
             throw new DetectStorageServiceException(e);
@@ -312,7 +325,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
             if (detectStorageList != null && !detectStorageList.isEmpty()) {
                 if ( passed >= 0 ) {
                     // update
@@ -352,7 +365,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      */
     private DetectStorage getDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
         DetectStorage detectStorage = null;
-        List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
         if (!detectStorageList.isEmpty())
             detectStorage = detectStorageList.get(0);
         return detectStorage;
@@ -418,13 +431,49 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         return true;
     }
 
-    @Override
-    public Map<String, Object> importDetectStorage(MultipartFile file) throws DetectStorageServiceException {
-        return null;
+    /**
+     * 检查货物ID对应的记录是否存在
+     *
+     * @param goodsID 货物ID
+     * @return 若存在则返回true，否则返回false
+     */
+    private boolean goodsValidate(Integer goodsID) throws DetectStorageServiceException {
+        try {
+            Goods goods = goodsMapper.selectById(goodsID);
+            return goods != null;
+        } catch (PersistenceException e) {
+            throw new DetectStorageServiceException(e);
+        }
     }
 
-    @Override
-    public File exportDetectStorage(List<DetectStorage> storages) {
-        return null;
+    /**
+     * 检查批次ID对应的记录是否存在
+     *
+     * @param batchID 批次ID
+     * @return 若存在则返回true，否则返回false
+     */
+    private boolean batchValidate(Integer batchID) throws DetectStorageServiceException {
+        try {
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
+            return repositoryBatch != null;
+        } catch (PersistenceException e) {
+            throw new DetectStorageServiceException(e);
+        }
     }
+
+    /**
+     * 检查仓库ID对应的记录是否存在
+     *
+     * @param repositoryID 仓库ID
+     * @return 若存在则返回true，否则返回false
+     */
+    private boolean repositoryValidate(Integer repositoryID) throws DetectStorageServiceException {
+        try {
+            Repository repository = repositoryMapper.selectByID(repositoryID);
+            return repository != null;
+        } catch (PersistenceException e) {
+            throw new DetectStorageServiceException(e);
+        }
+    }
+
 }

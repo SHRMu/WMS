@@ -33,19 +33,17 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 		 	ds.DETECT_GOODID = g.GOOD_ID and
-		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID
-		<if test="batchID != null">
-			and ds.DETECT_BATCHID = #{batchID}
-		</if>
+		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID and
+		 	ds.DETECT_REPOSITORY = r.REPO_ID
 		<if test="repositoryID != null">
 			and ds.DETECT_REPOSITORY = #{repositoryID}
 		</if>
 	</select>
 	
-	<select id="selectByGoodsID" resultMap="detectStorage">
+	<select id="selectByID" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
 			ds.DETECT_BATCHID as detectSto_batchID,
@@ -57,11 +55,14 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-			ds.DETECT_GOODID = #{goodsID}
+			ds.DETECT_REPOSITORY = r.REPO_ID
+		<if test="goodsID !=null">
+			and ds.DETECT_GOODID = #{goodsID}
+		</if>
 		<if test="batchID != null">
 			and ds.DETECT_BATCHID = #{batchID}
 		</if>
@@ -70,7 +71,7 @@
 		</if>
 	</select>
 
-	<select id="selectByGoodsName" resultMap="detectStorage">
+	<select id="selectApproximate" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
 			ds.DETECT_BATCHID as detectSto_batchID,
@@ -82,39 +83,21 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-		 	g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
-		<if test="batchID != null">
+			ds.DETECT_REPOSITORY = r.REPO_ID
+		<if test="goodsName !=null">
+			g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
+		</if>
+		<if test="batchCode != null">
 			and ds.DETECT_BATCHID = #{batchID}
 		</if>
 		<if test="repositoryID != null">
 			and ds.DETECT_REPOSITORY = #{repositoryID}
 		</if>
 	</select>
-
-	<update id="update">
-		update
-			wms_detect_storage
-		set
-			DETECT_GOODID = #{goodsID},
-			DETECT_BATCHID = #{batchID},
-			DETECT_REPOSITORY = #{repositoryID},
-			DETECT_NUMBER = #{number},
-			DETECT_PASSED = #{passed}
-		<if test="scratch != null" >
-			, DETECT_SCRATCH = #{scratch}
-		</if>
-		<if test="damage != null" >
-			, DETECT_DAMAGE = #{damage}
-		</if>
-		where
-			DETECT_GOODID = #{goodsID} and
-			DETECT_BATCHID = #{batchID} and
-			DETECT_REPOSITORY = #{repositoryID}
-	</update>
 
 	<insert id="insert">
 		insert into wms_detect_storage
@@ -149,6 +132,23 @@
 			)
 		</foreach>
 	</insert>
+
+	<update id="update">
+		update
+			wms_detect_storage
+		set
+			DETECT_GOODID = #{goodsID},
+			DETECT_BATCHID = #{batchID},
+			DETECT_REPOSITORY = #{repositoryID},
+			DETECT_NUMBER = #{number},
+			DETECT_PASSED = #{passed},
+			DETECT_SCRATCH = #{scratch},
+			DETECT_DAMAGE = #{damage}
+		where
+			DETECT_GOODID = #{goodsID} and
+			DETECT_BATCHID = #{batchID} and
+			DETECT_REPOSITORY = #{repositoryID}
+	</update>
 
 	<delete id="delete">
 		delete from wms_detect_storage

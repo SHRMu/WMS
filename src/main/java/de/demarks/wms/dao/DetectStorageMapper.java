@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- *  已检测 待发货 库存映射器
+ *  已检测 库存映射器
  *
  * @author huanyingcool
  *
@@ -16,41 +16,38 @@ import java.util.List;
 public interface DetectStorageMapper {
 
     /**
-     * 选择指定批次ID和仓库ID的检测库存信息
-     * @param batchID       批次ID
-     * @param repositoryID  仓库ID
-     * @return 返回所有的库存信息
+     * 返回所有的信息
+     * @param repositoryID
+     * @return
      */
-    List<DetectStorage> selectAll(@Param("batchID")Integer batchID, @Param("repositoryID") Integer repositoryID);
+    List<DetectStorage> selectAll(@Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定货物ID检测库存信息
-     * @param goodsID      货物ID
-     * @return 返回所有指定货物ID和仓库ID的库存信息
+     * 返回指定ID的信息
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<DetectStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                        @Param("batchID") Integer batchID,
-                                        @Param("repositoryID") Integer repositoryID);
+    List<DetectStorage> selectByID(@Param("goodsID") Integer goodsID,
+                                   @Param("batchID") Integer batchID,
+                                   @Param("repositoryID") Integer repositoryID);
+
 
     /**
-     * 选择指定货物名的检测库存信息
-     * @param goodsName 货物名称
-     * @return 返回所有指定货物名称的检测库存信息
+     * 模糊搜索 返回指定名称的信息
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<DetectStorage> selectByGoodsName(@Param("goodsName") String goodsName,
+    List<DetectStorage> selectApproximate(@Param("goodsName") String goodsName,
                                           @Param("batchID") Integer batchID,
                                           @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 更新库存信息，可单独更新良品数量
-     * 该库存信息必需已经存在于数据库当中，否则更新无效
-     * @param storage 库存信息
-     */
-    void update(DetectStorage storage);
-
-    /**
-     * 插入新的库存信息
-     * @param detectStorage 库存信息
+     * 添加一条信息
+     * @param detectStorage
      */
     void insert(DetectStorage detectStorage);
 
@@ -59,6 +56,12 @@ public interface DetectStorageMapper {
      * @param storages 若干条库存信息
      */
     void insertBatch(List<DetectStorage> storages);
+
+    /**
+     * 更新全部信息
+     * @param storage
+     */
+    void update(DetectStorage storage);
 
     /**
      * 删除指定批次，仓库中的货物ID的库存

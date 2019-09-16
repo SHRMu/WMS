@@ -6,13 +6,9 @@ import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.common.service.Interface.DetectManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.dao.*;
-import de.demarks.wms.domain.DetectDO;
-import de.demarks.wms.domain.Goods;
-import de.demarks.wms.domain.Repository;
-import de.demarks.wms.domain.RepositoryBatch;
+import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.DetectManageServiceException;
 import de.demarks.wms.exception.DetectStorageServiceException;
-import de.demarks.wms.exception.StockRecordManageServiceException;
 import de.demarks.wms.exception.StorageManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -48,16 +44,17 @@ public class DetectManageServiceImpl implements DetectManageService {
 
     /**
      * 货物检测操作
-     *
-     * @param goodsID       货物ID
-     * @param batchID       批次ID
-     * @param repositoryID  仓库ID
-     * @param passed        良品数量
-     * @param scratch       划痕数量
-     * @param damage        故障数量
-     * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param passed
+     * @param scratch
+     * @param damage
+     * @param personInCharge
+     * @return
+     * @throws DetectManageServiceException
      */
-    @UserOperation(value = "货物检测登记")
+    @UserOperation(value = "货物检测录入")
     @Override
     public boolean detectOperation(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage, String personInCharge) throws DetectManageServiceException {
         // ID对应的记录是否存在
@@ -76,9 +73,9 @@ public class DetectManageServiceImpl implements DetectManageService {
             boolean deSuccess, inSuccess;
             long total = passed + scratch + damage; //检测总数
 
-            //从待测数中扣除总数
+            //从待测数库存中减去总数
             deSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total);
-            //在已检测库存踪进行添加
+            //在已检测库存中添加详细数量
             inSuccess = detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage);
 
             // 保存入库记录
@@ -101,35 +98,36 @@ public class DetectManageServiceImpl implements DetectManageService {
         }
     }
 
-
     /**
      * 查询检测记录
-     *
-     * @param batchID      批次
-     * @param repositoryID 仓库ID
-     * @param endDateStr   查询记录起始日期
-     * @param startDateStr 查询记录结束日期
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     * @throws DetectManageServiceException
      */
     @Override
-    public Map<String, Object> selectDetectRecord(Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException{
-        return selectDetectRecord(batchID, repositoryID, startDateStr, endDateStr, -1, -1);
+    public Map<String, Object> selectDetectRecord(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException{
+        return selectDetectRecord(goodsID, batchID, repositoryID, startDateStr, endDateStr, -1, -1);
     }
 
     /**
-     * 分页查询检测记录
-     *
-     * @param batchID      批次ID
-     * @param repositoryID 仓库ID
-     * @param endDateStr   查询记录起始日期
-     * @param startDateStr 查询记录结束日期
-     * @param offset       分页偏移值
-     * @param limit        分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 查询检测记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param startDateStr
+     * @param endDateStr
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectManageServiceException
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> selectDetectRecord(Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException{
+    public Map<String, Object> selectDetectRecord(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException{
         // 初始化结果集
         Map<String, Object> result = new HashMap<>();
         List<DetectDO> detectDOS;
@@ -141,8 +139,12 @@ public class DetectManageServiceImpl implements DetectManageService {
             isPagination = false;
 
         // 检查传入参数
-        if (batchID == null || repositoryID == null)
-            throw new DetectManageServiceException("exception");
+        if (goodsID<0)
+            goodsID = null;
+        if (batchID<0)
+            batchID = null;
+        if (repositoryID<0)
+            repositoryID = null;
 
         // 转换 Date 对象
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -165,13 +167,13 @@ public class DetectManageServiceImpl implements DetectManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectDOS = detectMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                detectDOS = detectMapper.selectByDate(goodsID, batchID, repositoryID, startDate, endDate);
                 if (detectDOS != null)
                     total = new PageInfo<>(detectDOS).getTotal();
                 else
                     detectDOS = new ArrayList<>(10);
             } else {
-                detectDOS = detectMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                detectDOS = detectMapper.selectByDate(goodsID, batchID, repositoryID, startDate, endDate);
                 if (detectDOS != null)
                     total = detectDOS.size();
                 else
@@ -181,11 +183,30 @@ public class DetectManageServiceImpl implements DetectManageService {
             throw new DetectManageServiceException(e);
         }
 
-        result.put("data", detectDOS);
+        List<DetectDTO> detectDTOS = new ArrayList<>();
+        if (detectDOS != null)
+            detectDOS.forEach(detectDO -> detectDTOS.add(detectDoConvertToDetectDTO(detectDO)));
+
+        result.put("data", detectDTOS);
         result.put("total", total);
         return result;
+    }
 
-
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+    /**
+     * 转化传输流
+     * @param detectDO
+     * @return
+     */
+    private DetectDTO detectDoConvertToDetectDTO(DetectDO detectDO) {
+        DetectDTO detectDTO = new DetectDTO();
+        detectDTO.setId(detectDO.getId());
+        detectDTO.setGoodsID(detectDO.getGoodsID());
+        detectDTO.setGoodsName(detectDO.getGoodsName());
+        detectDTO.setBatchID(detectDO.getBatchID());
+        detectDTO.setBatchCode(detectDO.getBatchCode());
+        detectDTO.setTime(dateFormat.format(detectDO.getTime()));
+        return detectDTO;
     }
 
 

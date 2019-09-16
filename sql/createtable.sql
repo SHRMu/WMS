@@ -79,6 +79,9 @@ INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1);
 INSERT INTO `wms_action` VALUES (6,'getStorageListWithPacket',NULL,'/packetStorageManage/getStorageListWithPacket');
 INSERT INTO `wms_role_action` VALUES (6,1);
 
+INSERT INTO `wms_action` VALUES (7,'getStorageListWithStatus',NULL,'/packetStorageManage/getStorageListWithStatus');
+INSERT INTO `wms_role_action` VALUES (7,1);
+
 # 系统登入登出记录表
 create table wms_access_record
 (
@@ -131,7 +134,7 @@ create table wms_customer
 INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888@136.com','中国 湖南'),(2002,'深圳市松林达电子有限公司','刘明','85263335-820','85264958@126.com','中国 广东 深圳市宝安区'),(2003,'郑州绿之源饮品有限公司 ','赵志敬','87094196','87092165@qq.com','中国 河南 郑州市 郑州市嘉亿东方大厦609');
 
  # 创建仓库信息表
- create table wms_respository
+ create table wms_repository
  (
 	REPO_ID int not null auto_increment,
     REPO_ADDRESS varchar(30) not null,
@@ -146,11 +149,11 @@ INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888
 	PACKET_ID int not null auto_increment,
     PACKET_TRACE varchar(30) not null,
     PACKET_TIME datetime not null,
-    PACKET_STATUS varchar(10) not null,
+    PACKET_STATUS varchar(15) not null,
     PACKET_DESC varchar(50),
     PACKET_REPOID int not null,
     primary key(PACKET_ID),
-    foreign key(PACKET_REPOID) references wms_respository(REPO_ID)
+    foreign key(PACKET_REPOID) references wms_repository(REPO_ID)
  )engine=innodb;
 
  create table wms_packet_ref
@@ -174,11 +177,11 @@ create table wms_packet_storage
     foreign key(PRE_PACKETID) references wms_packet(PACKET_ID),
     foreign key(PRE_GOODID) references  wms_goods(GOOD_ID),
     foreign key(PRE_CUSTOMERID) references wms_customer(CUSTOMER_ID),
-    foreign key(PRE_REPOSITORYID) references wms_respository(REPO_ID)
+    foreign key(PRE_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
  # 导入仓库信息
-INSERT INTO `wms_respository` VALUES (3001,'德国','可用','11000㎡','提供服务完整');
+INSERT INTO `wms_repository` VALUES (3001,'德国','可用','11000㎡','提供服务完整');
 
   # 创建仓库管理员信息表
  create table wms_repo_admin
@@ -191,7 +194,7 @@ INSERT INTO `wms_respository` VALUES (3001,'德国','可用','11000㎡','提供�
     REPO_ADMIN_BIRTH datetime not null,
     REPO_ADMIN_REPOID int,
     primary key(REPO_ADMIN_ID),
-    foreign key (REPO_ADMIN_REPOID) references wms_respository(REPO_ID)
+    foreign key (REPO_ADMIN_REPOID) references wms_repository(REPO_ID)
 )engine=innodb;
 
  #创建仓库批次信息表
@@ -204,7 +207,7 @@ create table wms_repo_batch
     REPO_BATCH_DESC varchar(50),
     REPO_BATCH_REPOID int not null,
     primary key (REPO_BATCH_ID),
-    foreign key (REPO_BATCH_REPOID) references wms_respository(REPO_ID)
+    foreign key (REPO_BATCH_REPOID) references wms_repository(REPO_ID)
 )engine=innodb;
 
 # 创建入库记录表
@@ -224,7 +227,7 @@ create table wms_record_in
     foreign key(RECORD_PACKETID) references wms_packet(PACKET_ID),
     foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
     foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
-    foreign key(RECORD_REPOSITORYID) references wms_respository(REPO_ID)
+    foreign key(RECORD_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
 # 创建出库记录表
@@ -243,7 +246,7 @@ create table wms_record_out
     foreign key(RECORD_GOODID) references wms_goods(GOOD_ID),
     foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
     foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
-    foreign key(RECORD_REPOSITORYID) references wms_respository(REPO_ID)
+    foreign key(RECORD_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
 # 创建库存记录表
@@ -256,7 +259,7 @@ create table wms_record_storage
     primary key(RECORD_GOODID, RECORD_BATCHID),
     foreign key (RECORD_GOODID) references wms_goods(GOOD_ID),
     foreign key (RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (RECORD_REPOSITORY) references wms_respository(REPO_ID)
+    foreign key (RECORD_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
 
 #创建检测信息表
@@ -275,7 +278,7 @@ create table wms_detect
     primary key(DETECT_ID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (DETECT_REPOSITORYID) references wms_respository(REPO_ID)
+    foreign key (DETECT_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
 #创建检测库存
@@ -291,7 +294,7 @@ create table wms_detect_storage
     primary key(DETECT_GOODID, DETECT_BATCHID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (DETECT_REPOSITORY) references wms_respository(REPO_ID)
+    foreign key (DETECT_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
 
 

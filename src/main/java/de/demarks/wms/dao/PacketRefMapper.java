@@ -2,6 +2,7 @@ package de.demarks.wms.dao;
 
 import de.demarks.wms.domain.PacketRef;
 import org.apache.ibatis.annotations.Param;
+import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,27 +18,38 @@ import java.util.List;
 public interface PacketRefMapper {
 
     /**
-     * 指定refID
-     * @param refID
+     * 返回全部信息
+     * @param repositoryID
      * @return
      */
-    List<PacketRef> selectAll(@Param("refID") Integer refID);
+    List<PacketRef> selectAll(@Param("repositoryID") Integer repositoryID);
 
     /**
-     * 指定packetID
+     * 返回指定packetID的信息
      * @param packetID
      */
     PacketRef selectByID(@Param("packetID") Integer packetID);
 
     /**
-     * 精确查询 返回指定运单号的包裹
-     * @param packetTrace
+     * 返回指定RefID的信息
+     * @param refID
      * @return
      */
-    PacketRef selectByTrace(@Param("packetTrace") String packetTrace);
+    List<PacketRef> selectByRefID(@Param("refID") Integer refID,
+                                  @Param("repositoryID") Integer repositoryID);
 
     /**
-     *
+     * 精确查询 返回指定运单号的信息
+     * @param packetTrace
+     * @param refID
+     * @return
+     */
+    PacketRef selectByTrace(@Param("packetTrace") String packetTrace,
+                            @Param("refID") Integer refID,
+                            @Param("repositoryID") Integer repositoryID);
+
+    /**
+     * 模糊查询 返回指定运单号的信息
      * @param trace
      * @param status
      * @param repositoryID

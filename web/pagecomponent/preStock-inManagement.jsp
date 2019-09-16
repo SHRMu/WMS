@@ -231,19 +231,6 @@ function infoModal(type, msg) {
 					</div>
 				</div>
 			</div>
-			<div class="col-md-6 col-sm-6">
-				<div class="row">
-					<div class="col-md-1 col-sm-1"></div>
-					<div class="col-md-10 col-sm-11">
-						<form action="" class="form-inline" >
-							<div class="form-group">
-								<label for="" class="form-label">附加单号：</label>
-								<input type="text" class="form-control" id="packet_desc" placeholder="附加运单号,逗号分隔" >
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
 		</div>
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-6 col-sm-6">

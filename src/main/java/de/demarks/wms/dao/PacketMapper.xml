@@ -16,85 +16,74 @@
 
 	<select id="selectAll" resultMap="packet">
 		select
-			PACKET_ID,
-			PACKET_TRACE,
-			PACKET_TIME,
-			PACKET_STATUS,
-			PACKET_DESC,
-			PACKET_REPOID
+			p.PACKET_ID,
+			p.PACKET_TRACE,
+			p.PACKET_TIME,
+			p.PACKET_STATUS,
+			p.PACKET_DESC,
+			p.PACKET_REPOID
 		from
-			wms_packet
-		<if test="repositoryID > 0">
-		where PACKET_REPOID = #{repositoryID}
+			wms_packet p, wms_repository r
+		where
+			p.PACKET_REPOID = r.REPO_ID
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 	
-	<select id="selectByID" resultMap="packet">
+	<select id="selectByPacketID" resultMap="packet">
 		select
-			PACKET_ID,
-			PACKET_TRACE,
-			PACKET_TIME,
-			PACKET_STATUS,
-			PACKET_DESC,
-			PACKET_REPOID
+			p.PACKET_ID,
+			p.PACKET_TRACE,
+			p.PACKET_TIME,
+			p.PACKET_STATUS,
+			p.PACKET_DESC,
+			p.PACKET_REPOID
 		from
-			wms_packet
+			wms_packet p, wms_repository r
 		where
-			PACKET_ID = #{packetID}
+			p.PACKET_REPOID = r.REPO_ID and
+			p.PACKET_ID = #{packetID}
 	</select>
 
 	<select id="selectByTrace" resultMap="packet">
 		select
-			PACKET_ID,
-			PACKET_TRACE,
-			PACKET_TIME,
-			PACKET_STATUS,
-			PACKET_DESC,
-			PACKET_REPOID
+			p.PACKET_ID,
+			p.PACKET_TRACE,
+			p.PACKET_TIME,
+			p.PACKET_STATUS,
+			p.PACKET_DESC,
+			p.PACKET_REPOID
 		from
-			wms_packet
+			wms_packet p, wms_repository r
 		where
-			PACKET_TRACE = #{packetTrace}
-		<if test="repositoryID > 0 ">
-			and PACKET_REPOID = #{repositoryID}
+			p.PACKET_REPOID = r.REPO_ID and
+			p.PACKET_TRACE = #{trace}
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
-
-	<select id="selectByStatus" resultMap="packet">
-		select
-			PACKET_ID,
-			PACKET_TRACE,
-			PACKET_TIME,
-			PACKET_STATUS,
-			PACKET_DESC,
-			PACKET_REPOID
-		from
-			wms_packet
-		where
-			PACKET_STATUS = #{status}
-		<if test="repositoryID > 0">
-			and PACKET_REPOID = #{repositoryID}
-		</if>
-	</select>
-
 
 	<select id="selectApproximate" resultMap="packet">
 		select
-			PACKET_ID,
-			PACKET_TRACE,
-			PACKET_TIME,
-			PACKET_STATUS,
-			PACKET_DESC,
-			PACKET_REPOID
+			p.PACKET_ID,
+			p.PACKET_TRACE,
+			p.PACKET_TIME,
+			p.PACKET_STATUS,
+			p.PACKET_DESC,
+			p.PACKET_REPOID
 		from
-			wms_packet
+			wms_packet p, wms_repository r
 		where
-			PACKET_TRACE like concat ('%',#{trace},'%')
-		<if test="status != ''">
-			and PACKET_STATUS = #{status}
+			p.PACKET_REPOID = r.REPO_ID
+		<if test="trace !=null">
+			and p.PACKET_TRACE like concat ('%',#{trace},'%')
 		</if>
-		<if test="repositoryID > 0">
-			and PACKET_REPOID = #{repositoryID}
+		<if test="status !=null">
+			and p.PACKET_STATUS = #{status}
+		</if>
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 

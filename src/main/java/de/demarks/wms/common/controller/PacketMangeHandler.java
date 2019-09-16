@@ -1,6 +1,7 @@
 package de.demarks.wms.common.controller;
 
 import de.demarks.wms.common.service.Interface.PacketManageService;
+import de.demarks.wms.common.service.Interface.PacketRefMangeService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
@@ -41,12 +42,15 @@ public class PacketMangeHandler {
     private PacketMapper packetMapper;
     @Autowired
     private PacketManageService packetManageService;
+    @Autowired
+    private PacketRefMangeService packetRefMangeService;
 
     private static final String SEARCH_BY_ID = "searchByID";
-    private static final String SEARCH_BY_REF = "searchByRef"; //返回所有没收件的packetRef信息
     private static final String SEARCH_BY_TRACE = "searchByTrace";
     private static final String SEARCH_ACTIVE = "searchActive";
     private static final String SEARCH_ALL = "searchAll";
+
+    private static final String SEARCH_REF_ACTIVE = "searchRefActive";
 
     /**
      * 通用的记录查询
@@ -60,6 +64,7 @@ public class PacketMangeHandler {
     private Map<String, Object> query(@Param("searchType") String searchType,
                                       @Param("keyWord") String keyWord,
                                       @Param("offset") int offset, @Param("limit") int limit) throws PacketManageServiceException {
+
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
@@ -67,17 +72,17 @@ public class PacketMangeHandler {
                 if (StringUtils.isNumeric(keyWord))
                     queryResult = packetManageService.selectByPacketID(Integer.valueOf(keyWord));
                 break;
-            case SEARCH_BY_REF:
-                queryResult = packetManageService.selectRefApproximate(keyWord, StatusUtil.PACKET_STATUS_SEND,-1);
-                break;
             case SEARCH_BY_TRACE:
-                queryResult = packetManageService.selectApproximate(keyWord, "", -1);
+                queryResult = packetManageService.selectApproximate(keyWord, "", -1, offset, limit);
                 break;
             case SEARCH_ACTIVE:
-                queryResult = packetManageService.selectByStatus(StatusUtil.PACKET_STATUS_SEND, -1, offset, limit);
+                queryResult = packetManageService.selectApproximate("", StatusUtil.PACKET_STATUS_SEND, -1, offset, limit);
                 break;
             case SEARCH_ALL:
                 queryResult = packetManageService.selectAll(-1, offset, limit);
+                break;
+            case SEARCH_REF_ACTIVE:
+                queryResult = packetRefMangeService.selectRefApproximate(keyWord,StatusUtil.PACKET_STATUS_SEND,-1);
                 break;
             default:
                 // do other thing

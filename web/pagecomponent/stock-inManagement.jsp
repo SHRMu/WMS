@@ -90,13 +90,13 @@ function packetAutocomplete(){
 					limit : -1,
 					keyWord : request.term,
 					repositoryID:$('#repository_selector').val(),
-					searchType:'searchByRef'
+					searchType:'searchRefActive'
 				},
 				success : function(data){
 					var autoCompleteInfo = new Array();
 					$.each(data.rows, function(index,elem){
 						packetCache.push(elem);
-						autoCompleteInfo.push({label:elem.trace,value:elem.id});
+						autoCompleteInfo.push({label:elem.trace,value:elem.refid});
 					});
 					response(autoCompleteInfo);
 				}
@@ -166,8 +166,8 @@ function loadStorageInfo(){
 				offset : -1,
 				limit : -1,
 				searchType : 'searchByGoodsID',
-				packetBelong : stockin_packet,
-				repositoryBelong : stockin_repository,
+				packetID : stockin_packet,
+				repositoryID : stockin_repository,
 				keyword : stockin_goods
 			},
 			success : function(response){

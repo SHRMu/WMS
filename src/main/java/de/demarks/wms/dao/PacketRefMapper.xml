@@ -30,8 +30,8 @@
 			wms_packet_ref pr, wms_packet p
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID
-		<if test="refID != null">
-			and pr.PACKET_REF_ID = #{refID}
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 	
@@ -52,6 +52,26 @@
 			pr.PACKET_ID = #{packetID}
 	</select>
 
+	<select id="selectByRefID" resultMap="packetRef">
+		select
+			pr.PACKET_ID as id,
+			pr.PACKET_TRACE as trace,
+			pr.PACKET_REF_ID as ref_id,
+			p.PACKET_TRACE as ref_trace,
+			p.PACKET_TIME as ref_time,
+			p.PACKET_STATUS as ref_status,
+			p.PACKET_DESC as ref_desc,
+			p.PACKET_REPOID as ref_repo_id
+		from
+			wms_packet_ref pr, wms_packet p
+		where
+			pr.PACKET_REF_ID = p.PACKET_ID and
+			pr.PACKET_REF_ID = #{refID}
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
+		</if>
+	</select>
+
 	<select id="selectByTrace" resultMap="packetRef">
 		select
 			pr.PACKET_ID as id,
@@ -67,6 +87,12 @@
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID and
 			pr.PACKET_TRACE = #{packetTrace}
+		<if test="refID !=null">
+			and pr.PACKET_REF_ID = #{refID}
+		</if>
+		<if test="repositoryID !=null">
+			and p.PACKET_REPOID = #{repositoryID}
+		</if>
 	</select>
 
 	<select id="selectApproximate" resultMap="packetRef">
@@ -83,11 +109,13 @@
 			wms_packet_ref pr, wms_packet p
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID and
+		<if test="trace !=null">
 			pr.PACKET_TRACE like concat ('%',#{trace},'%')
-		<if test="status != ''">
+		</if>
+		<if test="status !=null">
 			and p.PACKET_STATUS = #{status}
 		</if>
-		<if test=" repositoryID>0 ">
+		<if test=" repositoryID !=null">
 			and p.repositoryID = #{repositoryID}
 		</if>
 	</select>

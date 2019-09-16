@@ -2,6 +2,7 @@ package de.demarks.wms.common.service.Interface;
 
 import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.exception.DetectStorageServiceException;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 检测后待发货库存信息管理
+ * 已检测库存信息管理
  *
  * @author huanyingcool
  */
@@ -17,68 +18,83 @@ import java.util.Map;
 public interface DetectStorageService {
 
     /**
-     * 返回所有的检测库存记录
-     *
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 选择所有记录
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectAll(Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
     /**
-     * 分页返回所有的检测库存记录
-     * @param batchID 批次ID
-     * @param repositoryID 仓库ID
-     * @param offset 分页偏移值
-     * @param limit  分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 选择所有记录
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectAll(Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
+    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
+                                  @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
     /**
-     * 返回指定货物ID的检测库存记录
-     *
-     * @param goodsID 指定的货物ID
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 选择指定ID的记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+                                   @Param("batchID") Integer batchID,
+                                   @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
     /**
-     * 分页返回指定货物ID的检测库存记录
-     *
-     * @param goodsID 指定的货物ID
-     * @param offset  分页偏移值
-     * @param limit   分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 选择指定ID的记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
+    Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+                                    @Param("batchID") Integer batchID,
+                                    @Param("repositoryID") Integer repositoryID,
+                                    @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
     /**
-     * 返回指定货物名称的检测库存记录
-     *
-     * @param goodsName 货物名称
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 模糊查询 返回指定名称的记录
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
 
     /**
-     * 分页返回指定货物名称的检测库存记录
-     *
-     * @param goodsName 货物名称
-     * @param offset    分页偏移值
-     * @param limit     分页大小
-     * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
+     * 分页 模糊查询 返回指定名称的记录
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
+    Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
 
     /**
-     * 添加一条检测库存记录
-     *
-     * @param goodsID      指定的货物ID
-     * @param batchID      指定的批次ID
-     * @param repositoryID 指定的仓库ID
-     * @param passed       良品数量
-     * @param scratch      划痕数量
-     * @param damage       故障数量
-     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
+     * 添加一条记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param passed
+     * @param scratch
+     * @param damage
+     * @return
+     * @throws DetectStorageServiceException
      */
     boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
@@ -119,22 +135,6 @@ public interface DetectStorageService {
     boolean deleteDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
 
     /**
-     * 导入库存记录
-     *
-     * @param file 保存有的库存记录的文件
-     * @return 返回一个Map，其中：key为total代表导入的总记录数，key为available代表有效导入的记录数
-     */
-    Map<String, Object> importDetectStorage(MultipartFile file) throws DetectStorageServiceException;
-
-    /**
-     * 导出库存记录
-     *
-     * @param storages 保存有库存记录的List
-     * @return excel 文件
-     */
-    File exportDetectStorage(List<DetectStorage> storages);
-
-    /**
      * 为指定的检测库存增加指定数目
      *
      * @param goodsID      货物ID
@@ -147,7 +147,6 @@ public interface DetectStorageService {
      */
     boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
-
     /**
      * 从检测的良品库存中减去出库数量
      *
@@ -158,10 +157,5 @@ public interface DetectStorageService {
      * @return 返回一个 boolean 值，若值为 true 表示数目减少成功，否则表示增加失败
      */
     boolean passedDetectStorageDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws DetectStorageServiceException;
-
-
-
-
-
 
 }
