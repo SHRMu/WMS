@@ -43,27 +43,13 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     @Autowired
     private DetectStorageMapper detectStorageMapper;
 
-    /**
-     * 选择所有记录
-     * @param repositoryID
-     * @return
-     * @throws DetectStorageServiceException
-     */
     @Override
-    public Map<String, Object> selectAll(Integer repositoryID) throws DetectStorageServiceException {
-        return selectAll(repositoryID, -1, -1);
+    public Map<String, Object> selectAll(Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
+        return selectAll(batchID, repositoryID, -1, -1);
     }
 
-    /**
-     * 分页 选择所有记录
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws DetectStorageServiceException
-     */
     @Override
-    public Map<String, Object> selectAll(Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectAll(Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -74,6 +60,8 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         if (offset < 0 || limit < 0)
             isPagination = false;
 
+        if (batchID < 0)
+            batchID = null;
         if (repositoryID < 0)
             repositoryID = null;
 
@@ -81,14 +69,14 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectAll(repositoryID);
+                detectStorageList = detectStorageMapper.selectAll(batchID,repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectAll(repositoryID);
+                detectStorageList = detectStorageMapper.selectAll(batchID, repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -112,8 +100,8 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByID(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
-        return selectByID(goodsID, batchID, repositoryID, -1, -1);
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
+        return selectByGoodsID(goodsID, batchID, repositoryID, -1, -1);
     }
 
     /**
@@ -127,7 +115,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectByID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -149,14 +137,14 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -180,8 +168,8 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
-        return selectApproximate(goodsName, batchID, repositoryID, -1, -1);
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException {
+        return selectByGoodsName(goodsName, batchID, repositoryID, -1, -1);
     }
 
     /**
@@ -195,7 +183,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<DetectStorage> detectStorageList;
@@ -206,18 +194,23 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         if (offset < 0 || limit < 0)
             isPagination = false;
 
+        if (batchID < 0)
+            batchID = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
         // query
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectStorageList = detectStorageMapper.selectApproximate(goodsName, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
                 if (detectStorageList != null) {
                     PageInfo<DetectStorage> pageInfo = new PageInfo<>(detectStorageList);
                     total = pageInfo.getTotal();
                 } else
                     detectStorageList = new ArrayList<>();
             } else {
-                detectStorageList = detectStorageMapper.selectApproximate(goodsName, batchID, repositoryID);
+                detectStorageList = detectStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
                 if (detectStorageList != null)
                     total = detectStorageList.size();
                 else
@@ -253,7 +246,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
             if (passed<0 || scratch<0 || damage<0)
                 isAvailable = false;
             Long total = passed + scratch + damage;
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (detectStorageList!= null || !detectStorageList.isEmpty())
                 isAvailable = false;
             if (isAvailable) {
@@ -292,7 +285,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (detectStorageList != null && !detectStorageList.isEmpty()) {
                 if ( passed >= 0 && scratch > 0 && damage > 0) {
                     // update
@@ -325,7 +318,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (detectStorageList != null && !detectStorageList.isEmpty()) {
                 if ( passed >= 0 ) {
                     // update
@@ -365,7 +358,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      */
     private DetectStorage getDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
         DetectStorage detectStorage = null;
-        List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsID, batchID, repositoryID);
+        List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
         if (!detectStorageList.isEmpty())
             detectStorage = detectStorageList.get(0);
         return detectStorage;

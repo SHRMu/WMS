@@ -21,7 +21,8 @@ public interface DetectMapper {
      * @param repositoryID
      * @return
      */
-    List<DetectDO> selectAll(@Param("repositoryID") Integer repositoryID);
+    List<DetectDO> selectAll(@Param("batchID") Integer batchID,
+                             @Param("repositoryID") Integer repositoryID);
 
     /**
      * 返回指定记录ID的结果
@@ -31,18 +32,7 @@ public interface DetectMapper {
     DetectDO selectByRecordID(@Param("recordID") Integer recordID);
 
     /**
-     * 返回指定ID的结果
-     * @param goodsID
-     * @param batchID
-     * @param repositoryID
-     * @return
-     */
-    List<DetectDO> selectByID(@Param("goodsID") Integer goodsID,
-                              @Param("batchID") Integer batchID,
-                              @Param("repositoryID") Integer repositoryID);
-
-    /**
-     * 返回指定时间范围的结果
+     * 指定GoodsID的结果
      * @param goodsID
      * @param batchID
      * @param repositoryID
@@ -50,11 +40,26 @@ public interface DetectMapper {
      * @param endDate
      * @return
      */
-    List<DetectDO> selectByDate(@Param("goodsID") Integer goodsID,
-                                @Param("batchID") Integer batchID,
-                                @Param("repositoryID") Integer repositoryID,
-                                @Param("startDate") Date startDate,
-                                @Param("endDate") Date endDate);
+    List<DetectDO> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                    @Param("batchID") Integer batchID,
+                                    @Param("repositoryID") Integer repositoryID,
+                                    @Param("startDate") Date startDate,
+                                    @Param("endDate") Date endDate);
+
+    /**
+     * 模糊搜索
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<DetectDO> selectByGoodsName(@Param("goodsName") String goodsName,
+                                     @Param("batchID") Integer batchID,
+                                     @Param("repositoryID") Integer repositoryID,
+                                     @Param("startDate") Date startDate,
+                                     @Param("endDate") Date endDate);
 
     /**
      * 添加一条记录

@@ -23,7 +23,8 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectAll(@Param("batchID") Integer batchID,
+                                  @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
     /**
      * 分页 选择所有记录
@@ -33,7 +34,8 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
+    Map<String, Object> selectAll(@Param("batchID") Integer batchID,
+                                  @Param("repositoryID") Integer repositoryID,
                                   @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
     /**
@@ -44,7 +46,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
                                    @Param("batchID") Integer batchID,
                                    @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
@@ -58,7 +60,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByID(@Param("goodsID") Integer goodsID,
+    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
                                     @Param("batchID") Integer batchID,
                                     @Param("repositoryID") Integer repositoryID,
                                     @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
@@ -71,7 +73,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
 
     /**
      * 分页 模糊查询 返回指定名称的记录
@@ -83,7 +85,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectApproximate(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
 
     /**
      * 添加一条记录

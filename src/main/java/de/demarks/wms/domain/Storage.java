@@ -10,14 +10,10 @@ public class Storage {
 
 	private Integer goodsID;// 货物ID
 	private String goodsName;// 货物名称
-	private String goodsSize;// 货物规格
-	private String goodsType;// 货物类型
-	private double goodsWeight;// 货物重量
 	private Integer batchID; //批次ID
 	private String batchCode; //批次编号
 	private Integer repositoryID;// 仓库ID
 	private Long number;// 待检测
-
 
 	public Integer getGoodsID() {
 		return goodsID;
@@ -33,30 +29,6 @@ public class Storage {
 
 	public void setGoodsName(String goodsName) {
 		this.goodsName = goodsName;
-	}
-
-	public String getGoodsSize() {
-		return goodsSize;
-	}
-
-	public void setGoodsSize(String goodsSize) {
-		this.goodsSize = goodsSize;
-	}
-
-	public String getGoodsType() {
-		return goodsType;
-	}
-
-	public void setGoodsType(String goodsType) {
-		this.goodsType = goodsType;
-	}
-
-	public double getGoodsWeight() {
-		return goodsWeight;
-	}
-
-	public void setGoodsWeight(double goodsWeight) {
-		this.goodsWeight = goodsWeight;
 	}
 
 	public Integer getRepositoryID() {
@@ -96,9 +68,6 @@ public class Storage {
 		return "Storage{" +
 				"goodsID=" + goodsID +
 				", goodsName='" + goodsName + '\'' +
-				", goodsSize='" + goodsSize + '\'' +
-				", goodsType='" + goodsType + '\'' +
-				", goodsWeight=" + goodsWeight +
 				", batchID=" + batchID +
 				", batchCode='" + batchCode + '\'' +
 				", repositoryID=" + repositoryID +

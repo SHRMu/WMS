@@ -16,23 +16,24 @@ import java.util.List;
 public interface DetectStorageMapper {
 
     /**
-     * 返回所有的信息
+     * 返回全部
+     * @param batchID
      * @param repositoryID
      * @return
      */
-    List<DetectStorage> selectAll(@Param("repositoryID") Integer repositoryID);
+    List<DetectStorage> selectAll(@Param("batchID") Integer batchID,
+                                  @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 返回指定ID的信息
+     * 精确搜索 返回指定ID的信息
      * @param goodsID
      * @param batchID
      * @param repositoryID
      * @return
      */
-    List<DetectStorage> selectByID(@Param("goodsID") Integer goodsID,
-                                   @Param("batchID") Integer batchID,
-                                   @Param("repositoryID") Integer repositoryID);
-
+    List<DetectStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                        @Param("batchID") Integer batchID,
+                                        @Param("repositoryID") Integer repositoryID);
 
     /**
      * 模糊搜索 返回指定名称的信息
@@ -41,7 +42,7 @@ public interface DetectStorageMapper {
      * @param repositoryID
      * @return
      */
-    List<DetectStorage> selectApproximate(@Param("goodsName") String goodsName,
+    List<DetectStorage> selectByGoodsName(@Param("goodsName") String goodsName,
                                           @Param("batchID") Integer batchID,
                                           @Param("repositoryID") Integer repositoryID);
 

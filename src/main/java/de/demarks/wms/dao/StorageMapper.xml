@@ -10,9 +10,6 @@
 		<id property="goodsID" column="storage_goodsID"/>
 		<id property="batchID" column="storage_batchID"/>
 		<result property="goodsName" column="storage_goodsName"/>
-		<result property="goodsSize" column="storage_goodsSize"/>
-		<result property="goodsType" column="storage_goodsType"/>
-		<result property="goodsWeight" column="storage_goodsWeight"/>
 		<result property="batchCode" column="storage_batchCode"/>
 		<result property="repositoryID" column="storage_repositoryID"/>
 		<result property="number" column="storage_number"/>
@@ -20,24 +17,43 @@
 		<association property="goodsInfo" javaType="com.ken.Goods" resultMap="goods"/>
 		 -->
 	</resultMap>
-	 
+
 	<select id="selectAll" resultMap="storage">
 		select
-			g.GOOD_ID as storage_goodsID,
+			s.RECORD_GOODID as storage_goodsID,
+			s.RECORD_BATCHID as storage_batchID,
+			s.RECORD_REPOSITORY as storage_repositoryID,
+			s.RECORD_NUMBER as storage_number,
 			g.GOOD_NAME as storage_goodsName,
-			g.GOOD_TYPE as storage_goodsType,
-			g.GOOD_SIZE as storage_goodsSize,
-			g.GOOD_WEIGHT as storage_goodsWeight,
-			b.REPO_BATCH_ID as storage_batchID,
-			b.REPO_BATCH_CODE as storage_batchCode,
-			r.REPO_ID as storage_repositoryID,
-			s.RECORD_NUMBER as storage_number
+			b.REPO_BATCH_CODE as storage_batchCode
 		from
-			wms_goods g, wms_repo_batch b, wms_respository r, wms_record_storage s
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
 		where
-		 	s.RECORD_GOODID = g.GOOD_ID and
-		 	s.RECORD_BATCHID = b.REPO_BATCH_ID and
-		 	s.RECORD_REPOSITORY = r.REPO_ID
+			s.RECORD_GOODID = g.GOOD_ID and
+			s.RECORD_BATCHID = b.REPO_BATCH_ID and
+			s.RECORD_REPOSITORY = r.REPO_ID
+		<if test="batchID != null">
+			and s.RECORD_BATCHID = #{batchID}
+		</if>
+		<if test="repositoryID != null">
+			and s.RECORD_REPOSITORY = #{repositoryID}
+		</if>
+	</select>
+	 
+	<select id="selectByGoodsID" resultMap="storage">
+		select
+			s.RECORD_GOODID as storage_goodsID,
+			s.RECORD_BATCHID as storage_batchID,
+			s.RECORD_REPOSITORY as storage_repositoryID,
+			s.RECORD_NUMBER as storage_number,
+			g.GOOD_NAME as storage_goodsName,
+			b.REPO_BATCH_CODE as storage_batchCode
+		from
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
+		where
+			s.RECORD_GOODID = g.GOOD_ID and
+			s.RECORD_BATCHID = b.REPO_BATCH_ID and
+			s.RECORD_REPOSITORY = r.REPO_ID
 		<if test="goodsID != null">
 			and s.RECORD_GOODID = #{goodsID}
 		</if>
@@ -51,22 +67,21 @@
 	
 	<select id="selectByGoodsName" resultMap="storage">
 		select
-			g.GOOD_ID as storage_goodsID,
+			s.RECORD_GOODID as storage_goodsID,
+			s.RECORD_BATCHID as storage_batchID,
+			s.RECORD_REPOSITORY as storage_repositoryID,
+			s.RECORD_NUMBER as storage_number,
 			g.GOOD_NAME as storage_goodsName,
-			g.GOOD_TYPE as storage_goodsType,
-			g.GOOD_SIZE as storage_goodsSize,
-			g.GOOD_WEIGHT as storage_goodsWeight,
-			b.REPO_BATCH_ID as storage_batchID,
-			b.REPO_BATCH_CODE as storage_batchCode,
-			r.REPO_ID as storage_repositoryID,
-			s.RECORD_NUMBER as storage_number
+			b.REPO_BATCH_CODE as storage_batchCode
 		from
-			wms_goods g, wms_repo_batch b, wms_respository r, wms_record_storage s
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
 		where
 			s.RECORD_GOODID = g.GOOD_ID and
 			s.RECORD_BATCHID = b.REPO_BATCH_ID and
-			s.RECORD_REPOSITORY = r.REPO_ID and
-		 	g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
+			s.RECORD_REPOSITORY = r.REPO_ID
+		<if test="goodsName !=null">
+			and g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
+		</if>
 		<if test="batchID != null">
 			and b.REPO_BATCH_ID = #{batchID}
 		</if>

@@ -33,7 +33,7 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 		 	ds.DETECT_GOODID = g.GOOD_ID and
 		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID and
@@ -43,7 +43,7 @@
 		</if>
 	</select>
 	
-	<select id="selectByID" resultMap="detectStorage">
+	<select id="selectByGoodsID" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
 			ds.DETECT_BATCHID as detectSto_batchID,
@@ -55,7 +55,7 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
@@ -71,7 +71,7 @@
 		</if>
 	</select>
 
-	<select id="selectApproximate" resultMap="detectStorage">
+	<select id="selectByGoodsName" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
 			ds.DETECT_BATCHID as detectSto_batchID,
@@ -83,7 +83,7 @@
 			g.GOOD_NAME as detectSto_goodsName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and

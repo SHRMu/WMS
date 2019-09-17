@@ -270,12 +270,12 @@ public class GoodsManageServiceImpl implements GoodsManageService {
                 return false;
 
             // 检查该货物是否有待检测库存信息
-            List<Storage> storageRecord = storageMapper.selectAll(goodsId, null, null);
+            List<Storage> storageRecord = storageMapper.selectByGoodsID(goodsId, null, null);
             if (storageRecord != null && !storageRecord.isEmpty())
                 return false;
 
             //检查该货物是否有检测存储记录
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectByID(goodsId, null, null);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsId, null, null);
             if (detectStorageList != null && !detectStorageList.isEmpty())
                 return  false;
 

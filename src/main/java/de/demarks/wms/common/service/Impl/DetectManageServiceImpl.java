@@ -26,21 +26,17 @@ public class DetectManageServiceImpl implements DetectManageService {
 
     @Autowired
     private GoodsMapper goodsMapper;
-
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
-
     @Autowired
     private RepositoryMapper repositoryMapper;
 
     @Autowired
-    private StorageManageService storageManageService;
-
+    private DetectMapper detectMapper;
     @Autowired
     private DetectStorageService detectStorageService;
-
     @Autowired
-    private DetectMapper detectMapper;
+    private StorageManageService storageManageService;
 
     /**
      * 货物检测操作
@@ -54,7 +50,7 @@ public class DetectManageServiceImpl implements DetectManageService {
      * @return
      * @throws DetectManageServiceException
      */
-    @UserOperation(value = "货物检测录入")
+    @UserOperation(value = "检测录入")
     @Override
     public boolean detectOperation(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage, String personInCharge) throws DetectManageServiceException {
         // ID对应的记录是否存在
@@ -109,8 +105,8 @@ public class DetectManageServiceImpl implements DetectManageService {
      * @throws DetectManageServiceException
      */
     @Override
-    public Map<String, Object> selectDetectRecord(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException{
-        return selectDetectRecord(goodsID, batchID, repositoryID, startDateStr, endDateStr, -1, -1);
+    public Map<String, Object> selectDetectRecordByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException{
+        return selectDetectRecordByGoodsID(goodsID, batchID, repositoryID, startDateStr, endDateStr, -1, -1);
     }
 
     /**
@@ -127,7 +123,7 @@ public class DetectManageServiceImpl implements DetectManageService {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> selectDetectRecord(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException{
+    public Map<String, Object> selectDetectRecordByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException{
         // 初始化结果集
         Map<String, Object> result = new HashMap<>();
         List<DetectDO> detectDOS;
@@ -167,13 +163,105 @@ public class DetectManageServiceImpl implements DetectManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                detectDOS = detectMapper.selectByDate(goodsID, batchID, repositoryID, startDate, endDate);
+                detectDOS = detectMapper.selectByGoodsID(goodsID, batchID, repositoryID, startDate, endDate);
                 if (detectDOS != null)
                     total = new PageInfo<>(detectDOS).getTotal();
                 else
                     detectDOS = new ArrayList<>(10);
             } else {
-                detectDOS = detectMapper.selectByDate(goodsID, batchID, repositoryID, startDate, endDate);
+                detectDOS = detectMapper.selectByGoodsID(goodsID, batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = detectDOS.size();
+                else
+                    detectDOS = new ArrayList<>(10);
+            }
+        } catch (PersistenceException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        List<DetectDTO> detectDTOS = new ArrayList<>();
+        if (detectDOS != null)
+            detectDOS.forEach(detectDO -> detectDTOS.add(detectDoConvertToDetectDTO(detectDO)));
+
+        result.put("data", detectDTOS);
+        result.put("total", total);
+        return result;
+    }
+
+    /**
+     *
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     * @throws DetectManageServiceException
+     */
+    @Override
+    public Map<String, Object> selectDetectRecordByGoodsName(String goodsName, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException {
+        return selectDetectRecordByGoodsName(goodsName,batchID,repositoryID,startDateStr, endDateStr, -1, -1);
+    }
+
+    /**
+     * 分页 模糊查询
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @param startDateStr
+     * @param endDateStr
+     * @param offset
+     * @param limit
+     * @return
+     * @throws DetectManageServiceException
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> selectDetectRecordByGoodsName(String goodsName, Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException {
+        // 初始化结果集
+        Map<String, Object> result = new HashMap<>();
+        List<DetectDO> detectDOS;
+        long total = 0;
+        boolean isPagination = true;
+
+        // 检查是否需要分页查询
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // 检查传入参数
+        if (batchID<0)
+            batchID = null;
+        if (repositoryID<0)
+            repositoryID = null;
+
+        // 转换 Date 对象
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = null;
+        Date endDate = null;
+        Date newEndDate = null;
+        try {
+            if (StringUtils.isNotEmpty(startDateStr))
+                startDate = dateFormat.parse(startDateStr);
+            if (StringUtils.isNotEmpty(endDateStr))
+            {
+                endDate = dateFormat.parse(endDateStr);
+                newEndDate = new Date(endDate.getTime()+(24*60*60*1000)-1);
+            }
+        } catch (ParseException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        // 查询记录
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                detectDOS = detectMapper.selectByGoodsName(goodsName, batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = new PageInfo<>(detectDOS).getTotal();
+                else
+                    detectDOS = new ArrayList<>(10);
+            } else {
+                detectDOS = detectMapper.selectByGoodsName(goodsName, batchID, repositoryID, startDate, endDate);
                 if (detectDOS != null)
                     total = detectDOS.size();
                 else
@@ -193,11 +281,7 @@ public class DetectManageServiceImpl implements DetectManageService {
     }
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
-    /**
-     * 转化传输流
-     * @param detectDO
-     * @return
-     */
+
     private DetectDTO detectDoConvertToDetectDTO(DetectDO detectDO) {
         DetectDTO detectDTO = new DetectDTO();
         detectDTO.setId(detectDO.getId());

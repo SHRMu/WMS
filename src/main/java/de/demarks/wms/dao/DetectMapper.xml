@@ -35,18 +35,21 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
 			d.DETECT_REPOSITORYID = r.REPO_ID
+		<if test="batchID !=null">
+			and d.DETECT_BATCHID = #{batchID}
+		</if>
 		<if test="repositoryID != null">
 			and d.DETECT_REPOSITORYID = #{repositoryID}
 		</if>
     </select>
 
 	<select id="selectByRecordID" resultMap="detectDO">
-		 select
+		  select
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
@@ -60,7 +63,7 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
@@ -68,7 +71,7 @@
 			d.DETECT_ID = #{recordID}
 	</select>
 
-	<select id="selectByID" resultMap="detectDO">
+	<select id="selectByGoodsID" resultMap="detectDO">
 		select
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
@@ -83,7 +86,7 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
@@ -97,9 +100,15 @@
 		<if test="repositoryID != null ">
 			and d.DETECT_REPOSITORYID = #{repositoryID}
 		</if>
+		<if test="startDate != null">
+			and d.DETECT_TIME >= #{startDate}
+		</if>
+		<if test="endDate != null">
+			<![CDATA[and d.DETECT_TIME <= #{endDate}]]>
+		</if>
 	</select>
 
-	<select id="selectByDate" resultMap="detectDO">
+	<select id="selectByGoodsName" resultMap="detectDO">
 		select
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
@@ -114,13 +123,13 @@
 			g.GOOD_NAME as detect_goodsName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_respository r
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
 			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
 			d.DETECT_REPOSITORYID = r.REPO_ID
-		<if test="goodsID != null">
-			and d.DETECT_GOODID = #{goodsID}
+		<if test="goodsName != null">
+			and g.GOOD_NAME like concat ('%',#{goodsName},'%')
 		</if>
 		<if test="batchID != null">
 			and d.DETECT_BATCHID = #{batchID}

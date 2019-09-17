@@ -15,23 +15,11 @@ import java.util.Map;
  */
 public interface PacketStorageManageService {
 
-   /**
-    *  返回所有的预报库存记录
-    * @param repositoryID
-    * @return
-    * @throws PacketStorageManageServiceException
-    */
-   Map<String, Object> selectAll(@Param("repository") Integer repositoryID) throws PacketStorageManageServiceException;
+   Map<String, Object> selectAll(@Param("packetID") Integer packetID,
+                                 @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
-   /**
-    * 分页 返回所有的预报库存记录
-    * @param repositoryID
-    * @param offset
-    * @param limit
-    * @return
-    * @throws PacketStorageManageServiceException
-    */
-   Map<String, Object> selectAll(@Param("repository") Integer repositoryID,
+   Map<String, Object> selectAll(@Param("packetID") Integer packetID,
+                                 @Param("repositoryID") Integer repositoryID,
                                  @Param("offset") Integer offset,
                                  @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
@@ -44,8 +32,8 @@ public interface PacketStorageManageService {
     * @throws PacketStorageManageServiceException
     */
    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                    @Param("packetID") Integer packetID,
-                                    @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+                                       @Param("packetID") Integer packetID,
+                                       @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -63,29 +51,17 @@ public interface PacketStorageManageService {
                                        @Param("offset") Integer offset,
                                        @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
-   /**
-    *
-    * @param packetID
-    * @param status
-    * @param repositoryID
-    * @return
-    * @throws PacketStorageManageServiceException
-    */
-   Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID, @Param("status") String status,
-                                          @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
-   /**
-    *
-    * @param packetID
-    * @param status
-    * @param repositoryID
-    * @param offset
-    * @param limit
-    * @return
-    * @throws PacketStorageManageServiceException
-    */
-   Map<String, Object> selectByPacketID(@Param("packetID") Integer packetID, @Param("status") String status,
-                                          @Param("repositoryID") Integer repositoryID, @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
+   Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName,
+                                       @Param("packetID") Integer packetID,
+                                       @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+
+
+   Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName,
+                                          @Param("packetID") Integer packetID,
+                                          @Param("repositoryID") Integer repositoryID,
+                                          @Param("offset") Integer offset,
+                                          @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -95,9 +71,9 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectApproximate(@Param("trace") String trace,
-                                         @Param("status") String status,
-                                         @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+   Map<String, Object> selectByTrace(@Param("trace") String trace,
+                                     @Param("status") String status,
+                                     @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -109,11 +85,11 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   Map<String, Object> selectApproximate(@Param("trace") String trace,
-                                         @Param("status") String status,
-                                         @Param("repositoryID") Integer repositoryID,
-                                         @Param("offset") Integer offset,
-                                         @Param("limit") Integer limit) throws PacketStorageManageServiceException;
+   Map<String, Object> selectByTrace(@Param("trace") String trace,
+                                     @Param("status") String status,
+                                     @Param("repositoryID") Integer repositoryID,
+                                      @Param("offset") Integer offset,
+                                      @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
 
    /**

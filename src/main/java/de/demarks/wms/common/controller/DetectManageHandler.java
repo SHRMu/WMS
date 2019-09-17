@@ -107,7 +107,7 @@ public class DetectManageHandler {
             }
 
             // 转到 Service 执行查询
-            Map<String, Object> queryResult = detectManageService.selectDetectRecord(null,batchID, repositoryID, startDateStr, endDateStr, offset, limit);
+            Map<String, Object> queryResult = detectManageService.selectDetectRecordByGoodsID(null,batchID, repositoryID, startDateStr, endDateStr, offset, limit);
             if (queryResult != null) {
                 rows = (List<DetectDO>) queryResult.get("data");
                 total = (long) queryResult.get("total");

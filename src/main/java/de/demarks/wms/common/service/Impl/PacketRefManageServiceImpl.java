@@ -93,7 +93,7 @@ public class PacketRefManageServiceImpl implements PacketRefMangeService {
                     deletePacketRef(refID);
                 }
                 packetRefMapper.insert(packet.getTrace(),refID); //添加主单信息
-                if (desc.equals(""))
+                if (desc.equals("")||desc==null)
                     return true;
                 if (desc.contains(",")){
                     String[] traces = desc.split(",");

@@ -3,6 +3,7 @@ package de.demarks.wms.dao;
 import com.sun.tracing.dtrace.ProviderAttributes;
 import de.demarks.wms.domain.PacketStorage;
 import org.apache.ibatis.annotations.Param;
+import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -15,19 +16,40 @@ import java.util.List;
 public interface PacketStorageMapper {
 
     /**
-     * 选择 全部 预报记录
+     * 返回全部信息
      *
      * @return 返回全部的预报
      */
-    List<PacketStorage> selectAll(@Param("packetID") Integer packetID, @Param("status") String status,
+    List<PacketStorage> selectAll(@Param("packetID") Integer packetID,
                                   @Param("repositoryID") Integer repositoryID);
 
-    List<PacketStorage> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
+    /**
+     * 精确搜索
+     * @param goodsID
+     * @param packetID
+     * @param repositoryID
+     * @return
+     */
+    List<PacketStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                        @Param("packetID") Integer packetID,
                                         @Param("repositoryID") Integer repositoryID);
 
-    List<PacketStorage> selectApproximate(@Param("trace") String trace,
-                                          @Param("status") String status,
+
+    List<PacketStorage> selectByGoodsName(@Param("goodsID") String goodsName,
+                                          @Param("packetID") Integer packetID,
                                           @Param("repositoryID") Integer repositoryID);
+
+    /**
+     * 模糊搜索
+     * @param trace
+     * @param status
+     * @param repositoryID
+     * @return
+     */
+    List<PacketStorage> selectByTrace(@Param("trace") String trace,
+                                      @Param("status") String status,
+                                      @Param("repositoryID") Integer repositoryID);
+
     /**
      * 添加一条记录
      *

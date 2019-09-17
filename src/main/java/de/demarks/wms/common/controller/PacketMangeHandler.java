@@ -47,8 +47,7 @@ public class PacketMangeHandler {
 
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_TRACE = "searchByTrace";
-    private static final String SEARCH_ACTIVE = "searchActive";
-    private static final String SEARCH_ALL = "searchAll";
+    private static final String SEARCH_ACTIVE = "searchAll";
 
     private static final String SEARCH_REF_ACTIVE = "searchRefActive";
 
@@ -77,9 +76,6 @@ public class PacketMangeHandler {
                 break;
             case SEARCH_ACTIVE:
                 queryResult = packetManageService.selectApproximate("", StatusUtil.PACKET_STATUS_SEND, -1, offset, limit);
-                break;
-            case SEARCH_ALL:
-                queryResult = packetManageService.selectAll(-1, offset, limit);
                 break;
             case SEARCH_REF_ACTIVE:
                 queryResult = packetRefMangeService.selectRefApproximate(keyWord,StatusUtil.PACKET_STATUS_SEND,-1);
@@ -229,7 +225,7 @@ public class PacketMangeHandler {
             packetID = packetMapper.selectByTrace(trace,repositoryID).getId();
         }
 
-        //执行包裹预报入库操作
+        //执行包裹预报操作
         String result = packetManageService.packetStockInOperation(packetID, goodsID, repositoryID, number, personInCharge) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 

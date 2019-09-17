@@ -41,6 +41,8 @@ public class PacketStorageManageHandler {
     private PacketStorageManageService packetStorageManageService;
 
     private static final String SEARCH_BY_GOODID = "searchByGoodsID";
+    private static final String SEARCH_BY_GOODNAME = "searchByGoodsName";
+    private static final String SEARCH_ALL = "searchAll";
     private static final String SEARCH_BY_PACKETID = "searchByPacketID";
     private static final String SEARCH_BY_TRACE = "searchByTrace";
 
@@ -63,18 +65,26 @@ public class PacketStorageManageHandler {
             case SEARCH_BY_GOODID:
                 if (StringUtils.isNumeric(keyword)){
                     Integer goodsID = Integer.valueOf(keyword);
+                    if (StringUtils.isNumeric(packetInfo)){
+                        Integer packetID = Integer.valueOf(packetInfo);
+                        queryResult = packetStorageManageService.selectByGoodsID(goodsID, packetID, repositoryID);
+                    }else
+                        queryResult = packetStorageManageService.selectByGoodsID(goodsID, -1, repositoryID);
+                }
+                break;
+            case SEARCH_BY_GOODNAME:
+                if (StringUtils.isNumeric(packetInfo)){
                     Integer packetID = Integer.valueOf(packetInfo);
-                    queryResult = packetStorageManageService.selectByGoodsID(goodsID, packetID, repositoryID);
-                }
+                    queryResult = packetStorageManageService.selectByGoodsName(keyword, packetID, repositoryID);
+                }else
+                    queryResult = packetStorageManageService.selectByGoodsName(keyword, -1, repositoryID);
                 break;
-            case SEARCH_BY_PACKETID:
-                if (StringUtils.isNumeric(keyword)){
-                    Integer packetID = Integer.valueOf(keyword);
-                    queryResult = packetStorageManageService.selectByPacketID(packetID, packetInfo, repositoryID);
-                }
-                break;
-            case SEARCH_BY_TRACE:
-                queryResult = packetStorageManageService.selectApproximate(keyword, packetInfo, repositoryID);
+            case SEARCH_ALL:
+                if (StringUtils.isNumeric(packetInfo)){
+                    Integer packetID = Integer.valueOf(packetInfo);
+                    queryResult = packetStorageManageService.selectAll(packetID, repositoryID);
+                }else
+                    queryResult = packetStorageManageService.selectAll(-1, repositoryID);
                 break;
             default:
                 break;
@@ -117,43 +127,5 @@ public class PacketStorageManageHandler {
         responseContent.setResponseTotal(total);
         return responseContent.generateResponse();
     }
-
-    /**
-     * 指定包裹信息对预报库存查询
-     *
-     * @param keyword          查询关键字
-     * @param searchType       查询类型
-     * @param repositoryID     查询所属的仓库
-     * @param offset           分页偏移值
-     * @param limit            分页大小
-     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getStorageListWithStatus", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Map<String, Object> getStorageListWithStatus(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,
-                                                 @RequestParam("status") String status, @RequestParam("repositoryID") Integer repositoryID,
-                                                 @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketStorageManageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-        List<PacketStorage> rows;
-        long total = 0;
-
-        // query
-        Map<String, Object> queryResult = query(searchType, keyword, status, repositoryID, offset, limit);
-        if (queryResult != null) {
-            rows = (List<PacketStorage>) queryResult.get("data");
-            total = (long) queryResult.get("total");
-        } else
-            rows = new ArrayList<>();
-
-        // 设置 Response
-        responseContent.setCustomerInfo("rows", rows);
-        responseContent.setResponseTotal(total);
-        return responseContent.generateResponse();
-    }
-
-
 
 }

@@ -51,6 +51,28 @@
 		});
 	}
 
+	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
+	function optionAction() {
+		$(".dropOption").click(function() {
+			var type = $(this).text();
+			$("#search_input").val("");
+			if (type == "所有") {
+				$("#search_input_type").attr("readOnly", "true");
+				search_type_storage = "searchAll";
+			} else if (type == "货物ID") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsID";
+			} else if (type == "货物名称") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByGoodsName";
+			} else {
+				$("#search_input_type").removeAttr("readOnly");
+			}
+			$("#search_type").text(type);
+			$("#search_input_type").attr("placeholder", type);
+		})
+	}
+
 	// 表格初始化
 	function storageListInit() {
 		$('#storageList')
@@ -102,8 +124,8 @@
 										},
 										'click .delete' : function(e,
 																   value, row, index) {
-											select_packetID = row.packetID;
 											select_goodsID = row.goodsID;
+											select_packetID = row.packetID;
 											select_repositoryID = row.repositoryID
 											$('#deleteWarning_modal').modal(
 													'show');
@@ -123,24 +145,7 @@
 						});
 	}
 
-	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
-	function optionAction() {
-		$(".dropOption").click(function() {
-			var type = $(this).text();
-			$("#search_input").val("");
-			if (type == "运单号") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByTrace";
-			} else if (type == "包裹ID") {
-				$("#search_input_type").removeAttr("readOnly");
-				search_type_storage = "searchByPacketID";
-			} {
-				$("#search_input_type").removeAttr("readOnly");
-			}
-			$("#search_type").text(type);
-			$("#search_input_type").attr("placeholder", type);
-		})
-	}
+
 
 	// 搜索动作
 	function searchAction() {
@@ -530,7 +535,9 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
 					</ul>
 				</div>
 			</div>
@@ -538,13 +545,11 @@
 				<div>
 					<div class="col-md-3 col-sm-3">
 						<input id="search_input_type" type="text" class="form-control"
-							placeholder="包裹ID">
+							placeholder="货物ID">
 					</div>
 					<div class="col-md-3 col-sm-4">
-						<select class="form-control" id="search_packet_status">
-							<option value="">所有</option>
-							<option value="已发货">未签收</option>
-						</select>
+						<input id="search_input_packet" type="text" class="form-control"
+							placeholder="包裹运单号">
 					</div>
 					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">

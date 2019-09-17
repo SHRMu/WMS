@@ -301,12 +301,12 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     public boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException {
         try {
             //检查该批次下是否有待检测的库存
-            List<Storage> storages = storageMapper.selectAll(null, batchID, repositoryID);
+            List<Storage> storages = storageMapper.selectByGoodsID(null, batchID, repositoryID);
             if ( storages != null && !storages.isEmpty())
                 return  false;
 
             //检查该批次下所有已测良品均已发货
-            List<DetectStorage> detectStorageList = detectStorageMapper.selectAll(repositoryID);
+            List<DetectStorage> detectStorageList = detectStorageMapper.selectAll(null, repositoryID);
             if ( detectStorageList != null && !detectStorageList.isEmpty()){
                 for (DetectStorage detectStorage:
                      detectStorageList) {

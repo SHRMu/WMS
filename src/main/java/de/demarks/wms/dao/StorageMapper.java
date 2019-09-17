@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * 待检测库存信息映射器
+ * 入库库存信息映射器
  *
  * @author huanyingcool
  *
@@ -17,21 +17,35 @@ import java.util.List;
 public interface StorageMapper {
 
 	/**
-	 * 选择所有的库存信息
-	 * @return 返回所有的库存信息
+	 * 选择全部
+	 * @param batchID
+	 * @param repositoryID
+	 * @return
 	 */
-	List<Storage> selectAll(@Param("goodsID") Integer goodsID,
-							@Param("batchID") Integer batchID,
+	List<Storage> selectAll(@Param("batchID") Integer batchID,
 							@Param("repositoryID") Integer repositoryID);
-	
+
 	/**
-	 * 选择指定货物名的库存信息
-	 * @param goodsName 货物名称
-	 * @return 返回所有指定货物名称的库存信息
+	 * 精确搜索
+	 * @param goodsID
+	 * @param batchID
+	 * @param repositoryID
+	 * @return
+	 */
+	List<Storage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+							 	  @Param("batchID") Integer batchID,
+							 	  @Param("repositoryID") Integer repositoryID);
+
+	/**
+	 * 模糊搜索
+	 * @param goodsName
+	 * @param batchID
+	 * @param repositoryID
+	 * @return
 	 */
 	List<Storage> selectByGoodsName(@Param("goodsName") String goodsName,
-									 @Param("batchID") Integer batchID,
-									 @Param("repositoryID") Integer repositoryID);
+									@Param("batchID") Integer batchID,
+									@Param("repositoryID") Integer repositoryID);
 
 	/**
 	 * 更新库存信息

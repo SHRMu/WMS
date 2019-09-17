@@ -31,15 +31,12 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectAll(repositoryID, -1, -1);
+    public Map<String, Object> selectAll(Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectAll(packetID, repositoryID, -1, -1);
     }
 
-
     @Override
-    public Map<String, Object> selectAll(@Param("repositoryID") Integer repositoryID,
-                                         @Param("offset") Integer offset,
-                                         @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectAll(Integer packetID, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -49,19 +46,23 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         // validate
         if (offset < 0 || limit < 0)
             isPagination = false;
+        if (packetID < 0)
+            packetID = null;
+        if (repositoryID <0)
+            repositoryID = null;
 
         // query
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectAll(null,null, repositoryID);
+                packetStorageList = packetStorageMapper.selectAll(packetID,repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectAll(null,null, repositoryID);
+                packetStorageList = packetStorageMapper.selectAll(packetID, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else
@@ -100,9 +101,8 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
-                                               @Param("repositoryID") Integer repositoryID,
-                                               @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID,Integer repositoryID,
+                                               Integer offset, Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -148,12 +148,12 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
     }
 
     @Override
-    public Map<String, Object> selectByPacketID(Integer packetID, String status, Integer repositoryID) throws PacketStorageManageServiceException {
-        return selectByPacketID(packetID, status, repositoryID, -1, -1);
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return selectByGoodsName(goodsName, packetID, repositoryID, -1, -1);
     }
 
     @Override
-    public Map<String, Object> selectByPacketID(Integer packetID, String status, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectByGoodsName(String goodsName, Integer packetID, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -164,10 +164,9 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         // validate
         if (offset < 0 || limit < 0)
             isPagination = false;
+
         if (packetID < 0)
             packetID = null;
-        if (status.equals(""))
-            status = null;
         if (repositoryID < 0)
             repositoryID = null;
 
@@ -175,14 +174,14 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectAll(packetID, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByGoodsName(goodsName, packetID, repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectAll(packetID, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByGoodsName(goodsName, packetID, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else
@@ -198,12 +197,12 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
     }
 
     @Override
-    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID) throws PacketStorageManageServiceException {
-        return selectApproximate(trace,status,repositoryID, -1, -1);
+    public Map<String, Object> selectByTrace(String trace, String status, Integer repositoryID) throws PacketStorageManageServiceException {
+        return selectByTrace(trace,status,repositoryID, -1, -1);
     }
 
     @Override
-    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectByTrace(String trace, String status, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -215,8 +214,6 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         if (offset < 0 || limit < 0)
             isPagination = false;
 
-        if (trace.equals(""))
-            trace = null;
         if (status.equals(""))
             status = null;
         if (repositoryID < 0)
@@ -226,14 +223,14 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectApproximate(trace, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByTrace(trace, status, repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectApproximate(trace, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByTrace(trace, status, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else

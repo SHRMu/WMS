@@ -1,5 +1,6 @@
 package de.demarks.wms.common.controller;
 
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import de.demarks.wms.common.service.Interface.StockRecordManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.common.util.Response;
@@ -39,8 +40,10 @@ public class StorageManageHandler {
     @Autowired
     private ResponseUtil responseUtil;
 
-    private static final String SEARCH_ALL = "searchAll";
+
+    private static final String SEARCH_BY_GOODS_NAME = "searchByGoodsName";
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
+    private static final String SEARCH_ALL = "searchAll";
 
     /**
      * 查询库存信息
@@ -48,50 +51,39 @@ public class StorageManageHandler {
      * @param searchType       查询类型
      * @param keyword          查询关键字
      * @param batchBelong      查询批次
-     * @param repositoryBelong 查询仓库
+     * @param repositoryID     查询仓库
      * @param offset           分页偏移值
      * @param limit            分页大小
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    private Map<String, Object> query(String searchType, String keyword, String batchBelong, String repositoryBelong,
+    private Map<String, Object> query(String searchType, String keyword, String batchBelong, Integer repositoryID,
                                       int offset, int limit) throws StorageManageServiceException {
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
             case SEARCH_ALL:
-                if (StringUtils.isNumeric(repositoryBelong)) {
-                    Integer repositoryID = Integer.valueOf(repositoryBelong);
-                    if (StringUtils.isNumeric(batchBelong)){
-                        Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = storageManageService.selectAll(batchID, repositoryID, offset, limit);
-                    }else
-                        queryResult = storageManageService.selectAll(null, repositoryID, offset, limit);
-                } else {
-                    if (StringUtils.isNumeric(batchBelong)) {
-                        Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = storageManageService.selectAll(batchID, null, offset, limit);
-                    }else
-                        queryResult = storageManageService.selectAll(null, null, offset, limit);
-                }
+                if (StringUtils.isNumeric(batchBelong)) {
+                    Integer batchID = Integer.valueOf(batchBelong);
+                    queryResult = storageManageService.selectAll(batchID, repositoryID, offset, limit);
+                } else
+                    queryResult = storageManageService.selectAll(-1, repositoryID, offset, limit);
                 break;
             case SEARCH_BY_GOODS_ID:
                 if (StringUtils.isNumeric(keyword)) {
                     Integer goodsID = Integer.valueOf(keyword);
-                    if (StringUtils.isNumeric(repositoryBelong)) {
-                        Integer repositoryID = Integer.valueOf(repositoryBelong);
-                        if (StringUtils.isNumeric(batchBelong)) {
-                            Integer batchID = Integer.valueOf(batchBelong);
-                            queryResult = storageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
-                        }else
-                            queryResult = storageManageService.selectByGoodsID(goodsID, null, repositoryID, offset, limit);
-                    } else {
-                        if (StringUtils.isNumeric(batchBelong)) {
-                            Integer batchID = Integer.valueOf(batchBelong);
-                            queryResult = storageManageService.selectByGoodsID(goodsID, batchID, null, offset, limit);
-                        }else
-                            queryResult = storageManageService.selectByGoodsID(goodsID, null, null, offset, limit);
-                    }
+                    if (StringUtils.isNumeric(batchBelong)) {
+                        Integer batchID = Integer.valueOf(batchBelong);
+                        queryResult = storageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
+                    } else
+                        queryResult = storageManageService.selectByGoodsID(goodsID, -1, repositoryID, offset, limit);
                 }
+                break;
+            case SEARCH_BY_GOODS_NAME:
+                if (StringUtils.isNumeric(batchBelong)){
+                    Integer batchID = Integer.valueOf(batchBelong);
+                    queryResult = storageManageService.selectByGoodsName(keyword, batchID, repositoryID, offset, limit);
+                }else
+                    queryResult = storageManageService.selectByGoodsName(keyword,-1, repositoryID, offset, limit);
                 break;
             default:
                 // do other thing
@@ -107,7 +99,7 @@ public class StorageManageHandler {
      * @param keyword          查询关键字
      * @param searchType       查询类型
      * @param batchBelong      查询所属的批次
-     * @param repositoryBelong 查询所属的仓库
+     * @param repositoryID     查询所属的仓库
      * @param offset           分页偏移值
      * @param limit            分页大小
      * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
@@ -117,7 +109,7 @@ public class StorageManageHandler {
     public
     @ResponseBody
     Map<String, Object> getStorageListWithRepoID(@RequestParam("keyword") String keyword,@RequestParam("searchType") String searchType,
-                                                 @RequestParam("batchBelong") String batchBelong, @RequestParam("repositoryBelong") String repositoryBelong,
+                                                 @RequestParam("batchBelong") String batchBelong, @RequestParam("repositoryID") Integer repositoryID,
                                                  @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws StorageManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -126,7 +118,7 @@ public class StorageManageHandler {
         long total = 0;
 
         // query
-        Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryBelong, offset, limit);
+        Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryID, offset, limit);
         if (queryResult != null) {
             rows = (List<Storage>) queryResult.get("data");
             total = (long) queryResult.get("total");
@@ -167,7 +159,7 @@ public class StorageManageHandler {
         Integer repositoryID = (Integer) session.getAttribute("repositoryBelong");
 
         if (batchID != null && repositoryID != null) {
-            Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID.toString(), offset, limit);
+            Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID, offset, limit);
             if (queryResult != null) {
                 rows = (List<Storage>) queryResult.get("data");
                 total = (long) queryResult.get("total");
@@ -293,89 +285,89 @@ public class StorageManageHandler {
         return responseContent.generateResponse();
     }
 
-    /**
-     * 导入库存信息
-     *
-     * @param file 保存有库存信息的文件
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
-     * error；key为total表示导入的总条数；key为available表示有效的条数
-     */
-    @RequestMapping(value = "importStorageRecord", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    Map<String, Object> importStorageRecord(@RequestParam("file") MultipartFile file) throws StorageManageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-        String result = Response.RESPONSE_RESULT_ERROR;
+//    /**
+//     * 导入库存信息
+//     *
+//     * @param file 保存有库存信息的文件
+//     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
+//     * error；key为total表示导入的总条数；key为available表示有效的条数
+//     */
+//    @RequestMapping(value = "importStorageRecord", method = RequestMethod.POST)
+//    public
+//    @ResponseBody
+//    Map<String, Object> importStorageRecord(@RequestParam("file") MultipartFile file) throws StorageManageServiceException {
+//        // 初始化 Response
+//        Response responseContent = responseUtil.newResponseInstance();
+//        String result = Response.RESPONSE_RESULT_ERROR;
+//
+//        int total = 0;
+//        int available = 0;
+//
+//        if (file != null) {
+//            Map<String, Object> importInfo = storageManageService.importStorage(file);
+//            if (importInfo != null) {
+//                total = (int) importInfo.get("total");
+//                available = (int) importInfo.get("available");
+//                result = Response.RESPONSE_RESULT_SUCCESS;
+//            }
+//        }
+//
+//        // 设置 Response
+//        responseContent.setResponseResult(result);
+//        responseContent.setResponseTotal(total);
+//        responseContent.setCustomerInfo("available", available);
+//        return responseContent.generateResponse();
+//    }
 
-        int total = 0;
-        int available = 0;
-
-        if (file != null) {
-            Map<String, Object> importInfo = storageManageService.importStorage(file);
-            if (importInfo != null) {
-                total = (int) importInfo.get("total");
-                available = (int) importInfo.get("available");
-                result = Response.RESPONSE_RESULT_SUCCESS;
-            }
-        }
-
-        // 设置 Response
-        responseContent.setResponseResult(result);
-        responseContent.setResponseTotal(total);
-        responseContent.setCustomerInfo("available", available);
-        return responseContent.generateResponse();
-    }
-
-    /**
-     * 导出库存信息
-     *
-     * @param searchType       查询类型
-     * @param keyword          查询关键字
-     * @param batchBelong      查询所属批次
-     * @param repositoryBelong 查询所属仓库
-     * @param request          请求
-     * @param response         响应
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "exportStorageRecord", method = RequestMethod.GET)
-    public void exportStorageRecord(@RequestParam("searchType") String searchType,
-                                    @RequestParam("keyword") String keyword,
-                                    @RequestParam(value = "batchBelong", required = false) String batchBelong,
-                                    @RequestParam(value = "repositoryBelong", required = false) String repositoryBelong,
-                                    HttpServletRequest request, HttpServletResponse response) throws StorageManageServiceException, IOException {
-        String fileName = "storageRecord.xlsx";
-
-        HttpSession session = request.getSession();
-        Integer sessionBatchBelong = (Integer) session.getAttribute("batchBelong");
-        Integer sessionRepositoryBelong = (Integer) session.getAttribute("repositoryBelong");
-        if (sessionBatchBelong != null && !sessionBatchBelong.equals("none"))
-            batchBelong = sessionBatchBelong.toString();
-        if (sessionRepositoryBelong != null && !sessionRepositoryBelong.equals("none"))
-            repositoryBelong = sessionRepositoryBelong.toString();
-
-        List<Storage> storageList = null;
-        Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryBelong, -1, -1);
-        if (queryResult != null)
-            storageList = (List<Storage>) queryResult.get("data");
-
-        File file = storageManageService.exportStorage(storageList);
-        if (file != null) {
-            // 设置响应头
-            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
-            FileInputStream inputStream = new FileInputStream(file);
-            OutputStream outputStream = response.getOutputStream();
-            byte[] buffer = new byte[8192];
-
-            int len;
-            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
-                outputStream.write(buffer, 0, len);
-                outputStream.flush();
-            }
-
-            inputStream.close();
-            outputStream.close();
-
-        }
-    }
+//    /**
+//     * 导出库存信息
+//     *
+//     * @param searchType       查询类型
+//     * @param keyword          查询关键字
+//     * @param batchBelong      查询所属批次
+//     * @param repositoryBelong 查询所属仓库
+//     * @param request          请求
+//     * @param response         响应
+//     */
+//    @SuppressWarnings("unchecked")
+//    @RequestMapping(value = "exportStorageRecord", method = RequestMethod.GET)
+//    public void exportStorageRecord(@RequestParam("searchType") String searchType,
+//                                    @RequestParam("keyword") String keyword,
+//                                    @RequestParam(value = "batchBelong", required = false) String batchBelong,
+//                                    @RequestParam(value = "repositoryBelong", required = false) String repositoryBelong,
+//                                    HttpServletRequest request, HttpServletResponse response) throws StorageManageServiceException, IOException {
+//        String fileName = "storageRecord.xlsx";
+//
+//        HttpSession session = request.getSession();
+//        Integer sessionBatchBelong = (Integer) session.getAttribute("batchBelong");
+//        Integer sessionRepositoryBelong = (Integer) session.getAttribute("repositoryBelong");
+//        if (sessionBatchBelong != null && !sessionBatchBelong.equals("none"))
+//            batchBelong = sessionBatchBelong.toString();
+//        if (sessionRepositoryBelong != null && !sessionRepositoryBelong.equals("none"))
+//            repositoryBelong = sessionRepositoryBelong.toString();
+//
+//        List<Storage> storageList = null;
+//        Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryBelong, -1, -1);
+//        if (queryResult != null)
+//            storageList = (List<Storage>) queryResult.get("data");
+//
+//        File file = storageManageService.exportStorage(storageList);
+//        if (file != null) {
+//            // 设置响应头
+//            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+//            FileInputStream inputStream = new FileInputStream(file);
+//            OutputStream outputStream = response.getOutputStream();
+//            byte[] buffer = new byte[8192];
+//
+//            int len;
+//            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
+//                outputStream.write(buffer, 0, len);
+//                outputStream.flush();
+//            }
+//
+//            inputStream.close();
+//            outputStream.close();
+//
+//        }
+//    }
 }

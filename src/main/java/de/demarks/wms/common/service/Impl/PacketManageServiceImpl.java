@@ -32,8 +32,6 @@ public class PacketManageServiceImpl implements PacketManageService {
     @Autowired
     private PacketMapper packetMapper;
     @Autowired
-    private PacketRefMapper packetRefMapper;
-    @Autowired
     private GoodsMapper goodsMapper;
     @Autowired
     private RepositoryMapper repositoryMapper;
@@ -182,7 +180,6 @@ public class PacketManageServiceImpl implements PacketManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                Map<String, Object> stringObjectMap = packetRefMangeService.selectRefApproximate(trace, status, repositoryID);
                 packetList = packetMapper.selectApproximate(trace, status, repositoryID);
                 if (packetList != null) {
                     PageInfo<Packet> pageInfo = new PageInfo<>(packetList);
