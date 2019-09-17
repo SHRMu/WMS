@@ -50,9 +50,9 @@ public interface PacketManageService {
      * @return
      * @throws PacketManageServiceException
      */
-    Map<String, Object> selectApproximate(@Param("trace") String trace,
-                                          @Param("status") String status,
-                                          @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
+    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
+                                              @Param("status") String status,
+                                              @Param("repositoryID") Integer repositoryID) throws PacketManageServiceException;
 
     /**
      * 模糊搜索 分页 返回指定运单号的信息
@@ -64,11 +64,11 @@ public interface PacketManageService {
      * @return
      * @throws PacketManageServiceException
      */
-    Map<String, Object> selectApproximate(@Param("trace") String trace,
-                                          @Param("status") String status,
-                                          @Param("repositoryID") Integer repositoryID,
-                                          @Param("offset")int offset,
-                                          @Param("limit") int limit) throws PacketManageServiceException;
+    Map<String, Object> selectByTraceApproximate(@Param("trace") String trace,
+                                              @Param("status") String status,
+                                              @Param("repositoryID") Integer repositoryID,
+                                              @Param("offset")int offset,
+                                              @Param("limit") int limit) throws PacketManageServiceException;
 
     /**
      * 添加包裹信息

@@ -64,7 +64,7 @@
 		</if>
 	</select>
 
-	<select id="selectApproximate" resultMap="packet">
+	<select id="selectByTraceApproximate" resultMap="packet">
 		select
 			p.PACKET_ID,
 			p.PACKET_TRACE,
@@ -97,7 +97,6 @@
 			wms_packet
 		set
 			PACKET_TRACE = #{trace},
-			PACKET_TIME = #{time},
 			PACKET_STATUS = #{status},
 			PACKET_DESC = #{desc},
 			PACKET_REPOID = #{repositoryID}
@@ -105,7 +104,7 @@
 			PACKET_ID = #{id}
 	</update>
 
-	<delete id="deleteByID">
+	<delete id="deleteByPacketID">
 		delete from wms_packet
 		where PACKET_ID = #{packetID}
 	</delete>

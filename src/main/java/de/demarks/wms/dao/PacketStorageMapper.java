@@ -1,9 +1,7 @@
 package de.demarks.wms.dao;
 
-import com.sun.tracing.dtrace.ProviderAttributes;
 import de.demarks.wms.domain.PacketStorage;
 import org.apache.ibatis.annotations.Param;
-import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -16,9 +14,10 @@ import java.util.List;
 public interface PacketStorageMapper {
 
     /**
-     * 返回全部信息
      *
-     * @return 返回全部的预报
+     * @param packetID
+     * @param repositoryID
+     * @return
      */
     List<PacketStorage> selectAll(@Param("packetID") Integer packetID,
                                   @Param("repositoryID") Integer repositoryID);
@@ -34,10 +33,27 @@ public interface PacketStorageMapper {
                                         @Param("packetID") Integer packetID,
                                         @Param("repositoryID") Integer repositoryID);
 
-
-    List<PacketStorage> selectByGoodsName(@Param("goodsID") String goodsName,
+    /**
+     * 模糊搜索
+     * @param goodsName
+     * @param packetID
+     * @param repositoryID
+     * @return
+     */
+    List<PacketStorage> selectByGoodsName(@Param("goodsName") String goodsName,
                                           @Param("packetID") Integer packetID,
                                           @Param("repositoryID") Integer repositoryID);
+
+    /**
+     * 精确搜索
+     * @param customerID
+     * @param packetID
+     * @param repositoryID
+     * @return
+     */
+    List<PacketStorage> selectByCustomerID(@Param("customerID") Integer customerID,
+                                            @Param("packetID") Integer packetID,
+                                            @Param("repositoryID") Integer repositoryID);
 
     /**
      * 模糊搜索
@@ -46,21 +62,19 @@ public interface PacketStorageMapper {
      * @param repositoryID
      * @return
      */
-    List<PacketStorage> selectByTrace(@Param("trace") String trace,
-                                      @Param("status") String status,
-                                      @Param("repositoryID") Integer repositoryID);
+    List<PacketStorage> selectByPacketTrace(@Param("trace") String trace,
+                                              @Param("status") String status,
+                                              @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 添加一条记录
-     *
-     * @param packetStorage 预报记录
+     * 添加
+     * @param packetStorage
      */
     void insert(PacketStorage packetStorage);
 
     /**
-     * 更新预报库存记录
-     *
-     * @param packetStorage 入库记录
+     * 更新
+     * @param packetStorage
      */
     void update(PacketStorage packetStorage);
 

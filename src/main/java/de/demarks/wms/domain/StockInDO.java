@@ -10,58 +10,17 @@ import java.util.Date;
  */
 public class StockInDO {
 
-    /**
-     * 入库记录
-     */
     private Integer id;
-
-    /**
-     * 包裹号
-     */
     private Integer packetID;
-
-    /**
-     * 客户ID
-     */
-    private Integer customerID;
-
-    /**
-     * 客户名称
-     */
-    private String customerName;
-
-    /**
-     * 商品ID
-     */
     private Integer goodsID;
-
-    /**
-     * 商品名称
-     */
     private String goodName;
-
     private Integer batchID;
-
     private String batchCode;
-
-    /**
-     * 入库仓库ID
-     */
+    private Integer customerID;
+    private String customerName;
     private Integer repositoryID;
-
-    /**
-     * 入库数量
-     */
     private long number;
-
-    /**
-     * 入库日期
-     */
     private Date time;
-
-    /**
-     * 入库经手人
-     */
     private String personInCharge;
 
     public Integer getId() {

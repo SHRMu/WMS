@@ -35,7 +35,7 @@
 		</if>
 	</select>
 	
-	<select id="selectByID" resultMap="packetRef">
+	<select id="selectByPacketID" resultMap="packetRef">
 		select
 			pr.PACKET_ID as id,
 			pr.PACKET_TRACE as trace,
@@ -86,7 +86,7 @@
 			wms_packet_ref pr, wms_packet p
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID and
-			pr.PACKET_TRACE = #{packetTrace}
+			pr.PACKET_TRACE = #{trace}
 		<if test="refID !=null">
 			and pr.PACKET_REF_ID = #{refID}
 		</if>
@@ -95,7 +95,7 @@
 		</if>
 	</select>
 
-	<select id="selectApproximate" resultMap="packetRef">
+	<select id="selectByTraceApproximate" resultMap="packetRef">
 		select
 			pr.PACKET_ID as id,
 			pr.PACKET_TRACE as trace,
@@ -109,14 +109,12 @@
 			wms_packet_ref pr, wms_packet p
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID and
-		<if test="trace !=null">
 			pr.PACKET_TRACE like concat ('%',#{trace},'%')
-		</if>
 		<if test="status !=null">
 			and p.PACKET_STATUS = #{status}
 		</if>
 		<if test=" repositoryID !=null">
-			and p.repositoryID = #{repositoryID}
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 	</select>
 
@@ -125,7 +123,7 @@
 		values (#{trace},#{refID})
 	</insert>
 
-	<delete id="deleteByID">
+	<delete id="deleteByPacketID">
 		delete from wms_packet_ref
 		where PACKET_ID = #{packetID}
 	</delete>

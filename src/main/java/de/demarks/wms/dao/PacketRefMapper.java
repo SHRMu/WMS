@@ -28,7 +28,7 @@ public interface PacketRefMapper {
      * 返回指定packetID的信息
      * @param packetID
      */
-    PacketRef selectByID(@Param("packetID") Integer packetID);
+    PacketRef selectByPacketID(@Param("packetID") Integer packetID);
 
     /**
      * 返回指定RefID的信息
@@ -40,11 +40,11 @@ public interface PacketRefMapper {
 
     /**
      * 精确查询 返回指定运单号的信息
-     * @param packetTrace
+     * @param trace
      * @param refID
      * @return
      */
-    PacketRef selectByTrace(@Param("packetTrace") String packetTrace,
+    PacketRef selectByTrace(@Param("trace") String trace,
                             @Param("refID") Integer refID,
                             @Param("repositoryID") Integer repositoryID);
 
@@ -55,9 +55,9 @@ public interface PacketRefMapper {
      * @param repositoryID
      * @return
      */
-    List<PacketRef> selectApproximate(@Param("trace") String trace,
-                                      @Param("status") String status,
-                                      @Param("repositoryID") Integer repositoryID);
+    List<PacketRef> selectByTraceApproximate(@Param("trace") String trace,
+                                              @Param("status") String status,
+                                              @Param("repositoryID") Integer repositoryID);
 
     /**
      * 添加附加包裹
@@ -71,7 +71,7 @@ public interface PacketRefMapper {
      * 删除指定ID号的包裹
      * @param packetID
      */
-    void deleteByID(@Param("packetID") Integer packetID);
+    void deleteByPacketID(@Param("packetID") Integer packetID);
 
     /**
      * 删除指定refID的包裹

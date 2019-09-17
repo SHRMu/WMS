@@ -7,7 +7,7 @@
 	
 	<resultMap type="de.demarks.wms.domain.StockOutDO" id="stockOutDO">
 		<id property="id" column="stockout_id"/>
-		<result property="packet" column="stockout_packet"/>
+		<result property="packetID" column="stockout_packetID"/>
 		<result property="batchID" column="stockout_batchID" />
 		<result property="batchCode" column="stockout_batchCode" />
 		<result property="customerID" column="stockout_customerID"/>
@@ -23,7 +23,7 @@
 	<select id="selectAll" resultMap="stockOutDO">
 		select
 			r.RECORD_ID as stockout_id,
-			r.RECORD_PACKET as stockout_packet,
+			r.RECORD_PACKETID as stockout_packetID,
 			r.RECORD_BATCHID as stockout_batchID,
 			r.RECORD_CUSTOMERID as stockout_customerID,
 			r.RECORD_GOODID as stockout_goodsID,
@@ -42,7 +42,7 @@
 			r.RECORD_GOODID = g.GOOD_ID
 	</select>
 
-	<select id="selectById" resultMap="stockOutDO">
+	<select id="selectByRecordID" resultMap="stockOutDO">
 		select
 			r.RECORD_ID as stockout_id,
 			r.RECORD_PACKET as stockout_packet,
@@ -64,30 +64,7 @@
 			r.RECORD_GOODID = g.GOOD_ID and
 			r.RECORD_ID = #{id}
 	</select>
-	
-	<select id="selectByCustomerId" resultMap="stockOutDO">
-		select
-			r.RECORD_ID as stockout_id,
-			r.RECORD_PACKET as stockout_packet,
-			r.RECORD_BATCHID as stockout_batchID,
-			r.RECORD_CUSTOMERID as stockout_customerID,
-			r.RECORD_GOODID as stockout_goodsID,
-			r.RECORD_NUMBER as stockout_number,
-			r.RECORD_TIME as stockout_time,
-			r.RECORD_PERSON as stockout_personInCharge,
-			r.RECORD_REPOSITORYID as stockout_repositoryID,
-			b.REPO_BATCH_CODE as stockout_batchCode,
-			cus.CUSTOMER_NAME as stockout_customerName,
-			g.GOOD_NAME as stockout_goodName
-		from
-			wms_record_out r,wms_repo_batch b, wms_goods g,wms_customer cus
-		where
-			r.RECORD_BATCHID = b.REPO_BATCH_ID and
-			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
-			r.RECORD_GOODID = g.GOOD_ID and
-			r.RECORD_CUSTOMERID = #{customerId}
-	</select>
-	
+
 	<select id="selectByGoodsID" resultMap="stockOutDO">
 		select
 			r.RECORD_ID as stockout_id,
@@ -110,8 +87,8 @@
 			r.RECORD_GOODID = g.GOOD_ID and
 			r.RECORD_GOODID = #{goodsID}
 	</select>
-	
-	<select id="selectByBatchID" resultMap="stockOutDO">
+
+	<select id="selectByGoodsName" resultMap="stockOutDO">
 		select
 			r.RECORD_ID as stockout_id,
 			r.RECORD_PACKET as stockout_packet,
@@ -126,15 +103,15 @@
 			cus.CUSTOMER_NAME as stockout_customerName,
 			g.GOOD_NAME as stockout_goodName
 		from
-			wms_record_out r,wms_repo_batch b, wms_goods g,wms_customer cus
+			wms_record_out r,wms_repo_batch b, wms_goods g, wms_customer cus
 		where
 			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
-			r.RECORD_BATCHID = #{batchID}
+			r.RECORD_GOODID = #{goodsID}
 	</select>
 	
-	<select id="selectByRepositoryID" resultMap="stockOutDO">
+	<select id="selectByCustomerID" resultMap="stockOutDO">
 		select
 			r.RECORD_ID as stockout_id,
 			r.RECORD_PACKET as stockout_packet,
@@ -154,10 +131,10 @@
 			r.RECORD_BATCHID = b.REPO_BATCH_ID and
 			r.RECORD_CUSTOMERID = cus.CUSTOMER_ID and
 			r.RECORD_GOODID = g.GOOD_ID and
-			r.RECORD_REPOSITORYID = #{repositoryID}
+			r.RECORD_CUSTOMERID = #{customerId}
 	</select>
 
-	<select id="selectByBatchRepoIDAndDate" resultMap="stockOutDO">
+	<select id="selectByDate" resultMap="stockOutDO">
         select
 			r.RECORD_ID as stockout_id,
 			r.RECORD_PACKET as stockout_packet,

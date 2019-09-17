@@ -146,7 +146,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             // 保存出库记录
             if (isSuccess) {
                 StockOutDO stockOutDO = new StockOutDO();
-                stockOutDO.setPacket(packet);
+                stockOutDO.setPacketID(packet);
                 stockOutDO.setBatchID(batchID);
                 stockOutDO.setCustomerID(customerID);
                 stockOutDO.setGoodsID(goodsID);
@@ -315,13 +315,13 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                stockInRecords = stockinMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                stockInRecords = stockinMapper.selectByDate(batchID, repositoryID, startDate, endDate);
                 if (stockInRecords != null)
                     stockInTotal = new PageInfo<>(stockInRecords).getTotal();
                 else
                     stockInRecords = new ArrayList<>(10);
             } else {
-                stockInRecords = stockinMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                stockInRecords = stockinMapper.selectByDate(batchID, repositoryID, startDate, endDate);
                 if (stockInRecords != null)
                     stockInTotal = stockInRecords.size();
                 else
@@ -361,13 +361,13 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                stockOutRecords = stockOutMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                stockOutRecords = stockOutMapper.selectByDate(batchID, repositoryID, startDate, endDate);
                 if (stockOutRecords != null)
                     stockOutRecordTotal = new PageInfo<>(stockOutRecords).getTotal();
                 else
                     stockOutRecords = new ArrayList<>(10);
             } else {
-                stockOutRecords = stockOutMapper.selectByBatchRepoIDAndDate(batchID, repositoryID, startDate, endDate);
+                stockOutRecords = stockOutMapper.selectByDate(batchID, repositoryID, startDate, endDate);
                 if (stockOutRecords != null)
                     stockOutRecordTotal = stockOutRecords.size();
                 else

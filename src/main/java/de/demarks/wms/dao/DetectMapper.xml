@@ -11,6 +11,8 @@
         <result property="goodsName" column="detect_goodsName" />
         <result property="batchID" column="detect_batchID"/>
         <result property="batchCode" column="detect_batchCode" />
+		<result property="customerID" column="detect_customerID" />
+		<result property="customerName" column="detect_customerName"/>
         <result property="repositoryID" column="detect_repositoryID"/>
         <result property="number" column="detect_number" />
         <result property="passed" column="detect_passed"/>
@@ -25,6 +27,7 @@
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
+			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -143,6 +146,10 @@
 		<if test="endDate != null">
 			<![CDATA[and d.DETECT_TIME <= #{endDate}]]>
 		</if>
+	</select>
+
+	<select id="selectByCustomerID" resultMap="detectDO">
+
 	</select>
 
     <insert id="insert">

@@ -103,7 +103,7 @@ public class PacketStorageManageHandler {
      * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getStorageListWithPacket", method = RequestMethod.GET)
+    @RequestMapping(value = "getStorageList", method = RequestMethod.GET)
     public
     @ResponseBody
     Map<String, Object> getStorageListWithPacket(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword,

@@ -45,9 +45,10 @@ public class PacketMangeHandler {
     @Autowired
     private PacketRefMangeService packetRefMangeService;
 
-    private static final String SEARCH_BY_ID = "searchByID";
+    private static final String SEARCH_BY_PACKET_ID = "searchByPacketID";
     private static final String SEARCH_BY_TRACE = "searchByTrace";
-    private static final String SEARCH_ACTIVE = "searchAll";
+    private static final String SEARCH_ACTIVE = "searchActive";
+    private static final String SEARCH_ALL= "searchAll";
 
     private static final String SEARCH_REF_ACTIVE = "searchRefActive";
 
@@ -60,25 +61,27 @@ public class PacketMangeHandler {
      * @return
      * @throws PacketManageServiceException
      */
-    private Map<String, Object> query(@Param("searchType") String searchType,
-                                      @Param("keyWord") String keyWord,
+    private Map<String, Object> query(@Param("searchType") String searchType, @Param("keyWord") String keyWord, @Param("repositoryID") Integer repositoryID,
                                       @Param("offset") int offset, @Param("limit") int limit) throws PacketManageServiceException {
 
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
-            case SEARCH_BY_ID:
+            case SEARCH_BY_PACKET_ID:
                 if (StringUtils.isNumeric(keyWord))
                     queryResult = packetManageService.selectByPacketID(Integer.valueOf(keyWord));
                 break;
             case SEARCH_BY_TRACE:
-                queryResult = packetManageService.selectApproximate(keyWord, "", -1, offset, limit);
+                queryResult = packetManageService.selectByTraceApproximate(keyWord, "", repositoryID, offset, limit);
                 break;
             case SEARCH_ACTIVE:
-                queryResult = packetManageService.selectApproximate("", StatusUtil.PACKET_STATUS_SEND, -1, offset, limit);
+                queryResult = packetManageService.selectByTraceApproximate("",StatusUtil.PACKET_STATUS_SEND,repositoryID);
+                break;
+            case SEARCH_ALL:
+                queryResult = packetManageService.selectAll(-1, offset, limit);
                 break;
             case SEARCH_REF_ACTIVE:
-                queryResult = packetRefMangeService.selectRefApproximate(keyWord,StatusUtil.PACKET_STATUS_SEND,-1);
+                queryResult = packetRefMangeService.selectRefApproximate(keyWord,StatusUtil.PACKET_STATUS_SEND,repositoryID);
                 break;
             default:
                 // do other thing
@@ -100,8 +103,7 @@ public class PacketMangeHandler {
     @RequestMapping(value = "getPacketList", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> getPacketList(@RequestParam("searchType") String searchType,
-                                      @RequestParam("keyWord") String keyWord,
+    Map<String, Object> getPacketList(@RequestParam("searchType") String searchType, @RequestParam("keyWord") String keyWord, @Param("repositoryID") Integer repositoryID,
                                       @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -109,7 +111,7 @@ public class PacketMangeHandler {
         long total = 0;
 
         // 查询
-        Map<String, Object> queryResult = query(searchType, keyWord, offset, limit);
+        Map<String, Object> queryResult = query(searchType, keyWord, repositoryID, offset, limit);
 
         if (queryResult != null) {
             rows = (List<Packet>) queryResult.get("data");

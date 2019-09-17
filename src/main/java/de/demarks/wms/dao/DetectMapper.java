@@ -61,6 +61,13 @@ public interface DetectMapper {
                                      @Param("startDate") Date startDate,
                                      @Param("endDate") Date endDate);
 
+
+    List<DetectDO> selectByCustomerID(@Param("customerID") Integer customerID,
+                                       @Param("batchID") Integer batchID,
+                                       @Param("repositoryID") Integer repositoryID,
+                                       @Param("startDate") Date startDate,
+                                       @Param("endDate") Date endDate);
+
     /**
      * 添加一条记录
      * @param detectDO

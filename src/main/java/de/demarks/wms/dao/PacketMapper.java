@@ -17,21 +17,21 @@ import java.util.List;
 public interface PacketMapper {
 
     /**
-     * 返回全部包裹信息
+     * 返回全部
      * @param repositoryID
      * @return
      */
     List<Packet> selectAll(@Param("repositoryID") Integer repositoryID);
 
     /**
-     * 返回指定包裹ID的信息
+     * 返回指定PacketID
      * @param packetID
      * @return
      */
     Packet selectByPacketID(@Param("packetID") Integer packetID);
 
     /**
-     * 精确查询 返回指定运单号的包裹信息
+     * 精确查询 返回指定运单号
      * @param trace
      * @param repositoryID
      * @return
@@ -40,31 +40,32 @@ public interface PacketMapper {
                          @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 模糊查询 返回指定运单号的包裹信息
+     * 模糊查询 返回指定运单号
      * @param trace
      * @param status
      * @param repositoryID
      * @return
      */
-    List<Packet> selectApproximate(@Param("trace") String trace,
-                                   @Param("status") String status,
-                                   @Param("repositoryID") Integer repositoryID);
+    List<Packet> selectByTraceApproximate(@Param("trace") String trace,
+                                         @Param("status") String status,
+                                         @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 添加包裹信息
+     * 添加
+     * @param packet
      * @return
      */
     Integer insert(Packet packet);
 
     /**
-     * 更新包裹信息
+     * 更新
      * @param packet
      */
     void update(Packet packet);
 
     /**
-     * 删除指定packetID号的包裹
+     * 删除指定packetID
      * @param packetID
      */
-    void deleteByID(Integer packetID);
+    void deleteByPacketID(@Param("packetID") Integer packetID);
 }

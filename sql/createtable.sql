@@ -77,11 +77,8 @@ INSERT INTO `wms_role_action` VALUES (49,1),(50,1),(51,1),(52,1),(53,1);
 INSERT INTO `wms_action` VALUES (1,'getPacketList',NULL,'/packetManage/getPacketList'), (2,'addPacket',NULL,'/packetManage/addPacket'), (3,'updatePacket',NULL,'/packetManage/updatePacket'), (4,'deletePacket',NULL,'/packetManage/deletePacket'),  (5,'packetStockIn',NULL,'/packetManage/packetStockIn');
 INSERT INTO `wms_role_action` VALUES (1,1),(2,1),(3,1),(4,1),(5,1);
 
-INSERT INTO `wms_action` VALUES (6,'getStorageListWithPacket',NULL,'/packetStorageManage/getStorageListWithPacket');
+INSERT INTO `wms_action` VALUES (6,'getStorageList',NULL,'/packetStorageManage/getStorageList');
 INSERT INTO `wms_role_action` VALUES (6,1);
-
-INSERT INTO `wms_action` VALUES (7,'getStorageListWithStatus',NULL,'/packetStorageManage/getStorageListWithStatus');
-INSERT INTO `wms_role_action` VALUES (7,1);
 
 # 系统登入登出记录表
 create table wms_access_record
@@ -145,6 +142,9 @@ INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888
     primary key(REPO_ID)
  )engine=innodb;
 
+  # 导入仓库信息
+INSERT INTO `wms_repository` VALUES (3001,'德国','可用','11000㎡','提供服务完整'),(3002,'中国深圳','可用','5500㎡','备用测试');
+
  create table wms_packet
  (
 	PACKET_ID int not null auto_increment,
@@ -157,6 +157,9 @@ INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888
     foreign key(PACKET_REPOID) references wms_repository(REPO_ID)
  )engine=innodb;
 
+
+INSERT INTO `wms_packet` VALUES (1,'DHL000','2019-09-17 08:59:55','已发货','DHL111,DHL222',3001),(2,'00340456','2019-08-22 08:59:55','已发货','', 3001);
+
  create table wms_packet_ref
 (
     PACKET_ID int not null auto_increment,
@@ -165,6 +168,8 @@ INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888
     primary key(PACKET_ID),
     foreign key(PACKET_REF_ID) references wms_packet(PACKET_ID)
 )engine=innodb;
+
+INSERT INTO `wms_packet_ref` VALUES (1,'DHL000',1),(2,'DHL111',1),(3,'DHL222',1),(4,'00340456',2);
 
 create table wms_packet_storage
 (
@@ -181,8 +186,7 @@ create table wms_packet_storage
     foreign key(PRE_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
- # 导入仓库信息
-INSERT INTO `wms_repository` VALUES (3001,'德国','可用','11000㎡','提供服务完整');
+
 
   # 创建仓库管理员信息表
  create table wms_repo_admin
@@ -210,6 +214,8 @@ create table wms_repo_batch
     primary key (REPO_BATCH_ID),
     foreign key (REPO_BATCH_REPOID) references wms_repository(REPO_ID)
 )engine=innodb;
+
+INSERT INTO `wms_repo_batch` VALUES (1,'Anker','可用','2019-09-17 08:59:55','', 3001),(2,'其他客户','可用','2019-08-20 08:59:55','', 3001);
 
 # 创建入库记录表
 create table wms_record_in
@@ -255,11 +261,13 @@ create table wms_record_storage
 (
 	RECORD_GOODID int not null,
 	RECORD_BATCHID int not null,
+	RECORD_CUSTOMERID int not null,
 	RECORD_REPOSITORY int not null,
     RECORD_NUMBER int not null,
     primary key(RECORD_GOODID, RECORD_BATCHID),
     foreign key (RECORD_GOODID) references wms_goods(GOOD_ID),
     foreign key (RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key (RECORD_CUSTOMERID) references  wms_customer(CUSTOMER_ID),
     foreign key (RECORD_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
 
@@ -269,6 +277,7 @@ create table wms_detect
     DETECT_ID int not null auto_increment,
     DETECT_GOODID int not null,
     DETECT_BATCHID int not null,
+    DETECT_CUSTOMERID int not null ,
     DETECT_REPOSITORYID int not null,
     DETECT_NUMBER int not null,
     DETECT_PASSED int not null,
@@ -279,6 +288,7 @@ create table wms_detect
     primary key(DETECT_ID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key (DETECT_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key (DETECT_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
@@ -287,6 +297,7 @@ create table wms_detect_storage
 (
     DETECT_GOODID int not null,
     DETECT_BATCHID int not null,
+    DETECT_CUSTOMERID int not null,
     DETECT_REPOSITORY int not null,
     DETECT_NUMBER int not null,
     DETECT_PASSED int not null,
@@ -295,6 +306,7 @@ create table wms_detect_storage
     primary key(DETECT_GOODID, DETECT_BATCHID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
+    foreign key (DETECT_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key (DETECT_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
 

@@ -64,10 +64,10 @@ public interface RepositoryBatchMapper {
     void update(RepositoryBatch repositoryBatch);
 
     /**
-     * 删除指定 Batch ID 的 RepositoryBatch 记录
-     * @param BatchID 批次ID
+     * 删除指定 batchID 的 RepositoryBatch 记录
+     * @param batchID 批次ID
      */
-    void deleteByID(Integer BatchID);
+    void deleteByID(Integer batchID);
 
 
 }

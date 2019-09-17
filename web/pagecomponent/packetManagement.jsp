@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_packet = "none";
+	var search_type_packet = "searchActive";
 	var search_keyWord = "";
 	var selectID;
 
@@ -49,13 +49,13 @@
 		$(".dropOption").click(function() {
 			var type = $(this).text();
 			$("#search_input").val("");
-			if (type == "未签收") {
+			if (type == "所有") {
 				$("#search_input").attr("readOnly","true");
-				search_type_packet = "searchActive";
+				search_type_packet = "searchAll";
 			} else if (type == "包裹ID") {
 				$("#search_input").removeAttr("readOnly");
-				search_type_packet = "searchByID";
-			} else if (type == "运单号") {
+				search_type_packet = "searchByPacketID";
+			} else if (type == "包裹运单号") {
 				$("#search_input").removeAttr("readOnly");
 				search_type_packet = "searchByTrace";
 			} else {
@@ -489,16 +489,16 @@
 						<span id="search_type">查询方式</span> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu">
-						<li><a href="javascript:void(0)" class="dropOption">未签收</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">运单号</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹运单号</a></li>
 					</ul>
 				</div>
 			</div>
 			<div class="col-md-9 col-sm-9">
 				<div>
 					<div class="col-md-3 col-sm-4">
-						<input id="search_input" type="text" class="form-control" placeholder="未签收">
+						<input id="search_input" type="text" class="form-control" placeholder="包裹ID">
 					</div>
 					<div class="col-md-2 col-sm-2">
 						<button id="search_button" class="btn btn-success">

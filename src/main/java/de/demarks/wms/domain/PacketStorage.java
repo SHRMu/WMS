@@ -11,13 +11,14 @@ public class PacketStorage {
 	private Integer packetID;
 	private String packetTrace;
 	private String packetStatus;
+	private String packetDesc;
 	private Integer goodsID;// 货物ID
 	private String goodsName;// 货物名称
 	private Integer customerID;
 	private String customerName;
 	private Integer repositoryID;// 仓库ID
 	private Long number; //预报数量
-	private Long storage; //未到货数量
+	private Long storage; //到货数量
 
 	public Integer getPacketID() {
 		return packetID;
@@ -41,6 +42,14 @@ public class PacketStorage {
 
 	public void setPacketStatus(String packetStatus) {
 		this.packetStatus = packetStatus;
+	}
+
+	public String getPacketDesc() {
+		return packetDesc;
+	}
+
+	public void setPacketDesc(String packetDesc) {
+		this.packetDesc = packetDesc;
 	}
 
 	public Integer getGoodsID() {
@@ -105,6 +114,7 @@ public class PacketStorage {
 				"packetID=" + packetID +
 				", packetTrace='" + packetTrace + '\'' +
 				", packetStatus='" + packetStatus + '\'' +
+				", packetDesc='" + packetDesc + '\'' +
 				", goodsID=" + goodsID +
 				", goodsName='" + goodsName + '\'' +
 				", customerID=" + customerID +

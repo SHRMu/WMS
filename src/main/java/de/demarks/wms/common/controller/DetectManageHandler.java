@@ -45,10 +45,8 @@ public class DetectManageHandler {
     @RequestMapping(value = "detect", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> detect(@RequestParam("goodsID") Integer goodsID,
-                               @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
-                               @RequestParam("passed") long passed, @RequestParam("scratch") long scratch,
-                               @RequestParam("damage") long damage,
+    Map<String, Object> detect(@RequestParam("goodsID") Integer goodsID, @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
+                               @RequestParam("passed") long passed, @RequestParam("scratch") long scratch, @RequestParam("damage") long damage,
                                HttpServletRequest request) throws DetectManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -78,12 +76,9 @@ public class DetectManageHandler {
     @SuppressWarnings({"SingleStatementInBlock", "unchecked"})
     @RequestMapping(value = "searchDetectRecord", method = RequestMethod.GET)
     public @ResponseBody
-    Map<String, Object> searchDetectRecord(@RequestParam("batchID") String batchIDStr,
-                                           @RequestParam("repositoryID") String repositoryIDStr,
-                                           @RequestParam("startDate") String startDateStr,
-                                           @RequestParam("endDate") String endDateStr,
-                                           @RequestParam("limit") int limit,
-                                           @RequestParam("offset") int offset) throws ParseException, DetectManageServiceException {
+    Map<String, Object> searchDetectRecord(@RequestParam("batchID") String batchIDStr, @RequestParam("repositoryID") String repositoryIDStr,
+                                           @RequestParam("startDate") String startDateStr, @RequestParam("endDate") String endDateStr,
+                                           @RequestParam("limit") int limit, @RequestParam("offset") int offset) throws ParseException, DetectManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<DetectDO> rows = null;

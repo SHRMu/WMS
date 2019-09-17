@@ -145,8 +145,8 @@ public class PacketManageServiceImpl implements PacketManageService {
      * @throws PacketManageServiceException
      */
     @Override
-    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID) throws PacketManageServiceException {
-        return  selectApproximate(trace, status, repositoryID, -1, -1);
+    public Map<String, Object> selectByTraceApproximate(String trace, String status, Integer repositoryID) throws PacketManageServiceException {
+        return  selectByTraceApproximate(trace, status, repositoryID, -1, -1);
     }
 
     /**
@@ -160,7 +160,7 @@ public class PacketManageServiceImpl implements PacketManageService {
      * @throws PacketManageServiceException
      */
     @Override
-    public Map<String, Object> selectApproximate(String trace, String status, Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
+    public Map<String, Object> selectByTraceApproximate(String trace, String status, Integer repositoryID, int offset, int limit) throws PacketManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<Packet> packetList;
@@ -180,14 +180,14 @@ public class PacketManageServiceImpl implements PacketManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetList = packetMapper.selectApproximate(trace, status, repositoryID);
+                packetList = packetMapper.selectByTraceApproximate(trace, status, repositoryID);
                 if (packetList != null) {
                     PageInfo<Packet> pageInfo = new PageInfo<>(packetList);
                     total = pageInfo.getTotal();
                 } else
                     packetList = new ArrayList<>();
             } else {
-                packetList = packetMapper.selectApproximate(trace, status, repositoryID);
+                packetList = packetMapper.selectByTraceApproximate(trace, status, repositoryID);
                 if (packetList != null)
                     total = packetList.size();
                 else
@@ -273,7 +273,7 @@ public class PacketManageServiceImpl implements PacketManageService {
             if(status.equals(StatusUtil.PACKET_STATUS_RECEIVE)){
                 //先删除相关依赖的PacketRef
                 packetRefMangeService.deletePacketRef(packetID);
-                packetMapper.deleteByID(packetID);
+                packetMapper.deleteByPacketID(packetID);
                 return true;
             }
             return false;

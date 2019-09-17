@@ -259,7 +259,7 @@ public class CustomerManageServiceImpl implements CustomerManageService {
 
         try {
             // 查询该客户是否有出库记录
-            List<StockOutDO> records = stockOutMapper.selectByCustomerId(customerId);
+            List<StockOutDO> records = stockOutMapper.selectByCustomerID(customerId);
             if (records != null && records.size() > 0) {
                 return false;
             } else {

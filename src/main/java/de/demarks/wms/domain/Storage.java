@@ -12,6 +12,8 @@ public class Storage {
 	private String goodsName;// 货物名称
 	private Integer batchID; //批次ID
 	private String batchCode; //批次编号
+	private Integer customerID;
+	private String customerName;
 	private Integer repositoryID;// 仓库ID
 	private Long number;// 待检测
 
@@ -31,22 +33,6 @@ public class Storage {
 		this.goodsName = goodsName;
 	}
 
-	public Integer getRepositoryID() {
-		return repositoryID;
-	}
-
-	public void setRepositoryID(Integer repositoryID) {
-		this.repositoryID = repositoryID;
-	}
-
-	public Long getNumber() {
-		return number;
-	}
-
-	public void setNumber(Long number) {
-		this.number = number;
-	}
-
 	public Integer getBatchID() {
 		return batchID;
 	}
@@ -63,6 +49,38 @@ public class Storage {
 		this.batchCode = batchCode;
 	}
 
+	public Integer getCustomerID() {
+		return customerID;
+	}
+
+	public void setCustomerID(Integer customerID) {
+		this.customerID = customerID;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public Integer getRepositoryID() {
+		return repositoryID;
+	}
+
+	public void setRepositoryID(Integer repositoryID) {
+		this.repositoryID = repositoryID;
+	}
+
+	public Long getNumber() {
+		return number;
+	}
+
+	public void setNumber(Long number) {
+		this.number = number;
+	}
+
 	@Override
 	public String toString() {
 		return "Storage{" +
@@ -70,6 +88,8 @@ public class Storage {
 				", goodsName='" + goodsName + '\'' +
 				", batchID=" + batchID +
 				", batchCode='" + batchCode + '\'' +
+				", customerID=" + customerID +
+				", customerName='" + customerName + '\'' +
 				", repositoryID=" + repositoryID +
 				", number=" + number +
 				'}';

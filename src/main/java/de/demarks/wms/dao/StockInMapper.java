@@ -16,43 +16,53 @@ import java.util.List;
 public interface StockInMapper {
 
     /**
-     * 选择全部的入库记录
      *
-     * @return 返回全部的入库记录
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<StockInDO> selectAll();
+    List<StockInDO> selectAll(@Param("batchID") Integer batchID,
+                              @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定入库记录的ID的入库记录
      *
-     * @param id 入库记录ID
-     * @return 返回指定ID的入库记录
+     * @param recordID
+     * @return
      */
-    StockInDO selectByID(Integer id);
+    StockInDO selectByRecordID(@Param("recordID") Integer recordID);
 
     /**
-     * 选择指定客户ID相关的入库记录
      *
-     * @param customerID 指定的供应商ID
-     * @return 返回指定供应商相关的入库记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<StockInDO> selectByCustomerID(Integer customerID);
+    List<StockInDO> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                    @Param("batchID") Integer batchID,
+                                    @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定货物ID相关的入库记录
      *
-     * @param goodsID 指定的货物ID
-     * @return 返回指定货物相关的入库记录
+     * @param goodsName
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<StockInDO> selectByGoodsID(Integer goodsID);
+    List<StockInDO> selectByGoodsName(@Param("goodsName") String goodsName,
+                                      @Param("batchID") Integer batchID,
+                                      @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 选择指定仓库ID相关的入库记录
      *
-     * @param repositoryID 指定的仓库ID
-     * @return 返回指定仓库相关的入库记录
+     * @param customerID
+     * @param batchID
+     * @param repositoryID
+     * @return
      */
-    List<StockInDO> selectByRepositoryID(Integer repositoryID);
+    List<StockInDO> selectByCustomerID(@Param("customerID") Integer customerID,
+                                       @Param("batchID") Integer batchID,
+                                       @Param("repositoryID") Integer repositoryID);
 
     /**
      * 选择指定批次，仓库ID以及指定日期范围内的入库记录
@@ -63,10 +73,10 @@ public interface StockInMapper {
      * @param endDate      记录的结束日期
      * @return 返回所有符合要求的入库记录
      */
-    List<StockInDO> selectByBatchRepoIDAndDate(@Param("batchID") Integer batchID,
-                                                @Param("repositoryID") Integer repositoryID,
-                                                @Param("startDate") Date startDate,
-                                                @Param("endDate") Date endDate);
+    List<StockInDO> selectByDate(@Param("batchID") Integer batchID,
+                                 @Param("repositoryID") Integer repositoryID,
+                                 @Param("startDate") Date startDate,
+                                 @Param("endDate") Date endDate);
 
     /**
      * 添加一条新的入库记录

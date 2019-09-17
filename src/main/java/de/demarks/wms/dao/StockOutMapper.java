@@ -15,52 +15,21 @@ import java.util.List;
 @Repository
 public interface StockOutMapper {
 
-    /**
-     * 选择全部的出库记录
-     *
-     * @return 返回所有的出库记录
-     */
-    List<StockOutDO> selectAll();
 
-    /**
-     * 选择指定ID的出库记录
-     *
-     * @param id 指定的出库记录ID
-     * @return 返回指定ID的出库记录
-     */
-    StockOutDO selectById(Integer id);
+    List<StockOutDO> selectAll(@Param("batchID") Integer batchID,
+                               @Param("repositoryID") Integer repositoryID);
 
-    /**
-     * 选择指定客户ID相关的出库记录
-     *
-     * @param customerId 指定的客户ID
-     * @return 返回指定客户相关的出库记录
-     */
-    List<StockOutDO> selectByCustomerId(Integer customerId);
+    StockOutDO selectByRecordID(@Param("recordID") Integer recordID);
 
-    /**
-     * 选择指定货物ID相关的出库记录
-     *
-     * @param goodsID 指定的货物ID
-     * @return 返回指定货物ID相关的出库记录
-     */
-    List<StockOutDO> selectByGoodsID(Integer goodsID);
+    List<StockOutDO> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                     @Param("batchID") Integer batchID,
+                                     @Param("repositoryID") Integer repositoryID);
 
-    /**
-     * 选择指定批次ID相关的出库记录
-     *
-     * @param batchID 指定的货批次ID
-     * @return 返回指定货物ID相关的出库记录
-     */
-    List<StockOutDO> selectByBatchID(Integer batchID);
+    List<StockOutDO> selectByGoodsName(@Param("goodsName") String goodsName,
+                                       @Param("batchID") Integer batchID,
+                                       @Param("repositoryID") Integer repositoryID);
 
-    /**
-     * 选择指定仓库ID关联的出库记录
-     *
-     * @param repositoryID 指定的仓库ID
-     * @return 返回指定仓库ID相关的出库记录
-     */
-    List<StockOutDO> selectByRepositoryID(Integer repositoryID);
+    List<StockOutDO> selectByCustomerID(Integer customerID);
 
     /**
      * 选择指定批次，仓库ID以及指定日期范围内的出库记录
@@ -71,10 +40,10 @@ public interface StockOutMapper {
      * @param endDate      记录结束日期
      * @return 返回所有符合指定要求的出库记录
      */
-    List<StockOutDO> selectByBatchRepoIDAndDate(@Param("batchID") Integer batchID,
-                                                @Param("repositoryID") Integer repositoryID,
-                                                 @Param("startDate") Date startDate,
-                                                 @Param("endDate") Date endDate);
+    List<StockOutDO> selectByDate(@Param("batchID") Integer batchID,
+                                  @Param("repositoryID") Integer repositoryID,
+                                 @Param("startDate") Date startDate,
+                                 @Param("endDate") Date endDate);
 
 
 

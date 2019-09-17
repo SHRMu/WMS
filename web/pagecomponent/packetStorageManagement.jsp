@@ -4,7 +4,6 @@
 <script>
 	var search_type_storage = "none";
 	var search_keyWord = "";
-	var search_status = "";
 	var search_repository = "";
 
 	var select_goodsID;
@@ -15,6 +14,7 @@
 
 	$(function() {
 		repositoryOptionInit();
+		packetAutocomplete();
 		storageListInit();
 		optionAction();
 		searchAction();
@@ -49,6 +49,47 @@
 			error : function(response){
 			}
 		});
+	}
+
+	// 包裹信息自动匹配
+	function packetAutocomplete(){
+		$('#search_input_packet').autocomplete({
+			minLength : 0,
+			delay : 200,
+			source : function(request, response){
+				$.ajax({
+					type : 'GET',
+					url : 'packetManage/getPacketList',
+					dataType : 'json',
+					contentType : 'application/json',
+					data : {
+						offset : -1,
+						limit : -1,
+						keyWord : request.term,
+						repositoryID:$('#search_input_repository').val(),
+						searchType:'searchByTrace'
+					},
+					success : function(data){
+						var autoCompleteInfo = new Array();
+						$.each(data.rows, function(index,elem){
+							packetCache.push(elem);
+
+							autoCompleteInfo.push({label:elem.trace,value:elem.id});
+						});
+						response(autoCompleteInfo);
+					}
+				});
+			},
+			focus : function(event, ui){
+				$('#search_input_packet').val(ui.item.label);
+				return false;
+			},
+			select : function(event, ui){
+				$('#search_input_packet').val(ui.item.label);
+				select_packetID = ui.item.value;
+				return false;
+			}
+		})
 	}
 
 	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
@@ -90,6 +131,11 @@
 
 								},
 								{
+									field : 'packetDesc',
+									title : '子运单'
+
+								},
+								{
 									field : 'packetStatus',
 									title : '状态'
 
@@ -104,7 +150,7 @@
 								},
 								{
 									field : 'storage',
-									title : '剩余到货'
+									title : '到货数量'
 								},
 								{
 									field : 'operation',
@@ -132,7 +178,7 @@
 										}
 									}
 								} ],
-							url : 'packetStorageManage/getStorageListWithStatus',
+							url : 'packetStorageManage/getStorageList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -145,14 +191,13 @@
 						});
 	}
 
-
-
 	// 搜索动作
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
-			search_status = $('#search_packet_status').val();
 			search_repository = $('#search_input_repository').val();
+			if (select_packetID == null)
+				select_packetID = "";
 			tableRefresh();
 		})
 	}
@@ -170,9 +215,9 @@
 			limit : params.limit,
 			offset : params.offset,
 			searchType : search_type_storage,
-			status : search_status,
-			repositoryID : search_repository,
-			keyword : search_keyWord
+			keyword : search_keyWord,
+			packetID : select_packetID,
+			repositoryID : search_repository
 		}
 		return temp;
 	}
@@ -180,7 +225,6 @@
 	// 行编辑操作模态框展示与数据填充
 	function rowEditOperation(row) {
 		$('#edit_modal').modal("show");
-
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
 		$('#storage_goodsID_edit').text(row.goodsID);
@@ -524,7 +568,7 @@
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>预报库存信息管理</li>
+		<li>预报包裹信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">

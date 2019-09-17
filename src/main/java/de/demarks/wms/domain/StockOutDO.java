@@ -10,64 +10,17 @@ import java.util.Date;
  */
 public class StockOutDO {
 
-    /**
-     * 出库记录ID
-     */
     private Integer id;
-
-    /**
-     * 包裹运单号
-     */
-    private String packet;
-
-    /**
-     * 批次ID
-     */
-    private Integer batchID;
-
-    /**
-     * 批次编号
-     */
-    private String batchCode;
-
-    /**
-     * 客户ID
-     */
-    private Integer customerID;
-
-    /**
-     * 客户名称
-     */
-    private String customerName;
-
-    /**
-     * 商品ID
-     */
+    private String packetID;
     private Integer goodsID;
-
-    /**
-     * 商品名称
-     */
     private String goodName;
-
-    /**
-     * 出库仓库ID
-     */
+    private Integer batchID;
+    private String batchCode;
+    private Integer customerID;
+    private String customerName;
     private Integer repositoryID;
-
-    /**
-     * 商品出库数量
-     */
     private long number;
-
-    /**
-     * 出库日期
-     */
     private Date time;
-
-    /**
-     * 出库经手人
-     */
     private String personInCharge;// 经手人
 
     public Integer getRepositoryID() {
@@ -86,12 +39,12 @@ public class StockOutDO {
         this.id = id;
     }
 
-    public String getPacket() {
-        return packet;
+    public String getPacketID() {
+        return packetID;
     }
 
-    public void setPacket(String packet) {
-        this.packet = packet;
+    public void setPacketID(String packetID) {
+        this.packetID = packetID;
     }
 
     public Integer getBatchID() {
@@ -170,13 +123,13 @@ public class StockOutDO {
     public String toString() {
         return "StockOutDO{" +
                 "id=" + id +
-                ", packet='" + packet + '\'' +
+                ", packetID='" + packetID + '\'' +
+                ", goodsID=" + goodsID +
+                ", goodName='" + goodName + '\'' +
                 ", batchID=" + batchID +
                 ", batchCode='" + batchCode + '\'' +
                 ", customerID=" + customerID +
                 ", customerName='" + customerName + '\'' +
-                ", goodsID=" + goodsID +
-                ", goodName='" + goodName + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", time=" + time +

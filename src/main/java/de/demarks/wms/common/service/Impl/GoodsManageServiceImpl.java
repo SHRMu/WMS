@@ -260,12 +260,12 @@ public class GoodsManageServiceImpl implements GoodsManageService {
 
         try {
             // 检查该货物是否有入库信息
-            List<StockInDO> stockInDORecord = stockInMapper.selectByGoodsID(goodsId);
+            List<StockInDO> stockInDORecord = stockInMapper.selectByGoodsID(goodsId,null,null);
             if (stockInDORecord != null && !stockInDORecord.isEmpty())
                 return false;
 
             // 检查该货物是否有出库信息
-            List<StockOutDO> stockOutDORecord = stockOutMapper.selectByGoodsID(goodsId);
+            List<StockOutDO> stockOutDORecord = stockOutMapper.selectByGoodsID(goodsId,null,null);
             if (stockOutDORecord != null && !stockOutDORecord.isEmpty())
                 return false;
 

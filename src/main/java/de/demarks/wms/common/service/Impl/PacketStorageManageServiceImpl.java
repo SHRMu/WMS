@@ -223,14 +223,14 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectByTrace(trace, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByPacketTrace(trace, status, repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectByTrace(trace, status, repositoryID);
+                packetStorageList = packetStorageMapper.selectByPacketTrace(trace, status, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else

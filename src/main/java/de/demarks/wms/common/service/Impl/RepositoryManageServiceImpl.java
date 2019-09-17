@@ -258,12 +258,12 @@ public class RepositoryManageServiceImpl implements RepositoryService {
 
         try {
             // 检查是否存在出库记录
-            List<StockOutDO> stockOutDOList = stockOutMapper.selectByRepositoryID(repositoryId);
+            List<StockOutDO> stockOutDOList = stockOutMapper.selectAll(null,repositoryId);
             if (stockOutDOList != null && !stockOutDOList.isEmpty())
                 return false;
 
             // 检查是否存在入库记录
-            List<StockInDO> stockInDOList = stockInMapper.selectByRepositoryID(repositoryId);
+            List<StockInDO> stockInDOList = stockInMapper.selectAll(null,repositoryId);
             if (stockInDOList != null && !stockInDOList.isEmpty())
                 return false;
 

@@ -52,14 +52,14 @@ public class PacketRefManageServiceImpl implements PacketRefMangeService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                packetRefList = packetRefMapper.selectByTraceApproximate(trace,status,repositoryID);
                 if (packetRefList != null) {
                     PageInfo<PacketRef> pageInfo = new PageInfo<>(packetRefList);
                     total = pageInfo.getTotal();
                 } else
                     packetRefList = new ArrayList<>();
             } else {
-                packetRefList = packetRefMapper.selectApproximate(trace,status,repositoryID);
+                packetRefList = packetRefMapper.selectByTraceApproximate(trace,status,repositoryID);
                 if (packetRefList != null)
                     total = packetRefList.size();
                 else
