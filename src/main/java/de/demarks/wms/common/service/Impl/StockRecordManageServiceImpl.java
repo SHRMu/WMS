@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.DetectStorageService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.service.Interface.StockRecordManageService;
-import de.demarks.wms.common.service.Interface.StorageManageService;
+import de.demarks.wms.common.service.Interface.StockStorageManageService;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.*;
@@ -36,7 +36,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     @Autowired
     private PacketStorageManageService packetStorageManageService;
     @Autowired
-    private StorageManageService storageManageService;
+    private StockStorageManageService stockStorageManageService;
     @Autowired
     private DetectStorageService detectStorageService;
     @Autowired
@@ -86,7 +86,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             packetSuccess = packetStorageManageService.packetStorageIncrease(goodsID, packetID, repositoryID, number);
 
             // 增加待检测库存量
-            storageSuccess = storageManageService.storageIncrease(goodsID, customerID, batchID, repositoryID, number);
+            storageSuccess = stockStorageManageService.storageIncrease(goodsID, customerID, batchID, repositoryID, number);
 
             // 保存入库记录
             if (packetSuccess && storageSuccess ) {
@@ -134,7 +134,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             // 更新库存信息
             boolean isSuccess;
             // 从带发货良品中减去库存
-            isSuccess = detectStorageService.passedDetectStorageDecrease(goodsID, batchID, repositoryID, number);
+            isSuccess = detectStorageService.detectStoragePassedDecrease(goodsID, batchID, repositoryID, number);
 
             // 保存出库记录
             if (isSuccess) {

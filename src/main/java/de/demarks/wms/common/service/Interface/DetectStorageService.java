@@ -34,8 +34,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectAll(@Param("batchID") Integer batchID,
-                                  @Param("repositoryID") Integer repositoryID,
+    Map<String, Object> selectAll(@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
                                   @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
     /**
@@ -46,9 +45,8 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                   @Param("batchID") Integer batchID,
-                                   @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID,
+                                        @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
     /**
      * 分页 选择指定ID的记录
@@ -60,10 +58,9 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                    @Param("batchID") Integer batchID,
-                                    @Param("repositoryID") Integer repositoryID,
-                                    @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID,
+                                        @Param("repositoryID") Integer repositoryID,
+                                        @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
     /**
      * 模糊查询 返回指定名称的记录
@@ -73,91 +70,28 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName, @Param("batchID") Integer batchID,
+                                          @Param("repositoryID") Integer repositoryID) throws DetectStorageServiceException;
 
-    /**
-     * 分页 模糊查询 返回指定名称的记录
-     * @param goodsName
-     * @param batchID
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws DetectStorageServiceException
-     */
-    Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws DetectStorageServiceException;
 
-    /**
-     * 添加一条记录
-     * @param goodsID
-     * @param batchID
-     * @param repositoryID
-     * @param passed
-     * @param scratch
-     * @param damage
-     * @return
-     * @throws DetectStorageServiceException
-     */
-    boolean addDetectStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+    Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName, @Param("batchID") Integer batchID,
+                                          @Param("repositoryID") Integer repositoryID,
+                                          @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
-    /**
-     * 更新一条检测库存记录
-     *
-     * @param goodsID      指定的货物ID
-     * @param batchID      指定的批次ID
-     * @param repositoryID 指定的仓库ID
-     * @param number       检测总数
-     * @param passed       良品数量
-     * @param scratch      划痕数量
-     * @param damage       故障数量
-     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
-     */
-    boolean updateDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number ,long passed, long scratch, long damage) throws DetectStorageServiceException;
+    boolean addDetectStorage(@Param("goodsID") Integer goodsID, @Param("customerID") Integer customerID,
+                             @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                             @Param("passed") long passed, @Param("scratch") long scratch,@Param("damage") long damage) throws DetectStorageServiceException;
 
-    /**
-     * 只更新检测库存中的良品数量
-     *
-     * @param goodsID      指定的货物ID
-     * @param batchID      指定的批次ID
-     * @param repositoryID 指定的仓库ID
-     * @param passed       良品数量
-     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
-     */
-    boolean updatePassedDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed) throws DetectStorageServiceException;
 
-    /**
-     * 删除一条检测库存记录
-     * 货物ID与批次ID和仓库ID可唯一确定一条库存记录
-     *
-     * @param goodsID      指定的货物ID
-     * @param batchID      指定的批次ID
-     * @param repositoryID 指定的仓库ID
-     * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
-     */
+    boolean updateDetectStorage(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                @Param("number") long number, @Param("passed") long passed, @Param("scratch") long scratch,@Param("damage") long damage) throws DetectStorageServiceException;
+
     boolean deleteDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
 
-    /**
-     * 为指定的检测库存增加指定数目
-     *
-     * @param goodsID      货物ID
-     * @param batchID      批次ID
-     * @param repositoryID 仓库ID
-     * @param passed       良品数量
-     * @param scratch      划痕数量
-     * @param damage       故障数量
-     * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
-     */
+
     boolean detectStorageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
-    /**
-     * 从检测的良品库存中减去出库数量
-     *
-     * @param goodsID      货物ID
-     * @param batchID      批次ID
-     * @param repositoryID 仓库ID
-     * @param number       出库良品数
-     * @return 返回一个 boolean 值，若值为 true 表示数目减少成功，否则表示增加失败
-     */
-    boolean passedDetectStorageDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws DetectStorageServiceException;
+
+    boolean detectStoragePassedDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws DetectStorageServiceException;
 
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 public interface DetectManageService {
 
     /**
-     * 货物检测操作
+     * 货物检测录入
      * @param goodsID
      * @param batchID
      * @param repositoryID
@@ -25,47 +25,35 @@ public interface DetectManageService {
      * @return
      * @throws DetectManageServiceException
      */
-    boolean detectOperation(@Param("goodsID") Integer goodsID,
-                            @Param("batchID") Integer batchID,
-                            @Param("repositoryID") Integer repositoryID,
+    boolean detectOperation(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
                             @Param("passed") long passed, @Param("scratch") long scratch, @Param("damage") long damage,
-                            @Param("personInCharge") String personInCharge) throws DetectManageServiceException;
+                            @Param("personInCharge") String personInCharge, @Param("desc") String desc) throws DetectManageServiceException;
 
 
-    Map<String, Object> selectDetectRecord(@Param("batchID") Integer batchID,
-                                            @Param("repositoryID") Integer repositoryID,
-                                            @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws DetectManageServiceException;
-
-
-    Map<String, Object> selectDetectRecord(@Param("batchID") Integer batchID,
-                                            @Param("repositoryID") Integer repositoryID,
-                                            @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
-                                            @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
-
-
-    Map<String, Object> selectDetectRecordByGoodsID(@Param("goodsID") Integer goodsID,
-                                           @Param("batchID") Integer batchID,
-                                           @Param("repositoryID") Integer repositoryID,
+    Map<String, Object> selectDetectRecord(@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
                                            @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws DetectManageServiceException;
 
 
-    Map<String, Object> selectDetectRecordByGoodsID(@Param("goodsID") Integer goodsID,
-                                                       @Param("batchID") Integer batchID,
-                                                       @Param("repositoryID") Integer repositoryID,
-                                                       @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
-                                                       @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
+    Map<String, Object> selectDetectRecord(@Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                           @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
+                                           @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
 
 
-    Map<String, Object> selectDetectRecordByGoodsName(@Param("goodsName") String goodsName,
-                                                        @Param("batchID") Integer batchID,
-                                                        @Param("repositoryID") Integer repositoryID,
-                                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws DetectManageServiceException;
+    Map<String, Object> selectDetectRecordByGoodsID(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                                    @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws DetectManageServiceException;
 
 
-    Map<String, Object> selectDetectRecordByGoodsName(@Param("goodsName") String goodsName,
-                                                        @Param("batchID") Integer batchID,
-                                                        @Param("repositoryID") Integer repositoryID,
-                                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
-                                                        @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
+    Map<String, Object> selectDetectRecordByGoodsID(@Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                                    @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
+                                                    @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
+
+
+    Map<String, Object> selectDetectRecordByGoodsName(@Param("goodsName") String goodsName, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                                      @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws DetectManageServiceException;
+
+
+    Map<String, Object> selectDetectRecordByGoodsName(@Param("goodsName") String goodsName, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                                                      @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
+                                                      @Param("offset") int offset, @Param("limit") int limit) throws DetectManageServiceException;
 
 }

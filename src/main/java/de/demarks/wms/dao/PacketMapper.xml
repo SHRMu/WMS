@@ -43,7 +43,7 @@
 			wms_packet p, wms_repository r
 		where
 			p.PACKET_REPOID = r.REPO_ID and
-			p.PACKET_ID = #{packetDOID}
+			p.PACKET_ID = #{packetID}
 	</select>
 
 	<select id="selectByTrace" resultMap="packetDO">
@@ -75,10 +75,8 @@
 		from
 			wms_packet p, wms_repository r
 		where
-			p.PACKET_REPOID = r.REPO_ID
-		<if test="trace !=null">
-			and p.PACKET_TRACE like concat ('%',#{trace},'%')
-		</if>
+			p.PACKET_REPOID = r.REPO_ID and
+			p.PACKET_TRACE like concat ('%',#{trace},'%')
 		<if test="status !=null">
 			and p.PACKET_STATUS = #{status}
 		</if>
@@ -100,7 +98,7 @@
 		where
 			p.PACKET_REPOID = r.REPO_ID and
 		<if test="packetDOID != null">
-			and p.PACKET_ID = #{packetDOID}
+			and p.PACKET_ID = #{packetID}
 		</if>
 		<if test="repositoryID != null ">
 			and r.RECORD_REPOSITORYID = #{repositoryID}
@@ -132,7 +130,7 @@
 
 	<delete id="deleteByPacketID">
 		delete from wms_packet
-		where PACKET_ID = #{packetDOID}
+		where PACKET_ID = #{packetID}
 	</delete>
 
 </mapper>

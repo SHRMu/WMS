@@ -15,6 +15,7 @@ public class DetectDTO {
     private long damage;
     private String time;
     private String personInCharge;
+    private String desc;
 
     public Integer getId() {
         return id;
@@ -128,6 +129,14 @@ public class DetectDTO {
         this.personInCharge = personInCharge;
     }
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
     @Override
     public String toString() {
         return "DetectDTO{" +
@@ -145,6 +154,7 @@ public class DetectDTO {
                 ", damage=" + damage +
                 ", time='" + time + '\'' +
                 ", personInCharge='" + personInCharge + '\'' +
+                ", desc='" + desc + '\'' +
                 '}';
     }
 }

@@ -310,8 +310,3 @@ create table wms_detect_storage
     foreign key (DETECT_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key (DETECT_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
-
-
-
-
-

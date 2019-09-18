@@ -25,7 +25,7 @@ public interface DetectStorageMapper {
                                   @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 精确搜索 返回指定ID的信息
+     * 返回 指定goodsID 的记录
      * @param goodsID
      * @param batchID
      * @param repositoryID
@@ -36,7 +36,7 @@ public interface DetectStorageMapper {
                                         @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 模糊搜索 返回指定名称的信息
+     * 模糊搜索 返回 指定goodsName 的记录
      * @param goodsName
      * @param batchID
      * @param repositoryID
@@ -47,32 +47,37 @@ public interface DetectStorageMapper {
                                           @Param("repositoryID") Integer repositoryID);
 
     /**
-     * 添加一条信息
+     * 添加一条记录
      * @param detectStorage
      */
     void insert(DetectStorage detectStorage);
 
     /**
-     * 批量导入库存信息
-     * @param storages 若干条库存信息
+     * 批量导入记录
+     * @param storages
      */
     void insertBatch(List<DetectStorage> storages);
 
     /**
-     * 更新全部信息
+     * 更新一条记录
      * @param storage
      */
     void update(DetectStorage storage);
 
+    /**
+     * 删除一条记录
+     * @param storage
+     */
+    void delete(DetectStorage storage);
 
     /**
-     * 删除指定批次，仓库中的货物ID的库存
-     * @param goodsID 货物ID
-     * @param batchID 批次ID
-     * @param repositoryID 仓库ID
+     * 删除 指定ID 的记录
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
      */
-    void delete(@Param("goodsID") Integer goodsID,
-                @Param("batchID") Integer batchID,
-                @Param("repositoryID") Integer repositoryID);
+    void deleteByID(@Param("goodsID") Integer goodsID,
+                    @Param("batchID") Integer batchID,
+                    @Param("repositoryID") Integer repositoryID);
 
 }

@@ -54,7 +54,7 @@ public class DetectManageHandler {
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName");
 
-        String result = detectManageService.detectOperation(goodsID, batchID, repositoryID, passed, scratch, damage, personInCharge) ?
+        String result = detectManageService.detectOperation(goodsID, batchID, repositoryID, passed, scratch, damage, personInCharge,null) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response

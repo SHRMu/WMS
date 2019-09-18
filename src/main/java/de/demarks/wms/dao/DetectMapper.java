@@ -17,22 +17,36 @@ import java.util.List;
 public interface DetectMapper {
 
     /**
-     * 返回指定记录ID的结果
+     * 返回全部结果
+     * @param batchID
+     * @param repositoryID
+     * @return
+     */
+    List<DetectDO> selectAll(@Param("batchID") Integer batchID,
+                             @Param("repositoryID") Integer repositoryID);
+
+    /**
+     * 返回指定 recordID 的结果
      * @param recordID
      * @return
      */
     DetectDO selectByRecordID(@Param("recordID") Integer recordID);
 
-    List<DetectDO> selectAll(@Param("batchID") Integer batchID,
-                            @Param("repositoryID") Integer repositoryID);
-
+    /**
+     * 返回指定 时间区域 的结果
+     * @param batchID
+     * @param repositoryID
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     List<DetectDO> selectByDate(@Param("batchID") Integer batchID,
                                 @Param("repositoryID") Integer repositoryID,
                                 @Param("startDate") Date startDate,
                                 @Param("endDate") Date endDate);
 
     /**
-     * 指定GoodsID的结果
+     * 返回 指定GoodsID 的结果
      * @param goodsID
      * @param batchID
      * @param repositoryID
@@ -47,7 +61,7 @@ public interface DetectMapper {
                                     @Param("endDate") Date endDate);
 
     /**
-     * 模糊搜索
+     * 模糊搜索 指定GoodsName
      * @param goodsName
      * @param batchID
      * @param repositoryID
@@ -75,7 +89,7 @@ public interface DetectMapper {
     void update(DetectDO detectDO);
 
     /**
-     * 删除指定RecordID的记录
+     * 删除指定recordID的记录
      * @param recordID
      */
     void deleteByRecordID(Integer recordID);

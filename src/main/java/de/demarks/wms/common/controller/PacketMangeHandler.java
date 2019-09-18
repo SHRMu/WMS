@@ -75,7 +75,7 @@ public class PacketMangeHandler {
                 queryResult = packetManageService.selectByTraceApproximate("",StatusUtil.PACKET_STATUS_SEND,repositoryID);
                 break;
             case SEARCH_ALL:
-                queryResult = packetManageService.selectAll(-1, offset, limit);
+                queryResult = packetManageService.selectAll(repositoryID, offset, limit);
                 break;
             case SEARCH_REF_ACTIVE:
                 queryResult = packetRefMangeService.selectRefApproximate(keyWord,StatusUtil.PACKET_STATUS_SEND,repositoryID);
@@ -106,6 +106,9 @@ public class PacketMangeHandler {
         Response responseContent = responseUtil.newResponseInstance();
         List<PacketDO> rows = null;
         long total = 0;
+
+        if (repositoryID == null)
+            repositoryID = -1;
 
         // 查询
         Map<String, Object> queryResult = query(searchType, keyWord, repositoryID, offset, limit);

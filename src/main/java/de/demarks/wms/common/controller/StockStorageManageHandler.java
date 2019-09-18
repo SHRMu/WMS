@@ -1,7 +1,7 @@
 package de.demarks.wms.common.controller;
 
 import de.demarks.wms.common.service.Interface.StockRecordManageService;
-import de.demarks.wms.common.service.Interface.StorageManageService;
+import de.demarks.wms.common.service.Interface.StockStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.domain.StockStorage;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class StockStorageManageHandler {
 
     @Autowired
-    private StorageManageService storageManageService;
+    private StockStorageManageService stockStorageManageService;
     @Autowired
     private StockRecordManageService stockRecordManageService;
     @Autowired
@@ -57,26 +57,26 @@ public class StockStorageManageHandler {
             case SEARCH_ALL:
                 if (StringUtils.isNumeric(batchBelong)) {
                     Integer batchID = Integer.valueOf(batchBelong);
-                    queryResult = storageManageService.selectAll(batchID, repositoryID, offset, limit);
+                    queryResult = stockStorageManageService.selectAll(batchID, repositoryID, offset, limit);
                 } else
-                    queryResult = storageManageService.selectAll(-1, repositoryID, offset, limit);
+                    queryResult = stockStorageManageService.selectAll(-1, repositoryID, offset, limit);
                 break;
             case SEARCH_BY_GOODS_ID:
                 if (StringUtils.isNumeric(keyword)) {
                     Integer goodsID = Integer.valueOf(keyword);
                     if (StringUtils.isNumeric(batchBelong)) {
                         Integer batchID = Integer.valueOf(batchBelong);
-                        queryResult = storageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
+                        queryResult = stockStorageManageService.selectByGoodsID(goodsID, batchID, repositoryID, offset, limit);
                     } else
-                        queryResult = storageManageService.selectByGoodsID(goodsID, -1, repositoryID, offset, limit);
+                        queryResult = stockStorageManageService.selectByGoodsID(goodsID, -1, repositoryID, offset, limit);
                 }
                 break;
             case SEARCH_BY_GOODS_NAME:
                 if (StringUtils.isNumeric(batchBelong)){
                     Integer batchID = Integer.valueOf(batchBelong);
-                    queryResult = storageManageService.selectByGoodsName(keyword, batchID, repositoryID, offset, limit);
+                    queryResult = stockStorageManageService.selectByGoodsName(keyword, batchID, repositoryID, offset, limit);
                 }else
-                    queryResult = storageManageService.selectByGoodsName(keyword,-1, repositoryID, offset, limit);
+                    queryResult = stockStorageManageService.selectByGoodsName(keyword,-1, repositoryID, offset, limit);
                 break;
             default:
                 // do other thing
@@ -195,7 +195,7 @@ public class StockStorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = storageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(customerID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            isSuccess = stockStorageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(customerID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
@@ -233,7 +233,7 @@ public class StockStorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            result = storageManageService.updateStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            result = stockStorageManageService.updateStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
@@ -270,7 +270,7 @@ public class StockStorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            result = storageManageService.deleteStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID))
+            result = stockStorageManageService.deleteStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID))
                     ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

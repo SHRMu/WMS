@@ -2,7 +2,7 @@ package de.demarks.wms.common.service.Impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import de.demarks.wms.common.service.Interface.StorageManageService;
+import de.demarks.wms.common.service.Interface.StockStorageManageService;
 import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.dao.GoodsMapper;
 import de.demarks.wms.dao.RepositoryBatchMapper;
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author huanyingcool
  */
 @Service
-public class StorageManageServiceImpl implements StorageManageService {
+public class StockStorageManageServiceImpl implements StockStorageManageService {
 
     @Autowired
     private StockStorageMapper stockStorageMapper;

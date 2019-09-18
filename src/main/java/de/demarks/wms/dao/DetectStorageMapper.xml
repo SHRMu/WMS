@@ -37,7 +37,7 @@
 			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect_storage ds, wms_goods g, wms_customer c, wms_repo_batch b, wms_repository r
 		where
 		 	ds.DETECT_GOODID = g.GOOD_ID and
 		 	ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
@@ -65,7 +65,7 @@
 			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect_storage ds, wms_goods g, wms_customer c, wms_repo_batch b, wms_repository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
@@ -94,14 +94,14 @@
 			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect_storage ds, wms_goods g, wms_customer c, wms_repo_batch b, wms_repository r
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
 			ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
 			ds.DETECT_REPOSITORY = r.REPO_ID and
 			g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
-		<if test="batchCode != null">
+		<if test="batchID != null">
 			and ds.DETECT_BATCHID = #{batchID}
 		</if>
 		<if test="repositoryID != null">
@@ -160,6 +160,14 @@
 	</update>
 
 	<delete id="delete">
+		delete from wms_detect_storage
+		where
+			DETECT_GOODID = #{goodsID} and
+			DETECT_BATCHID = #{batchID} and
+			DETECT_REPOSITORY = #{repositoryID}
+	</delete>
+
+	<delete id="deleteByID">
 		delete from wms_detect_storage
 		where
 			DETECT_GOODID = #{goodsID} and

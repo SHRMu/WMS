@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author huanyingcool
  */
-public interface StorageManageService {
+public interface StockStorageManageService {
 
     /**
      * 返回所有的库存记录
