@@ -23,12 +23,8 @@ public interface StockRecordManageService {
      * @return
      * @throws StockRecordManageServiceException
      */
-    boolean stockInOperation(@Param("packetID") Integer packetID,
-                             @Param("goodsID") Integer goodsID,
-                             @Param("batchID") Integer batchID,
-                             @Param("repositoryID") Integer repositoryID,
-                             @Param("number") long number,
-                             @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException;
+    boolean stockInOperation(@Param("packetID") Integer packetID,  @Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                             @Param("number") long number, @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException;
 
     /**
      * 货物出库操作

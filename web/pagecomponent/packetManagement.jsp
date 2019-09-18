@@ -87,7 +87,7 @@
 
 	// 表格初始化
 	function packetListInit() {
-		$('#packetList')
+		$('#packetDOList')
 				.bootstrapTable(
 						{
 							columns : [
@@ -151,7 +151,7 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#packetList').bootstrapTable('refresh', {
+		$('#packetDOList').bootstrapTable('refresh', {
 			query : {}
 		});
 	}
@@ -239,7 +239,7 @@
 	function deletepacketAction(){
 		$('#delete_confirm').click(function(){
 			var data = {
-				"packetID" : selectID
+				"packetDOID" : selectID
 			}
 
 			// ajax
@@ -526,7 +526,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="packetList" class="table table-striped"></table>
+				<table id="packetDOList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>

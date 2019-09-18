@@ -7,7 +7,7 @@ import java.util.Date;
  *
  * @author huanyingcool
  */
-public class Packet {
+public class PacketDO {
 
     private Integer id; //包裹系统ID
     private String  trace; //包裹序列号

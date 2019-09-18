@@ -9,6 +9,8 @@
 	<resultMap type="de.demarks.wms.domain.DetectStorage" id="detectStorage">
 		<id property="goodsID" column="detectSto_goodsID"/>
 		<id property="batchID" column="detectSto_batchID"/>
+		<result property="customerID" column="detectSto_customerID" />
+		<result property="customerName" column="detectSto_customerName" />
 		<result property="goodsName" column="detectSto_goodsName" />
 		<result property="batchCode" column="detectSto_batchCode" />
 		<result property="repositoryID" column="detectSto_repositoryID"/>
@@ -24,6 +26,7 @@
 	<select id="selectAll" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_CUSTOMERID as detectSto_customerID,
 			ds.DETECT_BATCHID as detectSto_batchID,
 			ds.DETECT_REPOSITORY as detectSto_repositoryID,
 			ds.DETECT_NUMBER as detectSto_number,
@@ -31,13 +34,18 @@
 			ds.DETECT_SCRATCH as detectSto_scratch,
 			ds.DETECT_DAMAGE as detectSto_damage,
 			g.GOOD_NAME as detectSto_goodsName,
+			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
 		where
 		 	ds.DETECT_GOODID = g.GOOD_ID and
+		 	ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 		 	ds.DETECT_BATCHID = b.REPO_BATCH_ID and
 		 	ds.DETECT_REPOSITORY = r.REPO_ID
+		<if test="batchID != null">
+			and ds.DETECT_BATCHID = #{batchID}
+		</if>
 		<if test="repositoryID != null">
 			and ds.DETECT_REPOSITORY = #{repositoryID}
 		</if>
@@ -46,6 +54,7 @@
 	<select id="selectByGoodsID" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_CUSTOMERID as detectSto_customerID,
 			ds.DETECT_BATCHID as detectSto_batchID,
 			ds.DETECT_REPOSITORY as detectSto_repositoryID,
 			ds.DETECT_NUMBER as detectSto_number,
@@ -53,16 +62,16 @@
 			ds.DETECT_SCRATCH as detectSto_scratch,
 			ds.DETECT_DAMAGE as detectSto_damage,
 			g.GOOD_NAME as detectSto_goodsName,
+			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
+			ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-			ds.DETECT_REPOSITORY = r.REPO_ID
-		<if test="goodsID !=null">
-			and ds.DETECT_GOODID = #{goodsID}
-		</if>
+			ds.DETECT_REPOSITORY = r.REPO_ID and
+			ds.DETECT_GOODID = #{goodsID}
 		<if test="batchID != null">
 			and ds.DETECT_BATCHID = #{batchID}
 		</if>
@@ -74,6 +83,7 @@
 	<select id="selectByGoodsName" resultMap="detectStorage">
 		select
 			ds.DETECT_GOODID as detectSto_goodsID,
+			ds.DETECT_CUSTOMERID as detectSto_customerID,
 			ds.DETECT_BATCHID as detectSto_batchID,
 			ds.DETECT_REPOSITORY as detectSto_repositoryID,
 			ds.DETECT_NUMBER as detectSto_number,
@@ -81,16 +91,16 @@
 			ds.DETECT_SCRATCH as detectSto_scratch,
 			ds.DETECT_DAMAGE as detectSto_damage,
 			g.GOOD_NAME as detectSto_goodsName,
+			c.CUSTOMER_NAME as detectSto_customerName,
 			b.REPO_BATCH_CODE as detectSto_batchCode
 		from
-			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r
+			wms_detect_storage ds, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
 		where
 			ds.DETECT_GOODID = g.GOOD_ID and
+			ds.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			ds.DETECT_BATCHID = b.REPO_BATCH_ID and
-			ds.DETECT_REPOSITORY = r.REPO_ID
-		<if test="goodsName !=null">
+			ds.DETECT_REPOSITORY = r.REPO_ID and
 			g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
-		</if>
 		<if test="batchCode != null">
 			and ds.DETECT_BATCHID = #{batchID}
 		</if>
@@ -103,6 +113,7 @@
 		insert into wms_detect_storage
 		(
 			DETECT_GOODID,
+			DETECT_CUSTOMERID,
 			DETECT_BATCHID,
 			DETECT_REPOSITORY,
 			DETECT_NUMBER,
@@ -113,6 +124,7 @@
 		values
 		(
 			#{goodsID},
+			#{customerID},
 			#{batchID},
 			#{repositoryID},
 			#{number},
@@ -137,9 +149,6 @@
 		update
 			wms_detect_storage
 		set
-			DETECT_GOODID = #{goodsID},
-			DETECT_BATCHID = #{batchID},
-			DETECT_REPOSITORY = #{repositoryID},
 			DETECT_NUMBER = #{number},
 			DETECT_PASSED = #{passed},
 			DETECT_SCRATCH = #{scratch},
@@ -154,8 +163,8 @@
 		delete from wms_detect_storage
 		where
 			DETECT_GOODID = #{goodsID} and
-			wms_detect_storage.DETECT_BATCHID = #{batchID} and
-			wms_detect_storage.DETECT_REPOSITORY = #{repositoryID}
+			DETECT_BATCHID = #{batchID} and
+			DETECT_REPOSITORY = #{repositoryID}
 	</delete>
 
 </mapper>

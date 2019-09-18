@@ -98,7 +98,7 @@ public interface DetectStorageService {
      * @return
      * @throws DetectStorageServiceException
      */
-    boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+    boolean addDetectStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
     /**
      * 更新一条检测库存记录
@@ -147,7 +147,7 @@ public interface DetectStorageService {
      * @param damage       故障数量
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
-    boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+    boolean detectStorageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
     /**
      * 从检测的良品库存中减去出库数量

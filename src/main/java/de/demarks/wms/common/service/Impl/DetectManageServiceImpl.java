@@ -34,6 +34,8 @@ public class DetectManageServiceImpl implements DetectManageService {
     @Autowired
     private DetectMapper detectMapper;
     @Autowired
+    private StockStorageMapper stockStorageMapper;
+    @Autowired
     private DetectStorageService detectStorageService;
     @Autowired
     private StorageManageService storageManageService;
@@ -64,6 +66,13 @@ public class DetectManageServiceImpl implements DetectManageService {
         if (passed < 0 || scratch < 0 || damage < 0)
             return false;
 
+        //验证是否有待检测的库存 同时获取custoerID
+        List<StockStorage> stockStorages = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        if (stockStorages.isEmpty())
+            return false;
+        StockStorage stockStorage = stockStorages.get(0);
+        Integer customerID = stockStorage.getCustomerID();
+
         try {
             // 更新库存记录
             boolean deSuccess, inSuccess;
@@ -71,13 +80,14 @@ public class DetectManageServiceImpl implements DetectManageService {
 
             //从待测数库存中减去总数
             deSuccess = storageManageService.storageDecrease(goodsID, batchID, repositoryID, total);
-            //在已检测库存中添加详细数量
-            inSuccess = detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage);
+            //在检测库存中添加详细数量
+            inSuccess = detectStorageService.detectStorageIncrease(goodsID, customerID, batchID, repositoryID, passed, scratch, damage);
 
             // 保存入库记录
             if (deSuccess && inSuccess) {
                 DetectDO detectDO = new DetectDO();
                 detectDO.setGoodsID(goodsID);
+                detectDO.setCustomerID(customerID);
                 detectDO.setBatchID(batchID);
                 detectDO.setRepositoryID(repositoryID);
                 detectDO.setNumber(total);
@@ -92,6 +102,75 @@ public class DetectManageServiceImpl implements DetectManageService {
         } catch (PersistenceException | StorageManageServiceException | DetectStorageServiceException e) {
             throw new DetectManageServiceException(e);
         }
+    }
+
+    @Override
+    public Map<String, Object> selectDetectRecord(Integer batchID, Integer repositoryID, String startDateStr, String endDateStr) throws DetectManageServiceException {
+        return selectDetectRecord(batchID, repositoryID, startDateStr, endDateStr, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectDetectRecord(Integer batchID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws DetectManageServiceException {
+        // 初始化结果集
+        Map<String, Object> result = new HashMap<>();
+        List<DetectDO> detectDOS;
+        long total = 0;
+        boolean isPagination = true;
+
+        // 检查是否需要分页查询
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        // 检查传入参数
+        if (batchID<0)
+            batchID = null;
+        if (repositoryID<0)
+            repositoryID = null;
+
+        // 转换 Date 对象
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = null;
+        Date endDate = null;
+        Date newEndDate = null;
+        try {
+            if (StringUtils.isNotEmpty(startDateStr))
+                startDate = dateFormat.parse(startDateStr);
+            if (StringUtils.isNotEmpty(endDateStr))
+            {
+                endDate = dateFormat.parse(endDateStr);
+                newEndDate = new Date(endDate.getTime()+(24*60*60*1000)-1);
+            }
+        } catch (ParseException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        // 查询记录
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                detectDOS = detectMapper.selectByDate(batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = new PageInfo<>(detectDOS).getTotal();
+                else
+                    detectDOS = new ArrayList<>(10);
+            } else {
+                detectDOS = detectMapper.selectByDate(batchID, repositoryID, startDate, endDate);
+                if (detectDOS != null)
+                    total = detectDOS.size();
+                else
+                    detectDOS = new ArrayList<>(10);
+            }
+        } catch (PersistenceException e) {
+            throw new DetectManageServiceException(e);
+        }
+
+        List<DetectDTO> detectDTOS = new ArrayList<>();
+        if (detectDOS != null)
+            detectDOS.forEach(detectDO -> detectDTOS.add(detectDoConvertToDetectDTO(detectDO)));
+
+        result.put("data", detectDTOS);
+        result.put("total", total);
+        return result;
     }
 
     /**

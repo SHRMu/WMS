@@ -2,27 +2,24 @@ package de.demarks.wms.common.controller;
 
 import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketRefMangeService;
-import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.dao.PacketMapper;
-import de.demarks.wms.domain.Packet;
+import de.demarks.wms.domain.PacketDO;
+import de.demarks.wms.domain.PacketDTO;
 import de.demarks.wms.exception.PacketManageServiceException;
 import de.demarks.wms.exception.PreStockManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
-import org.apache.tools.ant.taskdefs.Pack;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-import sun.security.krb5.internal.PAData;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,14 +104,14 @@ public class PacketMangeHandler {
                                       @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
-        List<Packet> rows = null;
+        List<PacketDO> rows = null;
         long total = 0;
 
         // 查询
         Map<String, Object> queryResult = query(searchType, keyWord, repositoryID, offset, limit);
 
         if (queryResult != null) {
-            rows = (List<Packet>) queryResult.get("data");
+            rows = (List<PacketDO>) queryResult.get("data");
             total = (long) queryResult.get("total");
         }
 
@@ -127,19 +124,19 @@ public class PacketMangeHandler {
     /**
      * 添加一条包裹信息
      *
-     * @param packet 包裹信息
+     * @param packetDO 包裹信息
      * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
      */
     @RequestMapping(value = "addPacket", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> addPacket(@RequestBody Packet packet) throws PacketManageServiceException {
+    Map<String, Object> addPacket(@RequestBody PacketDO packetDO) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
         // 设置包裹已发货
-        packet.setStatus("已发货");
-        String result = packetManageService.addPacket(packet) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        packetDO.setStatus("已发货");
+        String result = packetManageService.addPacket(packetDO) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
         responseContent.setResponseResult(result);
@@ -149,17 +146,17 @@ public class PacketMangeHandler {
     /**
      * 更新一条包裹信息
      *
-     * @param packet 包裹信息
+     * @param packetDO 包裹信息
      * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
      */
     @RequestMapping(value = "updatePacket", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> updatePacket(@RequestBody Packet packet) throws PacketManageServiceException {
+    Map<String, Object> updatePacket(@RequestBody PacketDO packetDO) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
-        String result = packetManageService.updatePacket(packet) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        String result = packetManageService.updatePacket(packetDO) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
         responseContent.setResponseResult(result);
@@ -189,7 +186,6 @@ public class PacketMangeHandler {
     /**
      *  客户预报操作
      * @param trace
-     * @param desc
      * @param repositoryID
      * @param goodsID
      * @param number
@@ -201,29 +197,25 @@ public class PacketMangeHandler {
     @RequestMapping(value = "packetStockIn", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> preStockIn(@RequestParam("trace") String trace,
-                                   @RequestParam("goodsID") Integer goodsID,
-                                   @RequestParam("repositoryID") Integer repositoryID,
-                                   @Param("desc") String desc, @RequestParam("number") long number, HttpServletRequest request) throws PacketManageServiceException {
+    Map<String, Object> preStockIn(@RequestParam("trace") String trace, @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
+                                   @RequestParam("number") long number, HttpServletRequest request) throws PacketManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName"); //默认获取的userName取锁定客户ID
 
-        Packet packet = packetMapper.selectByTrace(trace,repositoryID); //验证是否有过该包裹预报
+        PacketDO packetDO = packetMapper.selectByTrace(trace,repositoryID); //验证是否有过该包裹预报
         Integer packetID;
-        if (packet != null){
+        if (packetDO != null){
             //如果包裹已有预报信息
-            packetID = packet.getId();
+            packetID = packetDO.getId();
         }else{
             //首先预报包裹信息
-            packet = new Packet();
-            packet.setTrace(trace);
-            packet.setStatus("已发货");
-            packet.setDesc(desc);
-            packet.setRepositoryID(repositoryID);
-            //TODO : addPacket怎样能够直接返回id值
-            packetManageService.addPacket(packet);
+            packetDO = new PacketDO();
+            packetDO.setTrace(trace);
+            packetDO.setStatus("已发货");
+            packetDO.setRepositoryID(repositoryID);
+            packetManageService.addPacket(packetDO);
             packetID = packetMapper.selectByTrace(trace,repositoryID).getId();
         }
 
@@ -235,6 +227,58 @@ public class PacketMangeHandler {
         responseContent.setResponseResult(result);
         return responseContent.generateResponse();
 
+    }
+
+    /**
+     *
+     * @param packetIDStr
+     * @param repositoryID
+     * @param startDateStr
+     * @param endDateStr
+     * @param limit
+     * @param offset
+     * @return
+     * @throws ParseException
+     * @throws PacketManageServiceException
+     */
+    @SuppressWarnings({"SingleStatementInBlock", "unchecked"})
+    @RequestMapping(value = "searchPacketRecord", method = RequestMethod.GET)
+    public @ResponseBody
+    Map<String, Object> searchDetectRecord(@RequestParam("packetID") String packetIDStr, @RequestParam("repositoryID") Integer repositoryID,
+                                           @RequestParam("startDate") String startDateStr, @RequestParam("endDate") String endDateStr,
+                                           @RequestParam("limit") int limit, @RequestParam("offset") int offset) throws ParseException, PacketManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        List<PacketDTO> rows = null;
+        long total = 0;
+
+        // 参数检查
+        String regex = "([0-9]{4})-([0-9]{2})-([0-9]{2})";
+        boolean startDateFormatCheck = (StringUtils.isEmpty(startDateStr) || startDateStr.matches(regex));
+        boolean endDateFormatCheck = (StringUtils.isEmpty(endDateStr) || endDateStr.matches(regex));
+        boolean packetIDCheck = (StringUtils.isEmpty(packetIDStr) || StringUtils.isNumeric(packetIDStr));
+
+        if (startDateFormatCheck && endDateFormatCheck && packetIDCheck) {
+            Integer packetID = -1;
+            if (StringUtils.isNumeric(packetIDStr)) {
+                packetID = Integer.valueOf(packetIDStr);
+            }
+
+            // 转到 Service 执行查询
+            Map<String, Object> queryResult = packetManageService.selectPacketRecord(packetID, repositoryID, startDateStr, endDateStr, offset, limit);
+            if (queryResult != null) {
+                rows = (List<PacketDTO>) queryResult.get("data");
+                total = (long) queryResult.get("total");
+            }
+        } else
+            responseContent.setResponseMsg("Request argument error");
+
+        if (rows == null)
+            rows = new ArrayList<>(0);
+
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
     }
 
 }

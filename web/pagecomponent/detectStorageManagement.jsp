@@ -106,7 +106,6 @@
 								{
 									field : 'goodsID',
 									title : '货物ID',
-									visible : false
 									//sortable: true
 								},
 								{
@@ -116,7 +115,6 @@
 								{
 									field : 'batchID',
 									title : '批次ID',
-									visible : false
 								},
 								{
 									field : 'batchCode',
@@ -748,7 +746,7 @@
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<!--下载本地表格，被FileSourceHandler拦截-->
 								<a class="btn btn-info"
-									href="commons/fileSource/download/storageRecord.xlsx"
+									href="commons/fileSource/download/stockStorageRecord.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>

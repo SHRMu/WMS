@@ -3,14 +3,8 @@ package de.demarks.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.DetectStorageService;
-import de.demarks.wms.dao.DetectStorageMapper;
-import de.demarks.wms.dao.GoodsMapper;
-import de.demarks.wms.dao.RepositoryBatchMapper;
-import de.demarks.wms.dao.RepositoryMapper;
-import de.demarks.wms.domain.DetectStorage;
-import de.demarks.wms.domain.Goods;
-import de.demarks.wms.domain.Repository;
-import de.demarks.wms.domain.RepositoryBatch;
+import de.demarks.wms.dao.*;
+import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.DetectStorageServiceException;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +27,8 @@ public class DetectStorageServiceImpl implements DetectStorageService {
 
     @Autowired
     private GoodsMapper goodsMapper;
+    @Autowired
+    private CustomerMapper customerMapper;
 
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
@@ -237,22 +233,23 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
+    public boolean addDetectStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isAvailable = true;
             // ID对应的记录是否存在
-            if (!(goodsValidate(goodsID) && batchValidate(batchID) && repositoryValidate(repositoryID)))
+            if (!(goodsValidate(goodsID) && customerValidate(customerID) && batchValidate(batchID) && repositoryValidate(repositoryID)))
                 isAvailable = false;
             if (passed<0 || scratch<0 || damage<0)
                 isAvailable = false;
             Long total = passed + scratch + damage;
             List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-            if (detectStorageList!= null || !detectStorageList.isEmpty())
+            if (!detectStorageList.isEmpty())
                 isAvailable = false;
             if (isAvailable) {
                 // insert
                 DetectStorage detectStorage = new DetectStorage();
                 detectStorage.setGoodsID(goodsID);
+                detectStorage.setCustomerID(customerID);
                 detectStorage.setBatchID(batchID);
                 detectStorage.setRepositoryID(repositoryID);
                 detectStorage.setNumber(total);
@@ -376,7 +373,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     @Override
-    public boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
+    public boolean detectStorageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         // 检查货物库存增加数目的有效性
         if ( passed < 0 || scratch < 0 || damage < 0)
             return false;
@@ -384,14 +381,14 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         synchronized (this) {
             // 检查对应的库存记录是否存在
             DetectStorage detectStorage = getDetectStorage(goodsID, batchID, repositoryID);
-            if (detectStorage != null) {
+            if (detectStorage!= null) {
                 long newNumber = detectStorage.getNumber() + passed + scratch + damage;
                 long newPassed = detectStorage.getPassed() + passed;
                 long newScratch = detectStorage.getScratch() + scratch;
                 long newDamage = detectStorage.getDamage() + damage;
                 updateDetectStorage(goodsID, batchID, repositoryID, newNumber, newPassed, newScratch, newDamage);
             } else {
-                addDetectStorage(goodsID, batchID, repositoryID, passed, scratch, damage);
+                addDetectStorage(goodsID, customerID, batchID, repositoryID, passed, scratch, damage);
             }
         }
         return true;
@@ -434,6 +431,21 @@ public class DetectStorageServiceImpl implements DetectStorageService {
         try {
             Goods goods = goodsMapper.selectById(goodsID);
             return goods != null;
+        } catch (PersistenceException e) {
+            throw new DetectStorageServiceException(e);
+        }
+    }
+
+    /**
+     * 检查货物ID对应的记录是否存在
+     *
+     * @param customerID
+     * @return 若存在则返回true，否则返回false
+     */
+    private boolean customerValidate(Integer customerID) throws DetectStorageServiceException {
+        try {
+            Customer customer = customerMapper.selectById(customerID);
+            return customer != null;
         } catch (PersistenceException e) {
             throw new DetectStorageServiceException(e);
         }

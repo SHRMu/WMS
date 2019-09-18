@@ -94,11 +94,11 @@ pageEncoding="UTF-8"%>
                                 <shiro:hasRole name="systemAdmin">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/packetStorageManagement.jsp">预报库存</a>
+                                           name="pagecomponent/packetStorageManagement.jsp">预报包裹</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/storageManagement.jsp">入库库存</a>
+                                           name="pagecomponent/stockStorageManagement.jsp">入库库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
@@ -106,7 +106,7 @@ pageEncoding="UTF-8"%>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/storageManagement.jsp">预报记录</a>
+                                           name="pagecomponent/packetRecordManagement.jsp">预报记录</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"

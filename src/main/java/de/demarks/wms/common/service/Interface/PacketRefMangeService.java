@@ -1,6 +1,6 @@
 package de.demarks.wms.common.service.Interface;
 
-import de.demarks.wms.domain.Packet;
+import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.exception.PacketManageServiceException;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,14 +42,14 @@ public interface PacketRefMangeService {
      * @return
      * @throws PacketManageServiceException
      */
-    boolean addPacketRef(Packet packet) throws PacketManageServiceException;
+    boolean addPacketRef(PacketDO packetDO) throws PacketManageServiceException;
 
     /**
      * 更新包裹信息
-     * @param packet
+     * @param packetDO
      * @return
      */
-    boolean updatePacketRef(Packet packet) throws PacketManageServiceException;
+    boolean updatePacketRef(PacketDO packetDO) throws PacketManageServiceException;
 
     /**
      * 删除附加包裹信息

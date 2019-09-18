@@ -78,14 +78,7 @@ public interface PacketStorageMapper {
      */
     void update(PacketStorage packetStorage);
 
-    /**
-     * 删除指定ID的入库记录
-     * @param packetID
-     * @param goodsID
-     * @param repositoryID
-     */
-    void delete(@Param("goodsID") Integer goodsID,
-                @Param("packetID") Integer packetID,
-                @Param("repositoryID") Integer repositoryID);
+
+    void delete(PacketStorage packetStorage);
 
 }

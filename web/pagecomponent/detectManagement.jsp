@@ -105,7 +105,7 @@
             select : function(event, ui){
                 $('#goods_input').val(ui.item.label);
                 detect_goods = ui.item.value;
-                loadStorageInfo();
+                // loadStorageInfo();
                 return false;
             }
         })
@@ -118,13 +118,8 @@
             detect_repository = $('#repository_selector').val();
             loadStorageInfo();
         });
-        $('#repository_selector').change(function(){
-            detect_batch = $('#batch_selector').val();
-            detect_repository = $(this).val();
-            loadStorageInfo();
-        });
-
     }
+
     function loadStorageInfo(){
         if(detect_batch != null && detect_repository != null && detect_goods != null){
             $.ajax({
@@ -137,7 +132,7 @@
                     limit : -1,
                     searchType : 'searchByGoodsID',
                     batchBelong : detect_batch,
-                    repositoryBelong : detect_repository,
+                    repositoryID : detect_repository,
                     keyword : detect_goods
                 },
                 success : function(response){

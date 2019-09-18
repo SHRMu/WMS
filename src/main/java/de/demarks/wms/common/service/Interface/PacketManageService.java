@@ -1,6 +1,6 @@
 package de.demarks.wms.common.service.Interface;
 
-import de.demarks.wms.domain.Packet;
+import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.exception.PacketManageServiceException;
 import org.apache.ibatis.annotations.Param;
 
@@ -72,18 +72,18 @@ public interface PacketManageService {
 
     /**
      * 添加包裹信息
-     * @param packet
+     * @param packetDO
      * @return
      * @throws PacketManageServiceException
      */
-    boolean addPacket(Packet packet) throws PacketManageServiceException;
+    boolean addPacket(PacketDO packetDO) throws PacketManageServiceException;
 
     /**
      * 更新包裹信息
-     * @param packet
+     * @param packetDO
      * @return
      */
-    boolean updatePacket(Packet packet) throws PacketManageServiceException;
+    boolean updatePacket(PacketDO packetDO) throws PacketManageServiceException;
 
     /**
      * 删除指定包裹ID的信息
@@ -103,5 +103,16 @@ public interface PacketManageService {
      * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
      */
     boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PacketManageServiceException;
+
+
+    Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID,
+                                        @Param("repositoryID") Integer repositoryID,
+                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws PacketManageServiceException;
+
+
+    Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID,
+                                        @Param("repositoryID") Integer repositoryID,
+                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
+                                        @Param("offset") int offset, @Param("limit") int limit) throws PacketManageServiceException;
 
 }

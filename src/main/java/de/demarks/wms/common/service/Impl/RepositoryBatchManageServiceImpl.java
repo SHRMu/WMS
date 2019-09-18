@@ -7,10 +7,10 @@ import de.demarks.wms.common.service.Interface.RepositoryBatchManageService;
 
 import de.demarks.wms.dao.DetectStorageMapper;
 import de.demarks.wms.dao.RepositoryBatchMapper;
-import de.demarks.wms.dao.StorageMapper;
+import de.demarks.wms.dao.StockStorageMapper;
 import de.demarks.wms.domain.DetectStorage;
 import de.demarks.wms.domain.RepositoryBatch;
-import de.demarks.wms.domain.Storage;
+import de.demarks.wms.domain.StockStorage;
 import de.demarks.wms.exception.RepositoryBatchManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -31,7 +31,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
     @Autowired
-    private StorageMapper storageMapper;
+    private StockStorageMapper stockStorageMapper;
     @Autowired
     private DetectStorageMapper detectStorageMapper;
 
@@ -301,8 +301,8 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     public boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException {
         try {
             //检查该批次下是否有待检测的库存
-            List<Storage> storages = storageMapper.selectByGoodsID(null, batchID, repositoryID);
-            if ( storages != null && !storages.isEmpty())
+            List<StockStorage> stockStorages = stockStorageMapper.selectByGoodsID(null, batchID, repositoryID);
+            if ( stockStorages != null && !stockStorages.isEmpty())
                 return  false;
 
             //检查该批次下所有已测良品均已发货

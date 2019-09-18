@@ -143,12 +143,15 @@ public class DetectStorageManageHandler {
 
         String goodsID = (String) params.get("goodsID");
         String batchID = (String) params.get("batchID");
+        String customerID = (String)params.get("customerID");
         String repositoryID = (String) params.get("repositoryID");
         String passed = (String) params.get("passed");
         String scratch = (String) params.get("scratch");
         String damage = (String) params.get("damage");
 
         if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(customerID) || !StringUtils.isNumeric(customerID))
             isAvailable = false;
         if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
             isAvailable = false;
@@ -162,7 +165,7 @@ public class DetectStorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = detectStorageManageService.addDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            isSuccess = detectStorageManageService.addDetectStorage(Integer.valueOf(goodsID), Integer.valueOf(customerID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(passed), Integer.valueOf(scratch), Integer.valueOf(damage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

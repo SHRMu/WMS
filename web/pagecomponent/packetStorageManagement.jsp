@@ -2,8 +2,9 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_storage = "none";
+	var search_type_storage = "searchAll";
 	var search_keyWord = "";
+	var search_packet = "";
 	var search_repository = "";
 
 	var select_goodsID;
@@ -116,12 +117,12 @@
 
 	// 表格初始化
 	function storageListInit() {
-		$('#storageList')
+		$('#stockStorageList')
 				.bootstrapTable(
 						{
 							columns : [
 								{
-									field : 'packetID',
+									field : 'packetDOID',
 									title : '包裹ID'
 									//sortable: true
 								},
@@ -141,6 +142,10 @@
 
 								},
 								{
+									field : 'goodsID',
+									title : '货物ID'
+								},
+								{
 									field : 'goodsName',
 									title : '货物名称'
 								},
@@ -149,7 +154,7 @@
 									title : '预报数量'
 								},
 								{
-									field : 'storage',
+									field : 'stockStorage',
 									title : '到货数量'
 								},
 								{
@@ -171,7 +176,7 @@
 										'click .delete' : function(e,
 																   value, row, index) {
 											select_goodsID = row.goodsID;
-											select_packetID = row.packetID;
+											select_packetID = row.packetDOID;
 											select_repositoryID = row.repositoryID
 											$('#deleteWarning_modal').modal(
 													'show');
@@ -195,18 +200,26 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
+			if (select_packetID != null){
+				search_packet = select_packetID;
+			}
 			search_repository = $('#search_input_repository').val();
-			if (select_packetID == null)
-				select_packetID = "";
 			tableRefresh();
+			inputReset();
 		})
 	}
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#storageList').bootstrapTable('refresh', {
+		$('#stockStorageList').bootstrapTable('refresh', {
 			query : {}
 		});
+	}
+	
+	function inputReset() {
+		$('#search_input_packet').val('');
+		select_packetID = null;
+		search_packet = -1;
 	}
 
 	// 分页查询参数
@@ -216,7 +229,7 @@
 			offset : params.offset,
 			searchType : search_type_storage,
 			keyword : search_keyWord,
-			packetID : select_packetID,
+			packetDOID : search_packet,
 			repositoryID : search_repository
 		}
 		return temp;
@@ -227,10 +240,14 @@
 		$('#edit_modal').modal("show");
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
+
+		$('#storage_packetID_edit').text(row.packetDOID);
+		$('#storage_packetTrace_edit').text(row.packetTrace);
 		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_packetID_edit').text(row.packetID);
+		$('#storage_goodsName_edit').text(row.goodsName);
 		$('#storage_repositoryID_edit').text(row.repositoryID);
-		$('#storage_number_edit').val(row.number);
+		$('#packet_number_edit').val(row.number);
+		$('#packet_storage_edit').val(row.stockStorage);
 	}
 
 	// 添加库存信息模态框数据校验
@@ -265,7 +282,7 @@
 						}
 					}
 				},
-				storage_number : {
+				packet_number : {
 					validators : {
 						notEmpty : {
 							message : '库存数量不能为空'
@@ -289,9 +306,9 @@
 
 					var data = {
 						goodsID : $('#storage_goodsID_edit').text(),
-						packetID : $('#storage_packetID_edit').text(),
+						packetDOID : $('#storage_packetID_edit').text(),
 						repositoryID : $('#storage_repositoryID_edit').text(),
-						number : $('#storage_number_edit').val(),
+						number : $('#packet_number_edit').val(),
 					}
 
 					// ajax
@@ -330,9 +347,9 @@
 		$('#add_modal_submit').click(function() {
 			var data = {
 				goodsID : $('#storage_goodsID').val(),
-				packetID : $('#storage_packetID').val(),
+				packetDOID : $('#storage_packetID').val(),
 				repositoryID : $('#storage_repositoryID').val(),
-				number : $('#storage_number').val()
+				number : $('#packet_number').val()
 			}
 			// ajax
 			$.ajax({
@@ -359,7 +376,7 @@
 					$('#storage_goodsID').val("");
 					$('#storage_packetID').val("");
 					$('#storage_repositoryID').val("");
-					$('#storage_number').val("");
+					$('#packet_number').val("");
 					$('#storage_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
@@ -373,7 +390,7 @@
 		$('#delete_confirm').click(function(){
 			var data = {
 				"goodsID" : select_goodsID,
-				"packetID" : select_packetID,
+				"packetDOID" : select_packetID,
 				"repositoryID" : select_repositoryID
 			}
 			
@@ -626,7 +643,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="storageList" class="table table-striped"></table>
+				<table id="stockStorageList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -678,16 +695,16 @@
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_number"
-										name="storage_number" placeholder="数量">
+									<input type="text" class="form-control" id="packet_number"
+										name="packet_number" placeholder="数量">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>未到货数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_storage"
-										   name="storage_storage" placeholder="未到货数量">
+									<input type="text" class="form-control" id="packet_storage"
+										   name="packet_storage" placeholder="未到货数量">
 								</div>
 							</div>
 						</form>
@@ -729,7 +746,7 @@
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<!--下载本地表格，被FileSourceHandler拦截-->
 								<a class="btn btn-info"
-									href="commons/fileSource/download/storageRecord.xlsx"
+									href="commons/fileSource/download/stockStorageRecord.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>
@@ -954,7 +971,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">编辑货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">编辑包裹预报信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->
@@ -964,32 +981,50 @@
 						<form class="form-horizontal" role="form" id="storage_form_edit"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物ID：</span>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>包裹ID：</span>
 								</label>
-								<div class="col-md-4 col-sm-4">
-									<p id="storage_goodsID_edit" class="form-control-static"></p>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>包裹ID：</span>
-								</label>
-								<div class="col-md-4 col-sm-4">
+								<div class="col-md-2 col-sm-2">
 									<p id="storage_packetID_edit" class="form-control-static"></p>
 								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库ID：</span>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>运单：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
+									<p id="storage_packetTrace_edit" class="form-control-static"></p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>货物ID：</span>
+								</label>
+								<div class="col-md-2 col-sm-2">
+									<p id="storage_goodsID_edit" class="form-control-static"></p>
+								</div>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>名称：</span>
+								</label>
+								<div class="col-md-4 col-sm-4">
+									<p id="storage_goodsName_edit" class="form-control-static"></p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>仓库ID：</span>
+								</label>
+								<div class="col-md-2 col-sm-2">
 									<p id="storage_repositoryID_edit" class="form-control-static"></p>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
 								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_number_edit"
-										name="storage_number" placeholder="库存数量">
+								<div class="col-md-4 col-sm-4">
+									<input type="text" class="form-control" id="packet_number_edit"
+										name="packet_number" placeholder="预报数量">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
+								</label>
+								<div class="col-md-4 col-sm-4">
+									<input type="text" class="form-control" id="packet_storage_edit"
+										   name="packet_storage" placeholder="到货数量">
 								</div>
 							</div>
 						</form>

@@ -154,7 +154,6 @@ function preStockInOption(){
 		}
 		data = {
             trace: $('#packet_trace').val(),
-			desc : $('#packet_desc').val(),
 			repositoryID: $('#repository_selector').val(),
 			goodsID: preStockin_goods,
 			number: $('#preStockin_input').val()

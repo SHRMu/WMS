@@ -11,7 +11,6 @@
 	var select_repositoryID;
 
 	$(function() {
-
 		batchSelectorInit();
 		repositoryOptionInit();
 		storageListInit();
@@ -77,7 +76,7 @@
 
 	// 表格初始化
 	function storageListInit() {
-		$('#storageList')
+		$('#stockStorageList')
 				.bootstrapTable(
 						{
 							columns : [
@@ -90,6 +89,14 @@
 								{
 									field : 'goodsName',
 									title : '货物名称'
+								},
+								{
+									field : 'customerID',
+									title : '客户ID'
+								},
+								{
+									field : 'customerName',
+									title : '客户名称'
 								},
 								{
 									field : 'batchID',
@@ -180,7 +187,7 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#storageList').bootstrapTable('refresh', {
+		$('#stockStorageList').bootstrapTable('refresh', {
 			query : {}
 		});
 	}
@@ -605,7 +612,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="storageList" class="table table-striped"></table>
+				<table id="stockStorageList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -700,7 +707,7 @@
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<!--下载本地表格，被FileSourceHandler拦截-->
 								<a class="btn btn-info"
-									href="commons/fileSource/download/storageRecord.xlsx"
+									href="commons/fileSource/download/stockStorageRecord.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>

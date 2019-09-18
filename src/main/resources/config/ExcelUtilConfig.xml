@@ -131,7 +131,7 @@
 			<value>所属仓库ID</value>
 		</property>
 	</entity>
-	<entity class="de.demarks.wms.domain.Storage">
+	<entity class="de.demarks.wms.domain.StockStorage">
 		<property>
 			<field>goodsID</field>
 			<value>货物ID</value>

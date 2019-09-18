@@ -7,7 +7,7 @@
 	
 	<resultMap type="de.demarks.wms.domain.StockOutDO" id="stockOutDO">
 		<id property="id" column="stockout_id"/>
-		<result property="packetID" column="stockout_packetID"/>
+		<result property="packetDOID" column="stockout_packetID"/>
 		<result property="batchID" column="stockout_batchID" />
 		<result property="batchCode" column="stockout_batchCode" />
 		<result property="customerID" column="stockout_customerID"/>
@@ -170,14 +170,14 @@
 		
 	<insert id="insert">
 		insert into wms_record_out(RECORD_PACKET, RECORD_BATCHID, RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
-		values(#{packet},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
+		values(#{packetDO},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
 	</insert>
 	
 	<update id="update">
 		update
 			wms_record_out
 		set
-			RECORD_PACKET = #{packet},
+			RECORD_PACKET = #{packetDO},
 			RECORD_BATCHID = #{batchID},
 			RECORD_CUSTOMERID = #{customerID},
 			RECORD_GOODID = #{goodsID},

@@ -1,18 +1,10 @@
 package de.demarks.wms.common.controller;
-import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
-import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
-import de.demarks.wms.common.util.StatusUtil;
-import de.demarks.wms.dao.PacketMapper;
-import de.demarks.wms.domain.Packet;
 import de.demarks.wms.domain.PacketStorage;
-import de.demarks.wms.exception.PacketManageServiceException;
 import de.demarks.wms.exception.PacketStorageManageServiceException;
-import de.demarks.wms.exception.PreStockManageServiceException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.*;
 
 /**

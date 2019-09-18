@@ -6,7 +6,7 @@
 <mapper namespace="de.demarks.wms.dao.PacketStorageMapper">
 	
 	<resultMap type="de.demarks.wms.domain.PacketStorage" id="packetStorage">
-		<id property="packetID" column="preStorage_packetID"/>
+		<id property="packetDOID" column="preStorage_packetID"/>
 		<id property="goodsID" column="preStorage_goodsID" />
 		<result property="customerID" column="preStorage_customerID" />
 		<result property="repositoryID" column="preStorage_repositoryID"/>
@@ -16,7 +16,7 @@
 		<result property="goodsName" column="preStorage_goodsName"/>
 		<result property="customerName" column="preStorage_customerName"/>
 		<result property="number" column="preStorage_number"/>
-		<result property="storage" column="preStorage_storage" />
+		<result property="stockStorage" column="preStorage_storage" />
 	</resultMap>
 	
 	<select id="selectAll" resultMap="packetStorage">
@@ -39,8 +39,8 @@
 			ps.PRE_GOODID =  g.GOOD_ID and
 			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID
-		<if test="packetID !=null">
-			and ps.PRE_PACKETID = #{packetID}
+		<if test="packetDOID !=null">
+			and ps.PRE_PACKETID = #{packetDOID}
 		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
@@ -68,8 +68,8 @@
 			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
 			ps.PRE_GOODID = #{goodsID}
-		<if test="packetID !=null">
-			and ps.PRE_PACKETID = #{packetID}
+		<if test="packetDOID !=null">
+			and ps.PRE_PACKETID = #{packetDOID}
 		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
@@ -97,8 +97,8 @@
 			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
 			g.GOOD_NAME like concat ('%',#{goodsName},'%')
-		<if test="packetID !=null">
-			and ps.PRE_PACKETID = #{packetID}
+		<if test="packetDOID !=null">
+			and ps.PRE_PACKETID = #{packetDOID}
 		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
@@ -126,8 +126,8 @@
 			ps.PRE_CUSTOMERID = cus.CUSTOMER_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
 			ps.PRE_CUSTOMERID = #{customerID}
-		<if test="packetID !=null">
-			and ps.PRE_PACKETID = #{packetID}
+		<if test="packetDOID !=null">
+			and ps.PRE_PACKETID = #{packetDOID}
 		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
@@ -165,7 +165,7 @@
 
 	<insert id="insert">
 		insert into wms_packet_storage(PRE_PACKETID,PRE_GOODID,PRE_CUSTOMERID,PRE_REPOSITORYID,PRE_NUMBER,PRE_STORAGE)
-		values(#{packetID},#{goodsID},#{customerID},#{repositoryID},#{number},#{storage})
+		values(#{packetDOID},#{goodsID},#{customerID},#{repositoryID},#{number},#{stockStorage})
 	</insert>
 	
 	<update id="update">
@@ -173,10 +173,10 @@
 			wms_packet_storage
 		set
 			PRE_NUMBER = #{number},
-			PRE_STORAGE = #{storage}
+			PRE_STORAGE = #{stockStorage}
 		where
 			PRE_GOODID = #{goodsID} and
-			PRE_PACKETID = #{packetID} and
+			PRE_PACKETID = #{packetDOID} and
 			PRE_REPOSITORYID = #{repositoryID}
 	</update>
 	
@@ -184,7 +184,7 @@
 		delete from wms_packet_storage
 		where
 			PRE_GOODID = #{goodsID} and
-			PRE_PACKETID = #{packetID} and
+			PRE_PACKETID = #{packetDOID} and
 			PRE_REPOSITORYID = #{repositoryID}
 	</delete>
 </mapper>

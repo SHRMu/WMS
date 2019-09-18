@@ -62,7 +62,7 @@
 
 	// 表格初始化
 	function storageListInit() {
-		$('#storageList')
+		$('#stockStorageList')
 				.bootstrapTable(
 						{
 							columns : [
@@ -129,7 +129,7 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#storageList').bootstrapTable('refresh', {
+		$('#stockStorageList').bootstrapTable('refresh', {
 			query : {}
 		});
 	}
@@ -224,7 +224,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="storageList" class="table table-striped"></table>
+				<table id="stockStorageList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>

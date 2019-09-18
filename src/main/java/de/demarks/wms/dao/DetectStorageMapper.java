@@ -64,6 +64,7 @@ public interface DetectStorageMapper {
      */
     void update(DetectStorage storage);
 
+
     /**
      * 删除指定批次，仓库中的货物ID的库存
      * @param goodsID 货物ID

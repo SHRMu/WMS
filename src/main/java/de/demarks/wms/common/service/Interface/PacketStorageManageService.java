@@ -117,7 +117,7 @@ public interface PacketStorageManageService {
     * @return
     * @throws PacketStorageManageServiceException
     */
-   boolean packetStorageDecrease(@Param("goodsID") Integer goodsID,
+   boolean packetStorageIncrease(@Param("goodsID") Integer goodsID,
                                  @Param("packetID") Integer packetID,
                                  @Param("repositoryID") Integer repositoryID,
                                  @Param("number") long number) throws PacketStorageManageServiceException;

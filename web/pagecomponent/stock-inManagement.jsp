@@ -159,23 +159,26 @@ function loadStorageInfo(){
 	if(stockin_packet != null && stockin_repository != null && stockin_goods != null){
 		$.ajax({
 			type : 'GET',
-			url : 'packetStorageManage/getStorageListWithPacket',
+			url : 'packetStorageManage/getStorageList',
 			dataType : 'json',
 			contentType : 'application/json',
 			data : {
 				offset : -1,
 				limit : -1,
 				searchType : 'searchByGoodsID',
-				packetID : stockin_packet,
+				packetDOID : stockin_packet,
 				repositoryID : stockin_repository,
 				keyword : stockin_goods
 			},
 			success : function(response){
 				if(response.total > 0){
-					data = response.rows[0].storage;
-					$('#info_storage').text(data);
+					number = response.rows[0].number;
+					stockStorage = response.rows[0].stockStorage;
+					$('#packet_number').text(number);
+					$('#packet_storage').text(stockStorage);
 				}else{
-					$('#info_storage').text('0');
+					$('#packet_number').text('0');
+					$('#packet_storage').text('0');
 				}
 			},
 			error : function(response){
@@ -220,7 +223,7 @@ function stockInOption(){
 			return;
 		}
 		data = {
-            packetID: stockin_packet,
+            packetDOID: stockin_packet,
 			batchID : $('#batch_selector').val(),
             repositoryID: stockin_repository,
             goodsID: stockin_goods,
@@ -344,6 +347,7 @@ function infoModal(type, msg) {
 				</div>
 			</div>
 		</div>
+
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
@@ -353,8 +357,7 @@ function infoModal(type, msg) {
 							<div class="form-group">
 								<label for="" class="control-label">入库数量：</label>
 								<input type="text" class="form-control" placeholder="请输入数量" id="stockin_input" name="stockin_input">
-								<span>未到货数量：</span>
-								<span id="info_storage">-</span>
+
 								<%--								<span>)</span>--%>
 							</div>
 						</form>
@@ -362,7 +365,25 @@ function infoModal(type, msg) {
 				</div>
 			</div>
 		</div>
-		<div class="row" style="margin-top:80px"></div>
+
+		<div class="row" style="margin-top: 25px">
+			<div class="col-md-6 col-sm-6">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-10 col-sm-11">
+						<div class="form-group">
+							<span>预报数量</span>
+							<span id="packet_number"> - </span>
+							<span>到货数量：</span>
+							<span id="packet_storage"> - </span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-top:80px">
+
+		</div>
 	</div>
 	<div class="panel-footer">
 		<div style="text-align:right">

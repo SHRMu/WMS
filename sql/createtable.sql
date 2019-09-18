@@ -285,6 +285,7 @@ create table wms_detect
     DETECT_DAMAGE int not null,
     DETECT_TIME datetime not null,
     DETECT_PERSON varchar(10) not null,
+    DETECT_DESC varchar(50),
     primary key(DETECT_ID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),

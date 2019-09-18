@@ -1,25 +1,18 @@
 package de.demarks.wms.common.controller;
 
-import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import de.demarks.wms.common.service.Interface.StockRecordManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
-import de.demarks.wms.domain.Storage;
+import de.demarks.wms.domain.StockStorage;
 import de.demarks.wms.exception.StorageManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +24,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/**/storageManage")
-public class StorageManageHandler {
+public class StockStorageManageHandler {
 
     @Autowired
     private StorageManageService storageManageService;
@@ -114,13 +107,13 @@ public class StorageManageHandler {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
-        List<Storage> rows;
+        List<StockStorage> rows;
         long total = 0;
 
         // query
         Map<String, Object> queryResult = query(searchType, keyword, batchBelong, repositoryID, offset, limit);
         if (queryResult != null) {
-            rows = (List<Storage>) queryResult.get("data");
+            rows = (List<StockStorage>) queryResult.get("data");
             total = (long) queryResult.get("total");
         } else
             rows = new ArrayList<>();
@@ -151,7 +144,7 @@ public class StorageManageHandler {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
-        List<Storage> rows = null;
+        List<StockStorage> rows = null;
         long total = 0;
 
         HttpSession session = request.getSession();
@@ -161,7 +154,7 @@ public class StorageManageHandler {
         if (batchID != null && repositoryID != null) {
             Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID, offset, limit);
             if (queryResult != null) {
-                rows = (List<Storage>) queryResult.get("data");
+                rows = (List<StockStorage>) queryResult.get("data");
                 total = (long) queryResult.get("total");
             }
         }
@@ -187,6 +180,7 @@ public class StorageManageHandler {
         boolean isAvailable = true;
 
         String goodsID = (String) params.get("goodsID");
+        String customerID = (String)params.get("customerID");
         String batchID = (String) params.get("batchID");
         String repositoryID = (String) params.get("repositoryID");
         String number = (String) params.get("number");
@@ -201,7 +195,7 @@ public class StorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = storageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            isSuccess = storageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(customerID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

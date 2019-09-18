@@ -8,12 +8,9 @@ import de.demarks.wms.common.service.Interface.StockRecordManageService;
 import de.demarks.wms.common.service.Interface.StorageManageService;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
-import de.demarks.wms.dao.*;
 import de.demarks.wms.exception.*;
 import de.demarks.wms.util.aop.UserOperation;
-import de.demarks.wms.domain.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +47,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     private PacketStorageMapper packetStorageMapper;
 
     /**
-     *
+     * 入库操作
      * @param packetID
      * @param goodsID
      * @param batchID
@@ -62,12 +59,8 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
      */
     @UserOperation(value = "货物入库")
     @Override
-    public boolean stockInOperation(@Param("packetID") Integer packetID,
-                                    @Param("goodsID") Integer goodsID,
-                                    @Param("batchID") Integer batchID,
-                                    @Param("repositoryID") Integer repositoryID,
-                                    @Param("number") long number,
-                                    @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException {
+    public boolean stockInOperation(Integer packetID, Integer goodsID, Integer batchID, Integer repositoryID,
+                                    long number, String personInCharge) throws StockRecordManageServiceException {
 
         // ID对应的记录是否存在
         if (!(packetValidate(packetID) && batchValidate(batchID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
@@ -90,10 +83,10 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         try {
             // 减少包裹未到货storage
             boolean  packetSuccess, storageSuccess;
-            packetSuccess = packetStorageManageService.packetStorageDecrease(goodsID, packetID, repositoryID, number);
+            packetSuccess = packetStorageManageService.packetStorageIncrease(goodsID, packetID, repositoryID, number);
 
             // 增加待检测库存量
-            storageSuccess = storageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
+            storageSuccess = storageManageService.storageIncrease(goodsID, customerID, batchID, repositoryID, number);
 
             // 保存入库记录
             if (packetSuccess && storageSuccess ) {
@@ -432,8 +425,8 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
      */
     private boolean packetValidate(Integer packetID) throws StockRecordManageServiceException {
         try {
-            Packet packet = packetMapper.selectByPacketID(packetID);
-            return packet != null;
+            PacketDO packetDO = packetMapper.selectByPacketID(packetID);
+            return packetDO != null;
         } catch (PersistenceException e) {
             throw new StockRecordManageServiceException(e);
         }

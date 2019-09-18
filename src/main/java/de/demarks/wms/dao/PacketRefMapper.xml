@@ -49,7 +49,7 @@
 			wms_packet_ref pr, wms_packet p
 		where
 			pr.PACKET_REF_ID = p.PACKET_ID and
-			pr.PACKET_ID = #{packetID}
+			pr.PACKET_ID = #{packetDOID}
 	</select>
 
 	<select id="selectByRefID" resultMap="packetRef">
@@ -125,7 +125,7 @@
 
 	<delete id="deleteByPacketID">
 		delete from wms_packet_ref
-		where PACKET_ID = #{packetID}
+		where PACKET_ID = #{packetDOID}
 	</delete>
 	
 	<delete id="deleteByRefID">

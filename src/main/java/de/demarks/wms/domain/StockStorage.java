@@ -6,7 +6,7 @@ package de.demarks.wms.domain;
  * @author Shouran
  *
  */
-public class Storage {
+public class StockStorage {
 
 	private Integer goodsID;// 货物ID
 	private String goodsName;// 货物名称

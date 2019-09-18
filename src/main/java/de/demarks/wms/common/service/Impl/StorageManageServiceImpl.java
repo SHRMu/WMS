@@ -7,11 +7,11 @@ import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.dao.GoodsMapper;
 import de.demarks.wms.dao.RepositoryBatchMapper;
 import de.demarks.wms.dao.RepositoryMapper;
-import de.demarks.wms.dao.StorageMapper;
+import de.demarks.wms.dao.StockStorageMapper;
 import de.demarks.wms.domain.Goods;
 import de.demarks.wms.domain.Repository;
 import de.demarks.wms.domain.RepositoryBatch;
-import de.demarks.wms.domain.Storage;
+import de.demarks.wms.domain.StockStorage;
 import de.demarks.wms.exception.StorageManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -34,7 +34,7 @@ import java.util.Map;
 public class StorageManageServiceImpl implements StorageManageService {
 
     @Autowired
-    private StorageMapper storageMapper;
+    private StockStorageMapper stockStorageMapper;
     @Autowired
     private GoodsMapper goodsMapper;
     @Autowired
@@ -65,7 +65,7 @@ public class StorageManageServiceImpl implements StorageManageService {
     public Map<String, Object> selectAll(Integer batchID, Integer repositoryID, int offset, int limit) throws StorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
-        List<Storage> storageList;
+        List<StockStorage> stockStorageList;
         long total = 0;
         boolean isPagination = true;
 
@@ -81,24 +81,24 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                storageList = storageMapper.selectByGoodsID(null, batchID, repositoryID);
-                if (storageList != null) {
-                    PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
+                stockStorageList = stockStorageMapper.selectAll(batchID, repositoryID);
+                if (stockStorageList != null) {
+                    PageInfo<StockStorage> pageInfo = new PageInfo<>(stockStorageList);
                     total = pageInfo.getTotal();
                 } else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             } else {
-                storageList = storageMapper.selectByGoodsID(null, batchID,repositoryID);
-                if (storageList != null)
-                    total = storageList.size();
+                stockStorageList = stockStorageMapper.selectAll(batchID,repositoryID);
+                if (stockStorageList != null)
+                    total = stockStorageList.size();
                 else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             }
         } catch (PersistenceException e) {
             throw new StorageManageServiceException(e);
         }
 
-        resultSet.put("data", storageList);
+        resultSet.put("data", stockStorageList);
         resultSet.put("total", total);
         return resultSet;
     }
@@ -126,7 +126,7 @@ public class StorageManageServiceImpl implements StorageManageService {
     public Map<String, Object> selectByGoodsID(Integer goodsID, Integer batchID, Integer repositoryID, int offset, int limit) throws StorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
-        List<Storage> storageList;
+        List<StockStorage> stockStorageList;
         long total = 0;
         boolean isPagination = true;
 
@@ -144,24 +144,24 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-                if (storageList != null) {
-                    PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
+                stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                if (stockStorageList != null) {
+                    PageInfo<StockStorage> pageInfo = new PageInfo<>(stockStorageList);
                     total = pageInfo.getTotal();
                 } else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             } else {
-                storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-                if (storageList != null)
-                    total = storageList.size();
+                stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+                if (stockStorageList != null)
+                    total = stockStorageList.size();
                 else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             }
         } catch (PersistenceException e) {
             throw new StorageManageServiceException(e);
         }
 
-        resultSet.put("data", storageList);
+        resultSet.put("data", stockStorageList);
         resultSet.put("total", total);
         return resultSet;
     }
@@ -189,7 +189,7 @@ public class StorageManageServiceImpl implements StorageManageService {
     public Map<String, Object> selectByGoodsName(String goodsName, Integer batchID, Integer repositoryID, int offset, int limit) throws StorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
-        List<Storage> storageList;
+        List<StockStorage> stockStorageList;
         long total = 0;
         boolean isPagination = true;
 
@@ -205,24 +205,24 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                storageList = storageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
-                if (storageList != null) {
-                    PageInfo<Storage> pageInfo = new PageInfo<>(storageList);
+                stockStorageList = stockStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
+                if (stockStorageList != null) {
+                    PageInfo<StockStorage> pageInfo = new PageInfo<>(stockStorageList);
                     total = pageInfo.getTotal();
                 } else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             } else {
-                storageList = storageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
-                if (storageList != null)
-                    total = storageList.size();
+                stockStorageList = stockStorageMapper.selectByGoodsName(goodsName, batchID, repositoryID);
+                if (stockStorageList != null)
+                    total = stockStorageList.size();
                 else
-                    storageList = new ArrayList<>();
+                    stockStorageList = new ArrayList<>();
             }
         } catch (PersistenceException e) {
             throw new StorageManageServiceException(e);
         }
 
-        resultSet.put("data", storageList);
+        resultSet.put("data", stockStorageList);
         resultSet.put("total", total);
         return resultSet;
     }
@@ -238,17 +238,15 @@ public class StorageManageServiceImpl implements StorageManageService {
      */
     @UserOperation(value = "添加库存记录")
     @Override
-    public boolean addStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean addStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
         try {
             boolean isAvailable = true;
 
             // validate
             Goods goods = goodsMapper.selectById(goodsID);
-            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,null);
+            RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(batchID,repositoryID);
             Repository repository = repositoryMapper.selectByID(repositoryID);
             if (goods == null)
-                isAvailable = false;
-            if (batchID == null)
                 isAvailable = false;
             if (repositoryBatch == null)
                 isAvailable = false;
@@ -256,20 +254,20 @@ public class StorageManageServiceImpl implements StorageManageService {
                 isAvailable = false;
             if (number < 0)
                 isAvailable = false;
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-            if (!(storageList != null && storageList.isEmpty()))
+            List<StockStorage> stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            if (!(stockStorageList != null && stockStorageList.isEmpty()))
                 isAvailable = false;
 
             if (isAvailable) {
                 // insert
-                Storage storage = new Storage();
-                storage.setGoodsID(goodsID);
-                storage.setBatchID(batchID);
-                storage.setRepositoryID(repositoryID);
-                storage.setNumber(number);
-                storageMapper.insert(storage);
+                StockStorage stockStorage = new StockStorage();
+                stockStorage.setGoodsID(goodsID);
+                stockStorage.setCustomerID(customerID);
+                stockStorage.setBatchID(batchID);
+                stockStorage.setRepositoryID(repositoryID);
+                stockStorage.setNumber(number);
+                stockStorageMapper.insert(stockStorage);
             }
-
             return isAvailable;
         } catch (PersistenceException e) {
             throw new StorageManageServiceException(e);
@@ -291,13 +289,13 @@ public class StorageManageServiceImpl implements StorageManageService {
         try {
             boolean isUpdate = false;
             // validate
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-            if (storageList != null && !storageList.isEmpty()) {
+            List<StockStorage> stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            if (stockStorageList != null && !stockStorageList.isEmpty()) {
                 if (number >= 0) {
                     // update
-                    Storage storage = storageList.get(0);
-                    storage.setNumber(number);
-                    storageMapper.update(storage);
+                    StockStorage stockStorage = stockStorageList.get(0);
+                    stockStorage.setNumber(number);
+                    stockStorageMapper.update(stockStorage);
                     isUpdate = true;
                 }
             }
@@ -324,10 +322,10 @@ public class StorageManageServiceImpl implements StorageManageService {
             boolean isDelete = false;
 
             // validate
-            List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-            if (storageList != null && !storageList.isEmpty()) {
+            List<StockStorage> stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+            if (stockStorageList != null && !stockStorageList.isEmpty()) {
                 // delete
-                storageMapper.delete(goodsID, batchID, repositoryID);
+                stockStorageMapper.delete(goodsID, batchID, repositoryID);
                 isDelete = true;
             }
 
@@ -352,46 +350,46 @@ public class StorageManageServiceImpl implements StorageManageService {
         int available = 0;
 
         // 从文件中读取
-        List<Object> storageList = excelUtil.excelReader(Storage.class, file);
+        List<Object> storageList = excelUtil.excelReader(StockStorage.class, file);
         if (storageList != null) {
             total = storageList.size();
 
             try {
-                Storage storage;
+                StockStorage stockStorage;
                 boolean isAvailable;
-                List<Storage> availableList = new ArrayList<>();
+                List<StockStorage> availableList = new ArrayList<>();
                 Goods goods;
                 RepositoryBatch repositoryBatch;
                 Repository repository;
                 for (Object object : storageList) {
                     isAvailable = true;
-                    storage = (Storage) object;
+                    stockStorage = (StockStorage) object;
 
                     // validate
-                    goods = goodsMapper.selectById(storage.getGoodsID());
-                    repositoryBatch = repositoryBatchMapper.selectByID(storage.getBatchID(),null);
-                    repository = repositoryMapper.selectByID(storage.getRepositoryID());
+                    goods = goodsMapper.selectById(stockStorage.getGoodsID());
+                    repositoryBatch = repositoryBatchMapper.selectByID(stockStorage.getBatchID(),null);
+                    repository = repositoryMapper.selectByID(stockStorage.getRepositoryID());
                     if (goods == null)
                         isAvailable = false;
                     if (repositoryBatch == null)
                         isAvailable = false;
                     if (repository == null)
                         isAvailable = false;
-                    if (storage.getNumber() < 0)
+                    if (stockStorage.getNumber() < 0)
                         isAvailable = false;
-                    List<Storage> temp = storageMapper.selectByGoodsID(storage.getGoodsID(), storage.getBatchID(), storage.getRepositoryID());
+                    List<StockStorage> temp = stockStorageMapper.selectByGoodsID(stockStorage.getGoodsID(), stockStorage.getBatchID(), stockStorage.getRepositoryID());
                     if (!(temp != null && temp.isEmpty()))
                         isAvailable = false;
 
                     if (isAvailable) {
-                        availableList.add(storage);
+                        availableList.add(stockStorage);
                     }
                 }
                 // 保存到数据库
                 available = availableList.size();
                 System.out.println(available);
                 if (available > 0)
-                    storageMapper.insertBatch(availableList);
+                    stockStorageMapper.insertBatch(availableList);
             } catch (PersistenceException e) {
                 throw new StorageManageServiceException(e);
             }
@@ -405,15 +403,15 @@ public class StorageManageServiceImpl implements StorageManageService {
     /**
      * 导出库存记录
      *
-     * @param storageList 保存有库存记录的List
+     * @param stockStorageList 保存有库存记录的List
      * @return excel 文件
      */
     @UserOperation(value = "导出库存记录")
     @Override
-    public File exportStorage(List<Storage> storageList) {
-        if (storageList == null)
+    public File exportStorage(List<StockStorage> stockStorageList) {
+        if (stockStorageList == null)
             return null;
-        return excelUtil.excelWriter(Storage.class, storageList);
+        return excelUtil.excelWriter(StockStorage.class, stockStorageList);
     }
 
     /**
@@ -426,7 +424,7 @@ public class StorageManageServiceImpl implements StorageManageService {
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     @Override
-    public boolean storageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean storageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
 
         // 检查货物库存增加数目的有效性
         if (number < 0)
@@ -434,12 +432,12 @@ public class StorageManageServiceImpl implements StorageManageService {
 
         synchronized (this) {
             // 检查对应的库存记录是否存在
-            Storage storage = getStorage(goodsID, batchID, repositoryID);
-            if (storage != null) {
-                long newStorage = storage.getNumber() + number;
+            StockStorage stockStorage = getStorage(goodsID, batchID, repositoryID);
+            if (stockStorage != null) {
+                long newStorage = stockStorage.getNumber() + number;
                 updateStorage(goodsID, batchID, repositoryID, newStorage);
             } else {
-                addStorage(goodsID, batchID, repositoryID, number);
+                addStorage(goodsID, customerID, batchID, repositoryID, number);
             }
         }
         return true;
@@ -459,14 +457,14 @@ public class StorageManageServiceImpl implements StorageManageService {
 
         synchronized (this) {
             // 检查对应的库存记录是否存在
-            Storage storage = getStorage(goodsID, batchID, repositoryID);
-            if (null != storage) {
+            StockStorage stockStorage = getStorage(goodsID, batchID, repositoryID);
+            if (null != stockStorage) {
                 // 检查库存减少数目的范围是否合理
-                if (number < 0 || storage.getNumber() < number)
+                if (number < 0 || stockStorage.getNumber() < number)
                     return false;
 
-                long newStorage = storage.getNumber() - number;
-                updateStorage(goodsID,batchID, repositoryID, newStorage);
+                long newStorage = stockStorage.getNumber() - number;
+                updateStorage(goodsID, batchID, repositoryID, newStorage);
                 return true;
             } else
                 return false;
@@ -481,12 +479,12 @@ public class StorageManageServiceImpl implements StorageManageService {
      * @param repositoryID 仓库ID
      * @return 若存在则返回对应的记录，否则返回null
      */
-    private Storage getStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
-        Storage storage = null;
-        List<Storage> storageList = storageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
-        if (!storageList.isEmpty())
-            storage = storageList.get(0);
-        return storage;
+    private StockStorage getStorage(Integer goodsID, Integer batchID, Integer repositoryID) {
+        StockStorage stockStorage = null;
+        List<StockStorage> stockStorageList = stockStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        if (!stockStorageList.isEmpty())
+            stockStorage = stockStorageList.get(0);
+        return stockStorage;
     }
 
 }

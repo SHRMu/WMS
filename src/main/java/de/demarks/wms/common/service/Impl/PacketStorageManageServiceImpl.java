@@ -286,19 +286,17 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
      * @throws PacketStorageManageServiceException
      */
     @Override
-    public boolean packetStorageDecrease(@Param("goodsID") Integer goodsID,
-                                         @Param("packetID") Integer packetID,
-                                         @Param("repositoryID") Integer repositoryID,
-                                         @Param("number") long number) throws PacketStorageManageServiceException {
+    public boolean packetStorageIncrease(Integer goodsID, Integer packetID, Integer repositoryID, long number) throws PacketStorageManageServiceException {
+
         synchronized (this) {
             // 检查对应的库存记录是否存在
             PacketStorage packetStorage = getPacketStorage(goodsID, packetID, repositoryID);
             if (null != packetStorage) {
                 // 检查库存减少数目的范围是否合理
-                if (number < 0 || packetStorage.getStorage() < number)
+                if (number < 0)
                     return false;
                 long newNumber = packetStorage.getNumber();
-                long newStorage = packetStorage.getStorage() - number;
+                long newStorage = packetStorage.getStorage() + number;
                 updatePacketStorage(goodsID, packetID, repositoryID, newNumber, newStorage);
                 return true;
             } else

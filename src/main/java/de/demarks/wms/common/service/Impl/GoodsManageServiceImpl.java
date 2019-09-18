@@ -35,7 +35,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
     @Autowired
     private StockOutMapper stockOutMapper;
     @Autowired
-    private StorageMapper storageMapper;
+    private StockStorageMapper stockStorageMapper;
     @Autowired
     private DetectStorageMapper detectStorageMapper;
     @Autowired
@@ -270,8 +270,8 @@ public class GoodsManageServiceImpl implements GoodsManageService {
                 return false;
 
             // 检查该货物是否有待检测库存信息
-            List<Storage> storageRecord = storageMapper.selectByGoodsID(goodsId, null, null);
-            if (storageRecord != null && !storageRecord.isEmpty())
+            List<StockStorage> stockStorageRecord = stockStorageMapper.selectByGoodsID(goodsId, null, null);
+            if (stockStorageRecord != null && !stockStorageRecord.isEmpty())
                 return false;
 
             //检查该货物是否有检测存储记录

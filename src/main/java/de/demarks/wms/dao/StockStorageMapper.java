@@ -1,6 +1,6 @@
 package de.demarks.wms.dao;
 
-import de.demarks.wms.domain.Storage;
+import de.demarks.wms.domain.StockStorage;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +14,7 @@ import java.util.List;
  *
  */
 @Repository
-public interface StorageMapper {
+public interface StockStorageMapper {
 
 	/**
 	 * 选择全部
@@ -22,8 +22,8 @@ public interface StorageMapper {
 	 * @param repositoryID
 	 * @return
 	 */
-	List<Storage> selectAll(@Param("batchID") Integer batchID,
-							@Param("repositoryID") Integer repositoryID);
+	List<StockStorage> selectAll(@Param("batchID") Integer batchID,
+                                 @Param("repositoryID") Integer repositoryID);
 
 	/**
 	 * 精确搜索
@@ -32,9 +32,9 @@ public interface StorageMapper {
 	 * @param repositoryID
 	 * @return
 	 */
-	List<Storage> selectByGoodsID(@Param("goodsID") Integer goodsID,
-							 	  @Param("batchID") Integer batchID,
-							 	  @Param("repositoryID") Integer repositoryID);
+	List<StockStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
+                                       @Param("batchID") Integer batchID,
+                                       @Param("repositoryID") Integer repositoryID);
 
 	/**
 	 * 模糊搜索
@@ -43,28 +43,28 @@ public interface StorageMapper {
 	 * @param repositoryID
 	 * @return
 	 */
-	List<Storage> selectByGoodsName(@Param("goodsName") String goodsName,
-									@Param("batchID") Integer batchID,
-									@Param("repositoryID") Integer repositoryID);
+	List<StockStorage> selectByGoodsName(@Param("goodsName") String goodsName,
+                                         @Param("batchID") Integer batchID,
+                                         @Param("repositoryID") Integer repositoryID);
 
 	/**
 	 * 更新库存信息
 	 * 该库存信息必需已经存在于数据库当中，否则更新无效
-	 * @param storage 库存信息
+	 * @param stockStorage 库存信息
 	 */
-	void update(Storage storage);
+	void update(StockStorage stockStorage);
 	
 	/**
 	 * 插入新的库存信息
-	 * @param storage 库存信息
+	 * @param stockStorage 库存信息
 	 */
-	void insert(Storage storage);
+	void insert(StockStorage stockStorage);
 	
 	/**
 	 * 批量导入库存信息
-	 * @param storages 若干条库存信息
+	 * @param stockStorages 若干条库存信息
 	 */
-	void insertBatch(List<Storage> storages);
+	void insertBatch(List<StockStorage> stockStorages);
 	
 	/**
 	 * 删除指定仓库中的指定货物的库存信息

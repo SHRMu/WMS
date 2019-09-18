@@ -7,7 +7,7 @@
 	
 	<resultMap type="de.demarks.wms.domain.StockInDO" id="stockInDO">
 		<id property="id" column="stockin_id"/>
-		<result property="packetID" column="stockin_packetID" />
+		<result property="packetDOID" column="stockin_packetID" />
 		<result property="customerID" column="stockin_customerID"/>
 		<result property="customerName" column="stockin_customerName"/>
 		<result property="goodsID" column="stockin_goodsID"/>
@@ -205,14 +205,14 @@
 	
 	<insert id="insert">
 		insert into wms_record_in(RECORD_PACKETID,RECORD_BATCHID,RECORD_CUSTOMERID,RECORD_GOODID,RECORD_NUMBER,RECORD_TIME,RECORD_PERSON,RECORD_REPOSITORYID)
-		values(#{packetID},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
+		values(#{packetDOID},#{batchID},#{customerID},#{goodsID},#{number},#{time},#{personInCharge},#{repositoryID})
 	</insert>
 	
 	<update id="update">
 		update 
 			wms_record_in
 		set
-			RECORD_PACKET = #{packet},
+			RECORD_PACKET = #{packetDO},
 			RECORD_BATCHID = #{batchID},
 			RECORD_CUSTOMERID = #{customerID},
 			RECORD_GOODID = #{goodsID},

@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.PacketRefMangeService;
 import de.demarks.wms.dao.PacketMapper;
 import de.demarks.wms.dao.PacketRefMapper;
-import de.demarks.wms.domain.Packet;
+import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.domain.PacketDTO;
 import de.demarks.wms.domain.PacketRef;
 import de.demarks.wms.exception.PacketManageServiceException;
@@ -83,17 +83,17 @@ public class PacketRefManageServiceImpl implements PacketRefMangeService {
      * @throws PacketManageServiceException
      */
     @Override
-    public boolean addPacketRef(Packet packet) throws PacketManageServiceException {
+    public boolean addPacketRef(PacketDO packetDO) throws PacketManageServiceException {
         try{
-            if ( packet!= null){
-                Integer refID = packet.getId(); //主单号
-                String desc = packet.getDesc(); //附单运单号
+            if ( packetDO != null){
+                Integer refID = packetDO.getId(); //主单号
+                String desc = packetDO.getDesc(); //附单运单号
                 List<PacketRef> packetRefList = packetRefMapper.selectByRefID(refID,null);
                 if (!packetRefList.isEmpty()){
                     deletePacketRef(refID);
                 }
-                packetRefMapper.insert(packet.getTrace(),refID); //添加主单信息
-                if (desc.equals("")||desc==null)
+                packetRefMapper.insert(packetDO.getTrace(),refID); //添加主单信息
+                if (desc==null || desc.equals(""))
                     return true;
                 if (desc.contains(",")){
                     String[] traces = desc.split(",");
@@ -117,10 +117,10 @@ public class PacketRefManageServiceImpl implements PacketRefMangeService {
     }
 
     @Override
-    public boolean updatePacketRef(Packet packet) throws PacketManageServiceException {
+    public boolean updatePacketRef(PacketDO packetDO) throws PacketManageServiceException {
         try {
-            if (packet!=null && packetRefCheck(packet)){
-                addPacketRef(packet);
+            if (packetDO !=null && packetRefCheck(packetDO)){
+                addPacketRef(packetDO);
                 return true;
             }
             return false;
@@ -151,12 +151,12 @@ public class PacketRefManageServiceImpl implements PacketRefMangeService {
 
     /**
      * 检查附加包裹信息是否修改
-     * @param packet
+     * @param packetDO
      * @return
      */
-    private boolean packetRefCheck(Packet packet){
-        String desc = packet.getDesc();
-        String oldDesc = packetMapper.selectByPacketID(packet.getId()).getDesc();
+    private boolean packetRefCheck(PacketDO packetDO){
+        String desc = packetDO.getDesc();
+        String oldDesc = packetMapper.selectByPacketID(packetDO.getId()).getDesc();
         if (desc.equalsIgnoreCase(oldDesc))
             return false;
         return true;

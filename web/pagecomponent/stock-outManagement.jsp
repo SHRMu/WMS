@@ -309,7 +309,7 @@ function stockoutOperation(){
 		}
 
 		data = {
-			packet : $('#packet_input').val(),
+			packetDO : $('#packet_input').val(),
 			batchID :  stockout_batch,
 			customerID : stockout_customer,
 			goodsID : stockout_goods,

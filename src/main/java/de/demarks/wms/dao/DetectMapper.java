@@ -17,19 +17,19 @@ import java.util.List;
 public interface DetectMapper {
 
     /**
-     * 返回全部的结果
-     * @param repositoryID
-     * @return
-     */
-    List<DetectDO> selectAll(@Param("batchID") Integer batchID,
-                             @Param("repositoryID") Integer repositoryID);
-
-    /**
      * 返回指定记录ID的结果
      * @param recordID
      * @return
      */
     DetectDO selectByRecordID(@Param("recordID") Integer recordID);
+
+    List<DetectDO> selectAll(@Param("batchID") Integer batchID,
+                            @Param("repositoryID") Integer repositoryID);
+
+    List<DetectDO> selectByDate(@Param("batchID") Integer batchID,
+                                @Param("repositoryID") Integer repositoryID,
+                                @Param("startDate") Date startDate,
+                                @Param("endDate") Date endDate);
 
     /**
      * 指定GoodsID的结果
@@ -61,12 +61,6 @@ public interface DetectMapper {
                                      @Param("startDate") Date startDate,
                                      @Param("endDate") Date endDate);
 
-
-    List<DetectDO> selectByCustomerID(@Param("customerID") Integer customerID,
-                                       @Param("batchID") Integer batchID,
-                                       @Param("repositoryID") Integer repositoryID,
-                                       @Param("startDate") Date startDate,
-                                       @Param("endDate") Date endDate);
 
     /**
      * 添加一条记录

@@ -1,9 +1,10 @@
 package de.demarks.wms.dao;
 
-import de.demarks.wms.domain.Packet;
+import de.demarks.wms.domain.PacketDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,14 +22,14 @@ public interface PacketMapper {
      * @param repositoryID
      * @return
      */
-    List<Packet> selectAll(@Param("repositoryID") Integer repositoryID);
+    List<PacketDO> selectAll(@Param("repositoryID") Integer repositoryID);
 
     /**
      * 返回指定PacketID
      * @param packetID
      * @return
      */
-    Packet selectByPacketID(@Param("packetID") Integer packetID);
+    PacketDO selectByPacketID(@Param("packetID") Integer packetID);
 
     /**
      * 精确查询 返回指定运单号
@@ -36,8 +37,8 @@ public interface PacketMapper {
      * @param repositoryID
      * @return
      */
-    Packet selectByTrace(@Param("trace") String trace,
-                         @Param("repositoryID") Integer repositoryID);
+    PacketDO selectByTrace(@Param("trace") String trace,
+                           @Param("repositoryID") Integer repositoryID);
 
     /**
      * 模糊查询 返回指定运单号
@@ -46,22 +47,28 @@ public interface PacketMapper {
      * @param repositoryID
      * @return
      */
-    List<Packet> selectByTraceApproximate(@Param("trace") String trace,
-                                         @Param("status") String status,
-                                         @Param("repositoryID") Integer repositoryID);
+    List<PacketDO> selectByTraceApproximate(@Param("trace") String trace,
+                                            @Param("status") String status,
+                                            @Param("repositoryID") Integer repositoryID);
+
+
+    List<PacketDO> selectByDate(@Param("packetID") Integer packetID,
+                                @Param("repositoryID") Integer repositoryID,
+                                @Param("startDate") Date startDate,
+                                @Param("endDate") Date endDate);
 
     /**
      * 添加
-     * @param packet
+     * @param packetDO
      * @return
      */
-    Integer insert(Packet packet);
+    Integer insert(PacketDO packetDO);
 
     /**
      * 更新
-     * @param packet
+     * @param packetDO
      */
-    void update(Packet packet);
+    void update(PacketDO packetDO);
 
     /**
      * 删除指定packetID

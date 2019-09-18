@@ -36,7 +36,7 @@ public class RepositoryManageServiceImpl implements RepositoryService {
     @Autowired
     private StockOutMapper stockOutMapper;
     @Autowired
-    private StorageMapper storageMapper;
+    private StockStorageMapper stockStorageMapper;
     @Autowired
     private RepositoryAdminMapper repositoryAdminMapper;
 
@@ -268,8 +268,8 @@ public class RepositoryManageServiceImpl implements RepositoryService {
                 return false;
 
             // 检查是否存在库存记录
-            List<Storage> storageRecords = storageMapper.selectByGoodsID(null,null, repositoryId);
-            if (storageRecords != null && !storageRecords.isEmpty())
+            List<StockStorage> stockStorageRecords = stockStorageMapper.selectByGoodsID(null,null, repositoryId);
+            if (stockStorageRecords != null && !stockStorageRecords.isEmpty())
                 return false;
 
             // 检查是否已指派仓库管理员
