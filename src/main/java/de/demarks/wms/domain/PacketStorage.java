@@ -1,5 +1,7 @@
 package de.demarks.wms.domain;
 
+import java.util.Date;
+
 /**
  * 预报包裹库存
  * 
@@ -11,11 +13,10 @@ public class PacketStorage {
 	private Integer packetID;
 	private String packetTrace;
 	private String packetStatus;
+	private Date packetTime;
 	private String packetDesc;
 	private Integer goodsID;// 货物ID
 	private String goodsName;// 货物名称
-	private Integer customerID;
-	private String customerName;
 	private Integer repositoryID;// 仓库ID
 	private Long number; //预报数量
 	private Long storage; //到货数量
@@ -44,6 +45,14 @@ public class PacketStorage {
 		this.packetStatus = packetStatus;
 	}
 
+	public Date getPacketTime() {
+		return packetTime;
+	}
+
+	public void setPacketTime(Date packetTime) {
+		this.packetTime = packetTime;
+	}
+
 	public String getPacketDesc() {
 		return packetDesc;
 	}
@@ -66,22 +75,6 @@ public class PacketStorage {
 
 	public void setGoodsName(String goodsName) {
 		this.goodsName = goodsName;
-	}
-
-	public Integer getCustomerID() {
-		return customerID;
-	}
-
-	public void setCustomerID(Integer customerID) {
-		this.customerID = customerID;
-	}
-
-	public String getCustomerName() {
-		return customerName;
-	}
-
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
 	}
 
 	public Integer getRepositoryID() {
@@ -114,11 +107,10 @@ public class PacketStorage {
 				"packetID=" + packetID +
 				", packetTrace='" + packetTrace + '\'' +
 				", packetStatus='" + packetStatus + '\'' +
+				", packetTime=" + packetTime +
 				", packetDesc='" + packetDesc + '\'' +
 				", goodsID=" + goodsID +
 				", goodsName='" + goodsName + '\'' +
-				", customerID=" + customerID +
-				", customerName='" + customerName + '\'' +
 				", repositoryID=" + repositoryID +
 				", number=" + number +
 				", storage=" + storage +

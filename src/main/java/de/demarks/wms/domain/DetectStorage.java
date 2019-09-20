@@ -6,8 +6,6 @@ public class DetectStorage {
     private String goodsName; //货物名称
     private Integer batchID; // 货物批次
     private String batchCode; // 批次编号
-    private Integer customerID;
-    private String customerName;
     private Integer repositoryID;// 仓库ID
     private long number; // 检测总数
     private long passed; // 待出库良品数
@@ -44,22 +42,6 @@ public class DetectStorage {
 
     public void setBatchCode(String batchCode) {
         this.batchCode = batchCode;
-    }
-
-    public Integer getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(Integer customerID) {
-        this.customerID = customerID;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
     public Integer getRepositoryID() {
@@ -109,8 +91,6 @@ public class DetectStorage {
                 ", goodsName='" + goodsName + '\'' +
                 ", batchID=" + batchID +
                 ", batchCode='" + batchCode + '\'' +
-                ", customerID=" + customerID +
-                ", customerName='" + customerName + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", passed=" + passed +

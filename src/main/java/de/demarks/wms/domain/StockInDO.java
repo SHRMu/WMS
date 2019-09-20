@@ -11,7 +11,6 @@ import java.util.Date;
 public class StockInDO {
 
     private Integer id;
-    private Integer packetID;
     private Integer goodsID;
     private String goodName;
     private Integer batchID;
@@ -29,14 +28,6 @@ public class StockInDO {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getPacketID() {
-        return packetID;
-    }
-
-    public void setPacketID(Integer packetID) {
-        this.packetID = packetID;
     }
 
     public Integer getCustomerID() {
@@ -123,13 +114,12 @@ public class StockInDO {
     public String toString() {
         return "StockInDO{" +
                 "id=" + id +
-                ", packetID=" + packetID +
-                ", customerID=" + customerID +
-                ", customerName='" + customerName + '\'' +
                 ", goodsID=" + goodsID +
                 ", goodName='" + goodName + '\'' +
                 ", batchID=" + batchID +
                 ", batchCode='" + batchCode + '\'' +
+                ", customerID=" + customerID +
+                ", customerName='" + customerName + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", time=" + time +

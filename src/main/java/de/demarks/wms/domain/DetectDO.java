@@ -9,8 +9,6 @@ public class DetectDO {
     private String goodsName;
     private Integer batchID;
     private String batchCode;
-    private Integer customerID;
-    private String customerName;
     private Integer repositoryID;
     private long number;
     private long passed;
@@ -58,22 +56,6 @@ public class DetectDO {
 
     public void setBatchCode(String batchCode) {
         this.batchCode = batchCode;
-    }
-
-    public Integer getCustomerID() {
-        return customerID;
-    }
-
-    public void setCustomerID(Integer customerID) {
-        this.customerID = customerID;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
     public Integer getRepositoryID() {
@@ -148,8 +130,6 @@ public class DetectDO {
                 ", goodsName='" + goodsName + '\'' +
                 ", batchID=" + batchID +
                 ", batchCode='" + batchCode + '\'' +
-                ", customerID=" + customerID +
-                ", customerName='" + customerName + '\'' +
                 ", repositoryID=" + repositoryID +
                 ", number=" + number +
                 ", passed=" + passed +

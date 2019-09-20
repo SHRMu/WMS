@@ -4,7 +4,7 @@
 <script>
 
     // 检测记录查询
-    search_batchID = "";
+    search_packetID = "";
     search_packetID = "";
     search_repositoryID = "";
     search_start_date = null;
@@ -107,38 +107,41 @@
 						{
 							columns : [
 									{
-										field : 'packetDOID',
+										field : 'id',
 										title : '包裹ID'
-									//sortable: true
+									    // sortable: true
 									},
                                     {
-                                        field : 'packetTrace',
+                                        field : 'trace',
                                         title : '运单号'
+                                        // sortable: true
+                                    },
+                                    {
+                                        field : 'desc',
+                                        title : '子运单'
                                         //sortable: true
                                     },
                                     {
-                                        field : 'packetDesc',
-                                        title : '子运单'
-                                        //sortable: true
+                                        field : 'goodsID',
+                                        title : '商品ID',
+                                        visible : false
                                     },
 									{
 										field : 'goodsName',
 										title : '商品名称'
 									},
-									{
-										field : 'repositoryID',
-										title : '所属仓库ID'
-										//visible : false
-									},
-									{
-										field : 'number',
-										title : '检测总数'
-										//visible : false
-									},
+                                    {
+                                        field : 'goodsNumber',
+                                        title : '数量'
+                                    },
 									{
 										field : 'time',
-										title : '日期'
+										title : '发货日期'
 									},
+                                    {
+                                        field : 'status',
+                                        title : '包裹状态'
+                                    },
 									{
 										field : 'personInCharge',
 										title : '经手人'
@@ -170,7 +173,7 @@
 			limit : params.limit,
 			offset : params.offset,
 			// searchType : search_type,
-            batchID : search_batchID,
+            packetID : search_packetID,
 			repositoryID : search_repositoryID,
 			startDate : search_start_date,
 			endDate : search_end_date
@@ -181,7 +184,7 @@
 	// 查询操作
 	function searchAction(){
 	    $('#search_button').click(function(){
-	        search_batchID = $('#search_batch_ID').val();
+	        search_packetID = search_packetID;
 	        search_repositoryID = $('#search_repository_ID').val();
 	        search_start_date = $('#search_start_date').val();
 	        search_end_date = $('#search_end_date').val();

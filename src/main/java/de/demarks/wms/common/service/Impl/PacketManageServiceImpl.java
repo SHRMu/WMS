@@ -248,7 +248,7 @@ public class PacketManageServiceImpl implements PacketManageService {
             // 更新记录
             if (packetDO != null && packetCheck(packetDO)) {
                 packetRefMangeService.updatePacketRef(packetDO); //先更新依赖包裹
-                packetDO.setTime(new Date());
+//                packetDO.setTime(new Date());
                 packetMapper.update(packetDO);
                 return true;
             }
@@ -266,18 +266,16 @@ public class PacketManageServiceImpl implements PacketManageService {
     @Override
     public boolean deletePacket(Integer packetID) throws PacketManageServiceException {
         try {
+            //查看是否有预报信息
+            List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(packetID, null);
+            if (!packetStorageList.isEmpty())
+                return false;
             //检查该包裹是否已签收
             PacketDO packetDO = packetMapper.selectByPacketID(packetID);
             String status = packetDO.getStatus();
             if(status.equals(StatusUtil.PACKET_STATUS_RECEIVE)){
                 //先删除相关依赖的PacketRef
                 packetRefMangeService.deletePacketRef(packetID);
-                //
-                List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(packetID, null);
-                for (PacketStorage packetStorage:
-                     packetStorageList) {
-                    packetStorageMapper.delete(packetStorage);
-                }
                 packetMapper.deleteByPacketID(packetID);
                 return true;
             }
@@ -304,6 +302,11 @@ public class PacketManageServiceImpl implements PacketManageService {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
 
+    /**
+     *
+     * @param packetDO
+     * @return
+     */
     private PacketDTO packetConvertToPacketDTO(PacketDO packetDO){
         PacketDTO packetDTO = new PacketDTO();
         packetDTO.setId(packetDO.getId());
@@ -311,9 +314,9 @@ public class PacketManageServiceImpl implements PacketManageService {
         packetDTO.setTime(dateFormat.format(packetDO.getTime()));
         packetDTO.setStatus(packetDO.getStatus());
         packetDTO.setDesc(packetDO.getDesc());
+        packetDTO.setRepositoryID(packetDO.getRepositoryID());
         return packetDTO;
     }
-
 
     /**
      * 客户操作包裹预入库操作
@@ -332,13 +335,9 @@ public class PacketManageServiceImpl implements PacketManageService {
         if (!(packetValidate(packetID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
             return false;
 
+
         if (personInCharge == null)
             return false;
-
-        //必须用户账户登录下测试
-//        Customer customer = customerMapper.selectByName(personInCharge);
-//        if (customer == null)
-//            return false;
 
         // 检查入库数量有效性
         if (number < 0)
@@ -362,7 +361,6 @@ public class PacketManageServiceImpl implements PacketManageService {
                 packetStorage = new PacketStorage();
                 packetStorage.setPacketID(packetID);
                 packetStorage.setGoodsID(goodsID);
-                packetStorage.setCustomerID(2001);
                 packetStorage.setRepositoryID(repositoryID);
                 packetStorage.setNumber(number);
                 packetStorage.setStorage((long) 0);
@@ -372,75 +370,6 @@ public class PacketManageServiceImpl implements PacketManageService {
         } catch (PersistenceException e) {
             throw new PacketManageServiceException(e);
         }
-    }
-
-    @Override
-    public Map<String, Object> selectPacketRecord(Integer packetID, Integer repositoryID, String startDateStr, String endDateStr) throws PacketManageServiceException {
-        return selectPacketRecord(packetID,repositoryID,startDateStr,endDateStr,-1,-1);
-    }
-
-    @Override
-    public Map<String, Object> selectPacketRecord(Integer packetID, Integer repositoryID, String startDateStr, String endDateStr, int offset, int limit) throws PacketManageServiceException {
-        // 初始化结果集
-        Map<String, Object> result = new HashMap<>();
-        List<PacketDO> packetDOList;
-        long total = 0;
-        boolean isPagination = true;
-
-        // 检查是否需要分页查询
-        if (offset < 0 || limit < 0)
-            isPagination = false;
-
-        // 检查传入参数
-        if (packetID<0)
-            packetID = null;
-        if (repositoryID<0)
-            repositoryID = null;
-
-        // 转换 Date 对象
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = null;
-        Date endDate = null;
-        Date newEndDate = null;
-        try {
-            if (StringUtils.isNotEmpty(startDateStr))
-                startDate = dateFormat.parse(startDateStr);
-            if (StringUtils.isNotEmpty(endDateStr))
-            {
-                endDate = dateFormat.parse(endDateStr);
-                newEndDate = new Date(endDate.getTime()+(24*60*60*1000)-1);
-            }
-        } catch (ParseException e) {
-            throw new PacketManageServiceException(e);
-        }
-
-        // 查询记录
-        try {
-            if (isPagination) {
-                PageHelper.offsetPage(offset, limit);
-                packetDOList = packetMapper.selectByDate(packetID, repositoryID, startDate, endDate);
-                if (packetDOList != null)
-                    total = new PageInfo<>(packetDOList).getTotal();
-                else
-                    packetDOList = new ArrayList<>(10);
-            } else {
-                packetDOList = packetMapper.selectByDate(packetID, repositoryID, startDate, endDate);
-                if (packetDOList != null)
-                    total = packetDOList.size();
-                else
-                    packetDOList = new ArrayList<>(10);
-            }
-        } catch (PersistenceException e) {
-            throw new PacketManageServiceException(e);
-        }
-
-        List<PacketDTO> packetDTOS = new ArrayList<>();
-        if (packetDOList != null)
-            packetDOList.forEach(packet -> packetDTOS.add(packetConvertToPacketDTO(packet)));
-
-        result.put("data", packetDTOS);
-        result.put("total", total);
-        return result;
     }
 
     /**
@@ -487,7 +416,5 @@ public class PacketManageServiceImpl implements PacketManageService {
             throw new PacketManageServiceException(e);
         }
     }
-
-
 
 }

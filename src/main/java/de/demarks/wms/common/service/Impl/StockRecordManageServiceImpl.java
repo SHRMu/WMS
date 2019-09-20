@@ -44,7 +44,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     @Autowired
     private StockOutMapper stockOutMapper;
     @Autowired
-    private PacketStorageMapper packetStorageMapper;
+    private DetectStorageMapper detectStorageMapper;
 
     /**
      * 入库操作
@@ -73,28 +73,20 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
         if (number < 0)
             return false;
 
-        //客户未预报包裹
-        Integer customerID = -1;
-        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, null);
-        if (!packetStorageList.isEmpty()){
-            customerID = packetStorageList.get(0).getCustomerID();
-        }
-
         try {
             // 减少包裹未到货storage
             boolean  packetSuccess, storageSuccess;
             packetSuccess = packetStorageManageService.packetStorageIncrease(goodsID, packetID, repositoryID, number);
 
             // 增加待检测库存量
-            storageSuccess = stockStorageManageService.storageIncrease(goodsID, customerID, batchID, repositoryID, number);
+            storageSuccess = stockStorageManageService.storageIncrease(goodsID, batchID, repositoryID, number);
 
             // 保存入库记录
             if (packetSuccess && storageSuccess ) {
                 StockInDO stockInDO = new StockInDO();
-                stockInDO.setPacketID(packetID);
                 stockInDO.setGoodsID(goodsID);
                 stockInDO.setBatchID(batchID);
-                stockInDO.setCustomerID(customerID);
+                stockInDO.setCustomerID(2001);
                 stockInDO.setNumber(number);
                 stockInDO.setPersonInCharge(personInCharge);
                 stockInDO.setTime(new Date());
@@ -123,11 +115,14 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     public boolean stockOutOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
 
         // 检查ID对应的记录是否存在
-        if (!(batchValidate(batchID) && customerValidate(customerID) && goodsValidate(goodsID)))
+        if (!(goodsValidate(goodsID) && batchValidate(batchID) && customerValidate(customerID) && repositoryValidate(goodsID)))
             return false;
-
-        // 检查出库数量范围是否有效
-        if (number < 0)
+        List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
+        if (detectStorageList.isEmpty())
+            return false;
+        DetectStorage detectStorage = detectStorageList.get(0);
+        long passed = detectStorage.getPassed();
+        if (number < 0 || passed < number)
             return false;
 
         try {
@@ -139,7 +134,6 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             // 保存出库记录
             if (isSuccess) {
                 StockOutDO stockOutDO = new StockOutDO();
-                stockOutDO.setPacketID(packet);
                 stockOutDO.setBatchID(batchID);
                 stockOutDO.setCustomerID(customerID);
                 stockOutDO.setGoodsID(goodsID);

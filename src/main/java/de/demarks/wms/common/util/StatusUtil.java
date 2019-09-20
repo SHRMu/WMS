@@ -3,7 +3,7 @@ package de.demarks.wms.common.util;
 public class StatusUtil {
 
     //包裹状态
-    public static final String PACKET_STATUS_SEND = "已发货";
+    public static final String PACKET_STATUS_SEND = "发货中";
     public static final String PACKET_STATUS_RECEIVE = "已签收";
 
     //仓库状态

@@ -11,8 +11,6 @@
         <result property="goodsName" column="detect_goodsName" />
         <result property="batchID" column="detect_batchID"/>
         <result property="batchCode" column="detect_batchCode" />
-		<result property="customerID" column="detect_customerID" />
-		<result property="customerName" column="detect_customerName"/>
         <result property="repositoryID" column="detect_repositoryID"/>
         <result property="number" column="detect_number" />
         <result property="passed" column="detect_passed"/>
@@ -28,7 +26,6 @@
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -38,15 +35,13 @@
 			d.DETECT_PERSON as detect_personInCharge,
 			d.DETECT_DESC as detect_desc,
 			g.GOOD_NAME as detect_goodsName,
-			c.CUSTOMER_NAME as detect_customerName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
-			d.DETECT_REPOSITORYID = r.REPO_ID and
-			d.DETECT_CUSTOMERID = c.CUSTOMER_ID
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
+			d.DETECT_REPOSITORYID = r.REPO_ID
 		<if test="batchID !=null">
 			and d.DETECT_BATCHID = #{batchID}
 		</if>
@@ -56,11 +51,10 @@
     </select>
 
 	<select id="selectByRecordID" resultMap="detectDO">
-		  select
+		select
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -70,15 +64,13 @@
 			d.DETECT_PERSON as detect_personInCharge,
 			d.DETECT_DESC as detect_desc,
 			g.GOOD_NAME as detect_goodsName,
-			c.CUSTOMER_NAME as detect_customerName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_REPOSITORYID = r.REPO_ID and
-			d.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			d.DETECT_ID = #{recordID}
 	</select>
 
@@ -87,7 +79,6 @@
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -97,15 +88,13 @@
 			d.DETECT_PERSON as detect_personInCharge,
 			d.DETECT_DESC as detect_desc,
 			g.GOOD_NAME as detect_goodsName,
-			c.CUSTOMER_NAME as detect_customerName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
-			d.DETECT_REPOSITORYID = r.REPO_ID and
-			d.DETECT_CUSTOMERID = c.CUSTOMER_ID
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
+			d.DETECT_REPOSITORYID = r.REPO_ID
 		<if test="batchID !=null">
 			and d.DETECT_BATCHID = #{batchID}
 		</if>
@@ -125,7 +114,6 @@
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -135,15 +123,13 @@
 			d.DETECT_PERSON as detect_personInCharge,
 			d.DETECT_DESC as detect_desc,
 			g.GOOD_NAME as detect_goodsName,
-			c.CUSTOMER_NAME as detect_customerName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_REPOSITORYID = r.REPO_ID and
-			d.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			d.DETECT_GOODID = #{goodsID}
 		<if test="batchID != null">
 			and d.DETECT_BATCHID = #{batchID}
@@ -164,7 +150,6 @@
 			d.DETECT_ID as detect_id,
 			d.DETECT_GOODID as detect_goodsID,
 			d.DETECT_BATCHID as detect_batchID,
-			d.DETECT_CUSTOMERID as detect_customerID,
 			d.DETECT_REPOSITORYID as detect_repositoryID,
 			d.DETECT_NUMBER as detect_number,
 			d.DETECT_PASSED as detect_passed,
@@ -174,15 +159,13 @@
 			d.DETECT_PERSON as detect_personInCharge,
 			d.DETECT_DESC as detect_desc,
 			g.GOOD_NAME as detect_goodsName,
-			c.CUSTOMER_NAME as detect_customerName,
 			b.REPO_BATCH_CODE as detect_batchCode
 		from
-			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r, wms_customer c
+			wms_detect d, wms_repo_batch b, wms_goods g, wms_repository r
 		where
-			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_GOODID = g.GOOD_ID and
+			d.DETECT_BATCHID = b.REPO_BATCH_ID and
 			d.DETECT_REPOSITORYID = r.REPO_ID and
-			d.DETECT_CUSTOMERID = c.CUSTOMER_ID and
 			g.GOOD_NAME like concat ('%',#{goodsName},'%')
 		<if test="batchID != null">
 			and d.DETECT_BATCHID = #{batchID}
@@ -202,7 +185,6 @@
 		insert into wms_detect
 		(
 			DETECT_GOODID,
-			DETECT_CUSTOMERID,
 			DETECT_BATCHID,
 			DETECT_REPOSITORYID,
 			DETECT_NUMBER,
@@ -216,7 +198,6 @@
 		values
 		(
 			#{goodsID},
-			#{customerID},
 			#{batchID},
 			#{repositoryID},
 			#{number},

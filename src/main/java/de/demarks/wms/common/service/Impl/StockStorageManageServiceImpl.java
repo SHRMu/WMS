@@ -238,7 +238,7 @@ public class StockStorageManageServiceImpl implements StockStorageManageService 
      */
     @UserOperation(value = "添加库存记录")
     @Override
-    public boolean addStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean addStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
         try {
             boolean isAvailable = true;
 
@@ -262,7 +262,6 @@ public class StockStorageManageServiceImpl implements StockStorageManageService 
                 // insert
                 StockStorage stockStorage = new StockStorage();
                 stockStorage.setGoodsID(goodsID);
-                stockStorage.setCustomerID(customerID);
                 stockStorage.setBatchID(batchID);
                 stockStorage.setRepositoryID(repositoryID);
                 stockStorage.setNumber(number);
@@ -424,7 +423,7 @@ public class StockStorageManageServiceImpl implements StockStorageManageService 
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
     @Override
-    public boolean storageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
+    public boolean storageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException {
 
         // 检查货物库存增加数目的有效性
         if (number < 0)
@@ -437,7 +436,7 @@ public class StockStorageManageServiceImpl implements StockStorageManageService 
                 long newStorage = stockStorage.getNumber() + number;
                 updateStorage(goodsID, batchID, repositoryID, newStorage);
             } else {
-                addStorage(goodsID, customerID, batchID, repositoryID, number);
+                addStorage(goodsID, batchID, repositoryID, number);
             }
         }
         return true;

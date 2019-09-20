@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_packet = "searchActive";
+	var search_type_packet = "searchAll";
 	var search_keyWord = "";
 	var selectID;
 
@@ -52,6 +52,9 @@
 			if (type == "所有") {
 				$("#search_input").attr("readOnly","true");
 				search_type_packet = "searchAll";
+			} else if (type == "未签收") {
+				$("#search_input").attr("readOnly","true");
+				search_type_packet = "searchActive";
 			} else if (type == "包裹ID") {
 				$("#search_input").removeAttr("readOnly");
 				search_type_packet = "searchByPacketID";
@@ -80,6 +83,7 @@
 			limit : params.limit,
 			offset : params.offset,
 			searchType : search_type_packet,
+			repositoryID : -1,
 			keyWord : search_keyWord
 		}
 		return temp;
@@ -87,7 +91,7 @@
 
 	// 表格初始化
 	function packetListInit() {
-		$('#packetDOList')
+		$('#packetList')
 				.bootstrapTable(
 						{
 							columns : [
@@ -101,17 +105,22 @@
 										title : '运单号'
 									},
 									{
+										field : 'desc',
+										title : '子运单'
+									},
+									{
 										field : 'time',
 										title : '发货日期'
+									},
+									{
+										field : 'repositoryID',
+										title : '仓库ID'
 									},
 									{
 										field : 'status',
 										title : '包裹状态'
 									},
-									{
-										field : 'desc',
-										title : '子运单'
-									},
+
 									{
 										field : 'operation',
 										title : '操作',
@@ -151,7 +160,7 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#packetDOList').bootstrapTable('refresh', {
+		$('#packetList').bootstrapTable('refresh', {
 			query : {}
 		});
 	}
@@ -239,7 +248,7 @@
 	function deletepacketAction(){
 		$('#delete_confirm').click(function(){
 			var data = {
-				"packetDOID" : selectID
+				"packetID" : selectID
 			}
 
 			// ajax
@@ -399,7 +408,7 @@
 		})
 	}
 
-	// 导出货物信息
+	// 导出包裹信息
 	function exportpacketAction() {
 		$('#export_packet').click(function() {
 			$('#export_modal').modal("show");
@@ -416,7 +425,7 @@
 		})
 	}
 
-	// 导入货物模态框重置
+	// 导入模态框重置
 	function importModalReset(){
 		var i;
 		for(i = import_start; i <= import_end; i++){
@@ -490,6 +499,7 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">未签收</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">包裹运单号</a></li>
 					</ul>
@@ -526,7 +536,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="packetDOList" class="table table-striped"></table>
+				<table id="packetList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -570,7 +580,7 @@
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="packet_desc"
-										name="packet_desc" placeholder="该包裹侠附加运单,英文逗号分隔">
+										name="packet_desc" placeholder="该包裹附加运单号,英文逗号分隔">
 								</div>
 							</div>
 						</form>
@@ -788,7 +798,7 @@
 	</div>
 </div>
 
-<!-- 编辑货物信息模态框 -->
+<!-- 编辑包裹信息模态框 -->
 <div id="edit_modal" class="modal fade" table-index="-1" role="dialog"
 	 aria-labelledby="myModalLabel" aria-hidden="true"
 	 data-backdrop="static">
@@ -797,7 +807,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 						aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">编辑货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">编辑包裹信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->
@@ -819,7 +829,7 @@
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<select name="" id="packet_status_edit" class="form-control">
-										<option value="已发货">已发货</option>
+										<option value="发货中">发货中</option>
 										<option value="已签收">已签收</option>
 									</select>
 								</div>
@@ -876,7 +886,7 @@
 					</div>
 					<div class="col-md-8 col-sm-8">
 						<h3>是否确认删除该条包裹信息</h3>
-						<p>(注意：若该包裹下还有未签收的货物，则该包裹信息将不能删除成功。如需删除该包裹的信息，请先确保该该包裹下的所有货物都已签收)</p>
+						<p>(注意：请确认该包裹没有任何相关的预报信息，同时修改包裹状态为已签收，否则发货中的包裹将无法删除)</p>
 					</div>
 				</div>
 			</div>

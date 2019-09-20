@@ -78,7 +78,7 @@ public interface DetectStorageService {
                                           @Param("repositoryID") Integer repositoryID,
                                           @Param("offset") int offset, @Param("limit") int limit) throws DetectStorageServiceException;
 
-    boolean addDetectStorage(@Param("goodsID") Integer goodsID, @Param("customerID") Integer customerID,
+    boolean addDetectStorage(@Param("goodsID") Integer goodsID,
                              @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
                              @Param("passed") long passed, @Param("scratch") long scratch,@Param("damage") long damage) throws DetectStorageServiceException;
 
@@ -89,7 +89,7 @@ public interface DetectStorageService {
     boolean deleteDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID) throws DetectStorageServiceException;
 
 
-    boolean detectStorageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
+    boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException;
 
 
     boolean detectStoragePassedDecrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws DetectStorageServiceException;

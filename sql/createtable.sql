@@ -158,7 +158,7 @@ INSERT INTO `wms_repository` VALUES (3001,'德国','可用','11000㎡','提供�
  )engine=innodb;
 
 
-INSERT INTO `wms_packet` VALUES (1,'DHL000','2019-09-17 08:59:55','已发货','DHL111,DHL222',3001),(2,'00340456','2019-08-22 08:59:55','已发货','', 3001);
+INSERT INTO `wms_packet` VALUES (1,'DHL000','2019-09-17 08:59:55','发货中','DHL111,DHL222',3001),(2,'00340456','2019-08-22 08:59:55','发货中','', 3001);
 
  create table wms_packet_ref
 (
@@ -175,14 +175,12 @@ create table wms_packet_storage
 (
     PRE_PACKETID int not null,
     PRE_GOODID int not null,
-    PRE_CUSTOMERID int not null,
     PRE_REPOSITORYID int not null,
     PRE_NUMBER int not null,
     PRE_STORAGE int not null,
     primary key(PRE_PACKETID,PRE_GOODID),
     foreign key(PRE_PACKETID) references wms_packet(PACKET_ID),
     foreign key(PRE_GOODID) references  wms_goods(GOOD_ID),
-    foreign key(PRE_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(PRE_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
@@ -221,17 +219,15 @@ INSERT INTO `wms_repo_batch` VALUES (1,'Anker','可用','2019-09-17 08:59:55',''
 create table wms_record_in
 (
 	RECORD_ID int not null auto_increment,
-	RECORD_PACKETID int not null,
+	RECORD_GOODID int not null,
 	RECORD_BATCHID int not null,
     RECORD_CUSTOMERID int not null,
-    RECORD_GOODID int not null,
     RECORD_NUMBER int not null,
     RECORD_TIME datetime not null,
     RECORD_PERSON varchar(10) not null,
     RECORD_REPOSITORYID int not null,
     primary key(RECORD_ID),
     foreign key(RECORD_GOODID) references wms_goods(GOOD_ID),
-    foreign key(RECORD_PACKETID) references wms_packet(PACKET_ID),
     foreign key(RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
     foreign key(RECORD_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key(RECORD_REPOSITORYID) references wms_repository(REPO_ID)
@@ -241,10 +237,9 @@ create table wms_record_in
 create table wms_record_out
 (
 	RECORD_ID int not null auto_increment,
-	RECORD_PACKET varchar(30) not null,
+	RECORD_GOODID int not null,
 	RECORD_BATCHID int not null,
     RECORD_CUSTOMERID int not null,
-    RECORD_GOODID int not null,
     RECORD_NUMBER int not null,
     RECORD_TIME datetime not null,
     RECORD_PERSON varchar(10) not null,
@@ -261,13 +256,11 @@ create table wms_record_storage
 (
 	RECORD_GOODID int not null,
 	RECORD_BATCHID int not null,
-	RECORD_CUSTOMERID int not null,
 	RECORD_REPOSITORY int not null,
     RECORD_NUMBER int not null,
     primary key(RECORD_GOODID, RECORD_BATCHID),
     foreign key (RECORD_GOODID) references wms_goods(GOOD_ID),
     foreign key (RECORD_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (RECORD_CUSTOMERID) references  wms_customer(CUSTOMER_ID),
     foreign key (RECORD_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;
 
@@ -277,7 +270,6 @@ create table wms_detect
     DETECT_ID int not null auto_increment,
     DETECT_GOODID int not null,
     DETECT_BATCHID int not null,
-    DETECT_CUSTOMERID int not null ,
     DETECT_REPOSITORYID int not null,
     DETECT_NUMBER int not null,
     DETECT_PASSED int not null,
@@ -289,7 +281,6 @@ create table wms_detect
     primary key(DETECT_ID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (DETECT_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key (DETECT_REPOSITORYID) references wms_repository(REPO_ID)
 )engine=innodb;
 
@@ -298,7 +289,6 @@ create table wms_detect_storage
 (
     DETECT_GOODID int not null,
     DETECT_BATCHID int not null,
-    DETECT_CUSTOMERID int not null,
     DETECT_REPOSITORY int not null,
     DETECT_NUMBER int not null,
     DETECT_PASSED int not null,
@@ -307,6 +297,5 @@ create table wms_detect_storage
     primary key(DETECT_GOODID, DETECT_BATCHID),
     foreign key (DETECT_GOODID) references wms_goods(GOOD_ID),
     foreign key (DETECT_BATCHID) references wms_repo_batch(REPO_BATCH_ID),
-    foreign key (DETECT_CUSTOMERID) references wms_customer(CUSTOMER_ID),
     foreign key (DETECT_REPOSITORY) references wms_repository(REPO_ID)
 )engine=innodb;

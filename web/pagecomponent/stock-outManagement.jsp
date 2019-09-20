@@ -2,15 +2,18 @@
     pageEncoding="UTF-8"%>
 <script>
 
+var stockout_packet = null;
 var stockout_batch = null;
 
 var stockout_customer = null;
 var stockout_goods = null;
 
+var packetCache = new Array();
 var customerCache = new Array();
 var goodsCache = new Array();
 
 $(function(){
+	packetAutocomplete();
 	batchSelectorInit();
 	repositorySelectorInit();
 	detilInfoToggle();
@@ -20,6 +23,46 @@ $(function(){
 	dataValidateInit();
 	stockoutOperation();
 })
+
+// 包裹信息自动匹配
+function packetAutocomplete(){
+	$('#packet_input').autocomplete({
+		minLength : 0,
+		delay : 200,
+		source : function(request, response){
+			$.ajax({
+				type : 'GET',
+				url : 'packetManage/getPacketList',
+				dataType : 'json',
+				contentType : 'application/json',
+				data : {
+					offset : -1,
+					limit : -1,
+					keyWord : request.term,
+					repositoryID:$('#repository_selector').val(),
+					searchType:'searchRefActive'
+				},
+				success : function(data){
+					var autoCompleteInfo = new Array();
+					$.each(data.rows, function(index,elem){
+						packetCache.push(elem);
+						autoCompleteInfo.push({label:elem.trace,value:elem.refid});
+					});
+					response(autoCompleteInfo);
+				}
+			});
+		},
+		focus : function(event, ui){
+			$('#packet_input').val(ui.item.label);
+			return false;
+		},
+		select : function(event, ui){
+			$('#packet_input').val(ui.item.label);
+			stockout_packet = ui.item.value;
+			return false;
+		}
+	})
+}
 
 //当前可用的批次初始化
 function batchSelectorInit() {
@@ -309,7 +352,7 @@ function stockoutOperation(){
 		}
 
 		data = {
-			packetDO : $('#packet_input').val(),
+			packetID : stockout_packet,
 			batchID :  stockout_batch,
 			customerID : stockout_customer,
 			goodsID : stockout_goods,

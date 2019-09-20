@@ -225,7 +225,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public boolean addDetectStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
+    public boolean addDetectStorage(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         try {
             boolean isAvailable = true;
 //            // ID对应的记录是否存在
@@ -241,7 +241,6 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                 // insert
                 DetectStorage detectStorage = new DetectStorage();
                 detectStorage.setGoodsID(goodsID);
-                detectStorage.setCustomerID(customerID);
                 detectStorage.setBatchID(batchID);
                 detectStorage.setRepositoryID(repositoryID);
                 detectStorage.setNumber(total);
@@ -276,7 +275,9 @@ public class DetectStorageServiceImpl implements DetectStorageService {
             // validate
             List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
             if (detectStorageList != null && !detectStorageList.isEmpty()) {
-                if ( number >0 && passed >= 0 && scratch > 0 && damage > 0) {
+                if ( number < 0 || passed < 0 || scratch < 0 || damage < 0) {
+                   return  false;
+                }else {
                     // update
                     DetectStorage detectStorage = detectStorageList.get(0);
                     detectStorage.setNumber(number);
@@ -325,7 +326,6 @@ public class DetectStorageServiceImpl implements DetectStorageService {
     /**
      * 货物检测时 增加待检测库存数
      * @param goodsID
-     * @param customerID
      * @param batchID
      * @param repositoryID
      * @param passed
@@ -335,7 +335,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
      * @throws DetectStorageServiceException
      */
     @Override
-    public boolean detectStorageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
+    public boolean detectStorageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long passed, long scratch, long damage) throws DetectStorageServiceException {
         // 检查货物库存增加数目的有效性
         if ( passed < 0 || scratch < 0 || damage < 0)
             return false;
@@ -350,7 +350,7 @@ public class DetectStorageServiceImpl implements DetectStorageService {
                 long newDamage = detectStorage.getDamage() + damage;
                 updateDetectStorage(goodsID, batchID, repositoryID, newNumber, newPassed, newScratch, newDamage);
             } else {
-                addDetectStorage(goodsID, customerID, batchID, repositoryID, passed, scratch, damage);
+                addDetectStorage(goodsID, batchID, repositoryID, passed, scratch, damage);
             }
         }
         return true;

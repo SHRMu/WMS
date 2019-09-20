@@ -92,28 +92,40 @@
 										title : '记录ID'
 									//sortable: true
 									},
+                                    {
+                                        field : 'goodsID',
+                                        title : '商品ID'
+                                    },
 									{
 										field : 'goodsName',
 										title : '商品名称'
 									},
                                     {
                                         field : 'batchCode',
-                                        title : '批次编号',
-                                        visible : false
+                                        title : '批次编号'
                                     },
-									{
-										field : 'repositoryID',
-										title : '所属仓库ID'
-										//visible : false
-									},
 									{
 										field : 'number',
 										title : '检测总数'
-										//visible : false
 									},
                                     {
                                         field : 'passed',
                                         title : '良品数'
+                                        //visible : false
+                                    },
+                                    {
+                                        field : 'scratch',
+                                        title : '划痕数'
+                                        //visible : false
+                                    },
+                                    {
+                                        field : 'damage',
+                                        title : '故障数'
+                                        //visible : false
+                                    },
+                                    {
+                                        field : 'desc',
+                                        title : '备注'
                                         //visible : false
                                     },
 									{
@@ -150,7 +162,6 @@
 		var temp = {
 			limit : params.limit,
 			offset : params.offset,
-			// searchType : search_type,
             batchID : search_batchID,
 			repositoryID : search_repositoryID,
 			startDate : search_start_date,

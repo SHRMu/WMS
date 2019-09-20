@@ -96,18 +96,18 @@
 		from
 			wms_packet p, wms_repository r
 		where
-			p.PACKET_REPOID = r.REPO_ID and
-		<if test="packetDOID != null">
+			p.PACKET_REPOID = r.REPO_ID
+		<if test="packetID != null">
 			and p.PACKET_ID = #{packetID}
 		</if>
 		<if test="repositoryID != null ">
-			and r.RECORD_REPOSITORYID = #{repositoryID}
+			and p.PACKET_REPOID = #{repositoryID}
 		</if>
 		<if test="startDate != null">
-			and r.RECORD_TIME >= #{startDate}
+			and p.PACKET_TIME >= #{startDate}
 		</if>
 		<if test="endDate != null">
-			<![CDATA[and r.RECORD_TIME <= #{endDate}]]>
+			<![CDATA[and p.PACKET_TIME <= #{endDate}]]>
 		</if>
 	</select>
 

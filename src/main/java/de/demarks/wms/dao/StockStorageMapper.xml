@@ -9,8 +9,6 @@
 	<resultMap type="de.demarks.wms.domain.StockStorage" id="stockStorage">
 		<id property="goodsID" column="storage_goodsID"/>
 		<id property="batchID" column="storage_batchID"/>
-		<result property="customerID" column="storage_customerID" />
-		<result property="customerName" column="storage_customerName" />
 		<result property="goodsName" column="storage_goodsName"/>
 		<result property="batchCode" column="storage_batchCode"/>
 		<result property="repositoryID" column="storage_repositoryID"/>
@@ -23,18 +21,15 @@
 	<select id="selectAll" resultMap="stockStorage">
 		select
 			s.RECORD_GOODID as storage_goodsID,
-			s.RECORD_CUSTOMERID as storage_customerID,
 			s.RECORD_BATCHID as storage_batchID,
 			s.RECORD_REPOSITORY as storage_repositoryID,
 			s.RECORD_NUMBER as storage_number,
 			g.GOOD_NAME as storage_goodsName,
-			c.CUSTOMER_NAME as storage_customerName,
 			b.REPO_BATCH_CODE as storage_batchCode
 		from
-			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s, wms_customer c
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
 		where
 			s.RECORD_GOODID = g.GOOD_ID and
-			s.RECORD_CUSTOMERID = c.CUSTOMER_ID and
 			s.RECORD_BATCHID = b.REPO_BATCH_ID and
 			s.RECORD_REPOSITORY = r.REPO_ID
 		<if test="batchID != null">
@@ -48,18 +43,15 @@
 	<select id="selectByGoodsID" resultMap="stockStorage">
 		select
 			s.RECORD_GOODID as storage_goodsID,
-			s.RECORD_CUSTOMERID as storage_customerID,
 			s.RECORD_BATCHID as storage_batchID,
 			s.RECORD_REPOSITORY as storage_repositoryID,
 			s.RECORD_NUMBER as storage_number,
 			g.GOOD_NAME as storage_goodsName,
-			c.CUSTOMER_NAME as storage_customerName,
 			b.REPO_BATCH_CODE as storage_batchCode
 		from
-			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s, wms_customer c
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
 		where
 			s.RECORD_GOODID = g.GOOD_ID and
-			s.RECORD_CUSTOMERID = c.CUSTOMER_ID and
 			s.RECORD_BATCHID = b.REPO_BATCH_ID and
 			s.RECORD_REPOSITORY = r.REPO_ID and
 			s.RECORD_GOODID = #{goodsID}
@@ -74,18 +66,15 @@
 	<select id="selectByGoodsName" resultMap="stockStorage">
 		select
 			s.RECORD_GOODID as storage_goodsID,
-			s.RECORD_CUSTOMERID as storage_customerID,
 			s.RECORD_BATCHID as storage_batchID,
 			s.RECORD_REPOSITORY as storage_repositoryID,
 			s.RECORD_NUMBER as storage_number,
 			g.GOOD_NAME as storage_goodsName,
-			c.CUSTOMER_NAME as storage_customerName,
 			b.REPO_BATCH_CODE as storage_batchCode
 		from
-			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s, wms_customer c
+			wms_goods g, wms_repo_batch b, wms_repository r, wms_record_storage s
 		where
 			s.RECORD_GOODID = g.GOOD_ID and
-			s.RECORD_CUSTOMERID = c.CUSTOMER_ID and
 			s.RECORD_BATCHID = b.REPO_BATCH_ID and
 			s.RECORD_REPOSITORY = r.REPO_ID and
 			g.GOOD_NAME like concat("%",concat(#{goodsName},"%"))
@@ -101,7 +90,6 @@
 		insert into wms_record_storage
 		(
 			RECORD_GOODID,
-			RECORD_CUSTOMERID,
 			RECORD_BATCHID,
 			RECORD_REPOSITORY,
 			RECORD_NUMBER
@@ -109,7 +97,6 @@
 		values
 		(
 			#{goodsID},
-			#{customerID},
 			#{batchID},
 			#{repositoryID},
 			#{number}
@@ -120,9 +107,6 @@
 		update 
 			wms_record_storage
 		set
-			RECORD_GOODID = #{goodsID},
-			RECORD_BATCHID = #{batchID},
-			RECORD_REPOSITORY = #{repositoryID},
 			RECORD_NUMBER = #{number}
 		where
 			RECORD_GOODID = #{goodsID} and

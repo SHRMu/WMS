@@ -6,8 +6,10 @@ import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.CustomerManageService;
 import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.dao.CustomerMapper;
+import de.demarks.wms.dao.StockInMapper;
 import de.demarks.wms.dao.StockOutMapper;
 import de.demarks.wms.domain.Customer;
+import de.demarks.wms.domain.StockInDO;
 import de.demarks.wms.domain.StockOutDO;
 import de.demarks.wms.exception.CustomerManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
@@ -34,6 +36,8 @@ public class CustomerManageServiceImpl implements CustomerManageService {
     private CustomerMapper customerMapper;
     @Autowired
     private ExcelUtil excelUtil;
+    @Autowired
+    private StockInMapper stockInMapper;
     @Autowired
     private StockOutMapper stockOutMapper;
 
@@ -258,16 +262,16 @@ public class CustomerManageServiceImpl implements CustomerManageService {
     public boolean deleteCustomer(Integer customerId) throws CustomerManageServiceException {
 
         try {
-            // 查询该客户是否有出库记录
-            List<StockOutDO> records = stockOutMapper.selectByCustomerID(customerId);
-            if (records != null && records.size() > 0) {
+            // 查询该客户是否有出入库库记录
+            List<StockInDO> stockInDOS = stockInMapper.selectByCustomerID(customerId, null, null);
+            if (stockInDOS != null && stockInDOS.size() > 0)
                 return false;
-            } else {
-                // 删除该条客户记录
-                customerMapper.deleteById(customerId);
-                return true;
-
-            }
+            List<StockOutDO> stockOutDOS = stockOutMapper.selectByCustomerID(customerId,null,null);
+            if (stockOutDOS != null && stockOutDOS.size() > 0)
+                return false;
+            // 删除该条客户记录
+            customerMapper.deleteById(customerId);
+            return true;
         } catch (PersistenceException e) {
             throw new CustomerManageServiceException(e);
         }

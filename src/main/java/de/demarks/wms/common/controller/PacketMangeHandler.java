@@ -2,6 +2,7 @@ package de.demarks.wms.common.controller;
 
 import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketRefMangeService;
+import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.common.util.StatusUtil;
@@ -9,6 +10,7 @@ import de.demarks.wms.dao.PacketMapper;
 import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.domain.PacketDTO;
 import de.demarks.wms.exception.PacketManageServiceException;
+import de.demarks.wms.exception.PacketStorageManageServiceException;
 import de.demarks.wms.exception.PreStockManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
@@ -39,6 +41,8 @@ public class PacketMangeHandler {
     private PacketMapper packetMapper;
     @Autowired
     private PacketManageService packetManageService;
+    @Autowired
+    private PacketStorageManageService packetStorageManageService;
     @Autowired
     private PacketRefMangeService packetRefMangeService;
 
@@ -107,9 +111,6 @@ public class PacketMangeHandler {
         List<PacketDO> rows = null;
         long total = 0;
 
-        if (repositoryID == null)
-            repositoryID = -1;
-
         // 查询
         Map<String, Object> queryResult = query(searchType, keyWord, repositoryID, offset, limit);
 
@@ -125,10 +126,10 @@ public class PacketMangeHandler {
     }
 
     /**
-     * 添加一条包裹信息
-     *
-     * @param packetDO 包裹信息
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     * 添加包裹信息
+     * @param packetDO
+     * @return
+     * @throws PacketManageServiceException
      */
     @RequestMapping(value = "addPacket", method = RequestMethod.POST)
     public
@@ -138,7 +139,7 @@ public class PacketMangeHandler {
         Response responseContent = responseUtil.newResponseInstance();
 
         // 设置包裹已发货
-        packetDO.setStatus("已发货");
+        packetDO.setStatus(StatusUtil.PACKET_STATUS_SEND);
         String result = packetManageService.addPacket(packetDO) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
@@ -147,10 +148,10 @@ public class PacketMangeHandler {
     }
 
     /**
-     * 更新一条包裹信息
-     *
-     * @param packetDO 包裹信息
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     * 更新包裹信息
+     * @param packetDO
+     * @return
+     * @throws PacketManageServiceException
      */
     @RequestMapping(value = "updatePacket", method = RequestMethod.POST)
     public
@@ -167,10 +168,10 @@ public class PacketMangeHandler {
     }
 
     /**
-     * 删除一条包裹信息
-     *
-     * @param packetID 包裹信息
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     * 删除包裹信息
+     * @param packetID
+     * @return
+     * @throws PacketManageServiceException
      */
     @RequestMapping(value = "deletePacket", method = RequestMethod.GET)
     public
@@ -216,7 +217,7 @@ public class PacketMangeHandler {
             //首先预报包裹信息
             packetDO = new PacketDO();
             packetDO.setTrace(trace);
-            packetDO.setStatus("已发货");
+            packetDO.setStatus(StatusUtil.PACKET_STATUS_SEND);
             packetDO.setRepositoryID(repositoryID);
             packetManageService.addPacket(packetDO);
             packetID = packetMapper.selectByTrace(trace,repositoryID).getId();
@@ -249,7 +250,7 @@ public class PacketMangeHandler {
     public @ResponseBody
     Map<String, Object> searchDetectRecord(@RequestParam("packetID") String packetIDStr, @RequestParam("repositoryID") Integer repositoryID,
                                            @RequestParam("startDate") String startDateStr, @RequestParam("endDate") String endDateStr,
-                                           @RequestParam("limit") int limit, @RequestParam("offset") int offset) throws ParseException, PacketManageServiceException {
+                                           @RequestParam("limit") int limit, @RequestParam("offset") int offset) throws ParseException, PacketStorageManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<PacketDTO> rows = null;
@@ -268,7 +269,7 @@ public class PacketMangeHandler {
             }
 
             // 转到 Service 执行查询
-            Map<String, Object> queryResult = packetManageService.selectPacketRecord(packetID, repositoryID, startDateStr, endDateStr, offset, limit);
+            Map<String, Object> queryResult = packetStorageManageService.selectPacketRecord(packetID, repositoryID, startDateStr, endDateStr, offset, limit);
             if (queryResult != null) {
                 rows = (List<PacketDTO>) queryResult.get("data");
                 total = (long) queryResult.get("total");

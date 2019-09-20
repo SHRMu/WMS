@@ -29,8 +29,6 @@ public class StockStorageManageHandler {
     @Autowired
     private StockStorageManageService stockStorageManageService;
     @Autowired
-    private StockRecordManageService stockRecordManageService;
-    @Autowired
     private ResponseUtil responseUtil;
 
 
@@ -180,7 +178,6 @@ public class StockStorageManageHandler {
         boolean isAvailable = true;
 
         String goodsID = (String) params.get("goodsID");
-        String customerID = (String)params.get("customerID");
         String batchID = (String) params.get("batchID");
         String repositoryID = (String) params.get("repositoryID");
         String number = (String) params.get("number");
@@ -195,7 +192,7 @@ public class StockStorageManageHandler {
             isAvailable = false;
 
         if (isAvailable) {
-            isSuccess = stockStorageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(customerID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            isSuccess = stockStorageManageService.addStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

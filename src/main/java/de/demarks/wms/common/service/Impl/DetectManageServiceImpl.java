@@ -62,7 +62,6 @@ public class DetectManageServiceImpl implements DetectManageService {
             return false;
         StockStorage stockStorage = stockStorages.get(0);
         Long stockNumber = stockStorage.getNumber();//待检测库存
-        Integer customerID = stockStorage.getCustomerID();
 
         // ID对应的记录是否存在
 //        if (!(goodsValidate(goodsID) && batchValidate(batchID) && repositoryValidate(repositoryID)))
@@ -82,14 +81,13 @@ public class DetectManageServiceImpl implements DetectManageService {
             //从待测数库存中减去总数
             deSuccess = stockStorageManageService.storageDecrease(goodsID, batchID, repositoryID, total);
             //在已检测库存中添加详细数量
-            inSuccess = detectStorageService.detectStorageIncrease(goodsID, customerID, batchID, repositoryID, passed, scratch, damage);
+            inSuccess = detectStorageService.detectStorageIncrease(goodsID, batchID, repositoryID, passed, scratch, damage);
 
             // 保存检测记录
             if (deSuccess && inSuccess) {
                 DetectDO detectDO = new DetectDO();
                 detectDO.setGoodsID(goodsID);
                 detectDO.setBatchID(batchID);
-                detectDO.setCustomerID(customerID);
                 detectDO.setRepositoryID(repositoryID);
                 detectDO.setNumber(total);
                 detectDO.setPassed(passed);
@@ -326,6 +324,9 @@ public class DetectManageServiceImpl implements DetectManageService {
         detectDTO.setBatchCode(detectDO.getBatchCode());
         detectDTO.setNumber(detectDO.getNumber());
         detectDTO.setPassed(detectDO.getPassed());
+        detectDTO.setScratch(detectDO.getScratch());
+        detectDTO.setDamage(detectDO.getDamage());
+        detectDTO.setDesc(detectDO.getDesc());
         detectDTO.setTime(dateFormat.format(detectDO.getTime()));
         detectDTO.setPersonInCharge(detectDO.getPersonInCharge());
         detectDTO.setDesc(detectDO.getDesc());

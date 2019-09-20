@@ -166,16 +166,16 @@ function loadStorageInfo(){
 				offset : -1,
 				limit : -1,
 				searchType : 'searchByGoodsID',
-				packetDOID : stockin_packet,
+				packetID : stockin_packet,
 				repositoryID : stockin_repository,
 				keyword : stockin_goods
 			},
 			success : function(response){
 				if(response.total > 0){
 					number = response.rows[0].number;
-					stockStorage = response.rows[0].stockStorage;
+					storage = response.rows[0].storage;
 					$('#packet_number').text(number);
-					$('#packet_storage').text(stockStorage);
+					$('#packet_storage').text(storage);
 				}else{
 					$('#packet_number').text('0');
 					$('#packet_storage').text('0');
@@ -223,7 +223,7 @@ function stockInOption(){
 			return;
 		}
 		data = {
-            packetDOID: stockin_packet,
+            packetID: stockin_packet,
 			batchID : $('#batch_selector').val(),
             repositoryID: stockin_repository,
             goodsID: stockin_goods,

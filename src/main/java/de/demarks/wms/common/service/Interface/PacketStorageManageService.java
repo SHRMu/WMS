@@ -91,6 +91,10 @@ public interface PacketStorageManageService {
                                       @Param("offset") Integer offset,
                                       @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
+   boolean addStorage(@Param("goodsID") Integer goodsID,
+                      @Param("packetID") Integer packetID,
+                      @Param("repositoryID") Integer repositoryID,
+                      @Param("number") long number, @Param("storage") long storage) throws PacketStorageManageServiceException;
 
    /**
     *
@@ -121,5 +125,13 @@ public interface PacketStorageManageService {
                                  @Param("packetID") Integer packetID,
                                  @Param("repositoryID") Integer repositoryID,
                                  @Param("number") long number) throws PacketStorageManageServiceException;
+
+   Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
+                                          @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws PacketStorageManageServiceException;
+
+
+   Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
+                                          @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
+                                          @Param("offset") int offset, @Param("limit") int limit) throws PacketStorageManageServiceException;
 
 }

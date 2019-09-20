@@ -2,15 +2,13 @@ package de.demarks.wms.common.controller;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
+import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.domain.PacketStorage;
 import de.demarks.wms.exception.PacketStorageManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -117,5 +115,46 @@ public class PacketStorageManageHandler {
         responseContent.setResponseTotal(total);
         return responseContent.generateResponse();
     }
+
+    /**
+     * 添加一条库存信息
+     *
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
+     */
+    @RequestMapping(value = "addStorageRecord", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> addStorageRecord(@RequestBody Map<String, Object> params) throws PacketStorageManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String isSuccess = Response.RESPONSE_RESULT_ERROR;
+        boolean isAvailable = true;
+
+        String packetID = (String) params.get("packetID");
+        String goodsID = (String) params.get("goodsID");
+        String repositoryID = (String) params.get("repositoryID");
+        String number = (String) params.get("number");
+        String storage = (String) params.get("storage");
+
+        if (StringUtils.isBlank(packetID)||!StringUtils.isNumeric(packetID))
+            isAvailable = false;
+        if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
+            isAvailable = false;
+        if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
+            isAvailable = false;
+        if (StringUtils.isBlank(number) || !StringUtils.isNumeric(number))
+            isAvailable = false;
+        if (StringUtils.isBlank(storage) || !StringUtils.isNumeric(storage))
+            isAvailable = false;
+        if (isAvailable) {
+            isSuccess = packetStorageManageService.addStorage(Integer.valueOf(packetID), Integer.valueOf(goodsID), Integer.valueOf(repositoryID),
+                    Integer.valueOf(number), Integer.valueOf(storage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(isSuccess);
+        return responseContent.generateResponse();
+    }
+
 
 }

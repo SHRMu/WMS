@@ -12,8 +12,6 @@ public class StockStorage {
 	private String goodsName;// 货物名称
 	private Integer batchID; //批次ID
 	private String batchCode; //批次编号
-	private Integer customerID;
-	private String customerName;
 	private Integer repositoryID;// 仓库ID
 	private Long number;// 待检测
 
@@ -49,22 +47,6 @@ public class StockStorage {
 		this.batchCode = batchCode;
 	}
 
-	public Integer getCustomerID() {
-		return customerID;
-	}
-
-	public void setCustomerID(Integer customerID) {
-		this.customerID = customerID;
-	}
-
-	public String getCustomerName() {
-		return customerName;
-	}
-
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
-	}
-
 	public Integer getRepositoryID() {
 		return repositoryID;
 	}
@@ -83,13 +65,11 @@ public class StockStorage {
 
 	@Override
 	public String toString() {
-		return "Storage{" +
+		return "StockStorage{" +
 				"goodsID=" + goodsID +
 				", goodsName='" + goodsName + '\'' +
 				", batchID=" + batchID +
 				", batchCode='" + batchCode + '\'' +
-				", customerID=" + customerID +
-				", customerName='" + customerName + '\'' +
 				", repositoryID=" + repositoryID +
 				", number=" + number +
 				'}';

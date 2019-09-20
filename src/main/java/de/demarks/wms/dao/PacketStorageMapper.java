@@ -3,6 +3,8 @@ package de.demarks.wms.dao;
 import de.demarks.wms.domain.PacketStorage;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,16 +46,6 @@ public interface PacketStorageMapper {
                                           @Param("packetID") Integer packetID,
                                           @Param("repositoryID") Integer repositoryID);
 
-    /**
-     * 精确搜索
-     * @param customerID
-     * @param packetID
-     * @param repositoryID
-     * @return
-     */
-    List<PacketStorage> selectByCustomerID(@Param("customerID") Integer customerID,
-                                            @Param("packetID") Integer packetID,
-                                            @Param("repositoryID") Integer repositoryID);
 
     /**
      * 模糊搜索
@@ -65,6 +57,12 @@ public interface PacketStorageMapper {
     List<PacketStorage> selectByPacketTrace(@Param("trace") String trace,
                                               @Param("status") String status,
                                               @Param("repositoryID") Integer repositoryID);
+
+
+    List<PacketStorage> selectByDate(@Param("packetID") Integer packetID,
+                                     @Param("repositoryID") Integer repositoryID,
+                                     @Param("startDate") Date startDate,
+                                     @Param("endDate") Date endDate);
 
     /**
      * 添加

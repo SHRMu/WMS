@@ -9,6 +9,9 @@ public class PacketDTO {
     private String time; //包裹发货时间
     private String status;
     private String desc;
+    private Integer goodsID;
+    private String goodsName;
+    private long goodsNumber;
     private Integer repositoryID; //包裹所属仓库
 
     public Integer getId() {
@@ -67,6 +70,30 @@ public class PacketDTO {
         this.desc = desc;
     }
 
+    public Integer getGoodsID() {
+        return goodsID;
+    }
+
+    public void setGoodsID(Integer goodsID) {
+        this.goodsID = goodsID;
+    }
+
+    public String getGoodsName() {
+        return goodsName;
+    }
+
+    public void setGoodsName(String goodsName) {
+        this.goodsName = goodsName;
+    }
+
+    public long getGoodsNumber() {
+        return goodsNumber;
+    }
+
+    public void setGoodsNumber(long goodsNumber) {
+        this.goodsNumber = goodsNumber;
+    }
+
     public Integer getRepositoryID() {
         return repositoryID;
     }
@@ -85,6 +112,9 @@ public class PacketDTO {
                 ", time='" + time + '\'' +
                 ", status='" + status + '\'' +
                 ", desc='" + desc + '\'' +
+                ", goodsID=" + goodsID +
+                ", goodsName='" + goodsName + '\'' +
+                ", goodsNumber='" + goodsNumber + '\'' +
                 ", repositoryID=" + repositoryID +
                 '}';
     }

@@ -86,7 +86,7 @@ public interface PacketManageService {
     boolean updatePacket(PacketDO packetDO) throws PacketManageServiceException;
 
     /**
-     * 删除指定包裹ID的信息
+     * 删除 指定ID 的包裹
      * @param packetID
      * @return
      * @throws PacketManageServiceException
@@ -105,14 +105,6 @@ public interface PacketManageService {
     boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PacketManageServiceException;
 
 
-    Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID,
-                                        @Param("repositoryID") Integer repositoryID,
-                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr) throws PacketManageServiceException;
 
-
-    Map<String, Object> selectPacketRecord(@Param("packetID") Integer packetID,
-                                        @Param("repositoryID") Integer repositoryID,
-                                        @Param("startDateStr") String startDateStr, @Param("endDateStr") String endDateStr,
-                                        @Param("offset") int offset, @Param("limit") int limit) throws PacketManageServiceException;
 
 }

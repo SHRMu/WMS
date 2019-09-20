@@ -77,7 +77,7 @@ public interface StockStorageManageService {
      * @param number       库存数量
      * @return 返回一个boolean值，值为true代表更新成功，否则代表失败
      */
-    boolean addStorage(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException;
+    boolean addStorage(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException;
 
     /**
      * 更新一条库存记录
@@ -110,7 +110,7 @@ public interface StockStorageManageService {
      * @param number       增加的数量
      * @return 返回一个 boolean 值，若值为true表示数目增加成功，否则表示增加失败
      */
-    boolean storageIncrease(Integer goodsID, Integer customerID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException;
+    boolean storageIncrease(Integer goodsID, Integer batchID, Integer repositoryID, long number) throws StorageManageServiceException;
 
     /**
      * 为指定的货物库存记录减少指定的数目
