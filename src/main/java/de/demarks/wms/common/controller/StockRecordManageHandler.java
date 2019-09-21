@@ -50,10 +50,8 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "stockIn", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockIn(@RequestParam("packetID") Integer packetID,
-                                @RequestParam("goodsID") Integer goodsID,
-                                @RequestParam("batchID") Integer batchID,
-                                @RequestParam("repositoryID") Integer repositoryID,
+    Map<String, Object> stockIn(@RequestParam("packetID") Integer packetID, @Param("customerID") Integer customerID, @RequestParam("goodsID") Integer goodsID,
+                                @RequestParam("batchID") Integer batchID,  @RequestParam("repositoryID") Integer repositoryID,
                                 @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -61,7 +59,7 @@ public class StockRecordManageHandler {
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName");
 
-        String result = stockRecordManageService.stockInOperation(packetID, goodsID, batchID, repositoryID, number, personInCharge) ?
+        String result = stockRecordManageService.stockInOperation(packetID, customerID, goodsID, batchID, repositoryID, number, personInCharge) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
@@ -71,21 +69,21 @@ public class StockRecordManageHandler {
 
     /**
      * 货物出库操作
-     *
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 仓库ID
-     * @param number       出库数量
-     * @param request      http请求
-     * @return 返回一个map，key为result的值表示操作是否成功
+     * @param packetID
+     * @param customerID
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param number
+     * @param request
+     * @return
+     * @throws StockRecordManageServiceException
      */
     @RequestMapping(value = "stockOut", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> stockOut(@RequestParam("packetID") String packetID,@RequestParam("batchID") Integer batchID,
-                                 @RequestParam("customerID") Integer customerID, @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
+    Map<String, Object> stockOut(@RequestParam("packetID") Integer packetID,@RequestParam("customerID") Integer customerID,@RequestParam("goodsID") Integer goodsID,
+                                 @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
                                  @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
@@ -93,7 +91,7 @@ public class StockRecordManageHandler {
         HttpSession session = request.getSession();
         String personInCharge = (String) session.getAttribute("userName");
 
-        String result = stockRecordManageService.stockOutOperation(packetID, batchID, customerID, goodsID, repositoryID, number, personInCharge) ?
+        String result = stockRecordManageService.stockOutOperation(packetID, customerID, goodsID, batchID, repositoryID, number, personInCharge) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response

@@ -3,6 +3,7 @@ package de.demarks.wms.common.controller;
 import de.demarks.wms.common.service.Interface.RepositoryBatchManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
+import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.exception.RepositoryBatchManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class RepositoryBatchManageHandler {
                 queryResult = repositoryBatchManageService.selectByCode(keyword, offset, limit);
                 break;
             case SEARCH_BY_ACTIVE:
-                queryResult = repositoryBatchManageService.selectByStatus("可用", offset, limit);
+                queryResult = repositoryBatchManageService.selectByStatus(StatusUtil.BATCH_STATUS_AVAILABLE, offset, limit);
             default:
                 // do other thing
                 break;

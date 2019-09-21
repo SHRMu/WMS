@@ -2,29 +2,67 @@
     pageEncoding="UTF-8"%>
 <script>
 
-var stockin_packet = null; //入库包裹批次
+var stockin_packet = null;
 var stockin_batch = null;
-var stockin_repository = null;// 入库仓库编号
 
 var stockin_customer = null;// 入库供应商编号
 var stockin_goods = null;// 入库货物编号
-var stockin_number = null;// 入库数量
 
 var packetCache = new Array();//包裹信息缓存
 var customerCache = new Array();// 客户信息缓存
 var goodsCache = new Array();//货物信息缓存
 
 $(function(){
+	packetAutocomplete();
 	batchSelectorInit();
 	repositorySelectorInit();
-
-	packetAutocomplete();
+	detilInfoToggle();
+	fetchStorage();
 	customerAutocomplete();
 	goodsAutocomplete();
     dataValidateInit();
-
 	stockInOption();
 })
+
+// 包裹信息自动匹配
+function packetAutocomplete(){
+	$('#packet_input').autocomplete({
+		minLength : 0,
+		delay : 200,
+		source : function(request, response){
+			$.ajax({
+				type : 'GET',
+				url : 'packetManage/getPacketList',
+				dataType : 'json',
+				contentType : 'application/json',
+				data : {
+					offset : -1,
+					limit : -1,
+					keyWord : request.term,
+					repositoryID:$('#repository_selector').val(),
+					searchType:'searchRefActive'
+				},
+				success : function(data){
+					var autoCompleteInfo = new Array();
+					$.each(data.rows, function(index,elem){
+						packetCache.push(elem);
+						autoCompleteInfo.push({label:elem.trace,value:elem.refid});
+					});
+					response(autoCompleteInfo);
+				}
+			});
+		},
+		focus : function(event, ui){
+			$('#packet_input').val(ui.item.label);
+			return false;
+		},
+		select : function(event, ui){
+			$('#packet_input').val(ui.item.label);
+			stockin_packet = ui.item.value;
+			return false;
+		}
+	})
+}
 
 //当前可用的批次初始化
 function batchSelectorInit() {
@@ -75,46 +113,6 @@ function repositorySelectorInit(){
 	})
 }
 
-// 包裹信息自动匹配
-function packetAutocomplete(){
-	$('#packet_input').autocomplete({
-		minLength : 0,
-		delay : 200,
-		source : function(request, response){
-			$.ajax({
-				type : 'GET',
-				url : 'packetManage/getPacketList',
-				dataType : 'json',
-				contentType : 'application/json',
-				data : {
-					offset : -1,
-					limit : -1,
-					keyWord : request.term,
-					repositoryID:$('#repository_selector').val(),
-					searchType:'searchRefActive'
-				},
-				success : function(data){
-					var autoCompleteInfo = new Array();
-					$.each(data.rows, function(index,elem){
-						packetCache.push(elem);
-						autoCompleteInfo.push({label:elem.trace,value:elem.refid});
-					});
-					response(autoCompleteInfo);
-				}
-			});
-		},
-		focus : function(event, ui){
-			$('#packet_input').val(ui.item.label);
-			return false;
-		},
-		select : function(event, ui){
-			$('#packet_input').val(ui.item.label);
-			stockin_packet = ui.item.value;
-			return false;
-		}
-	})
-}
-
 //客户信息自动匹配
 function customerAutocomplete(){
 	$('#customer_input').autocomplete({
@@ -148,7 +146,8 @@ function customerAutocomplete(){
 		},
 		select : function(event,ui){
 			$('#customer_input').val(ui.item.label);
-			stockout_customer = ui.item.value;
+			stockin_customer = ui.item.value;
+			customerInfoSet(stockin_customer);
 			return false;
 		}
 	})
@@ -188,10 +187,107 @@ function goodsAutocomplete(){
 		select : function(event, ui){
 			$('#goods_input').val(ui.item.label);
 			stockin_goods = ui.item.value;
+			goodsInfoSet(stockin_goods);
 			loadStorageInfo();
 			return false;
 		}
 	})
+}
+
+function goodsInfoSet(goodsID){
+	var detailInfo;
+	$.each(goodsCache,function(index,elem){
+		if(elem.id == goodsID){
+			detailInfo = elem;
+			if(detailInfo.id==null)
+				$('#info_goods_ID').text('-');
+			else
+				$('#info_goods_ID').text(detailInfo.id);
+
+			if(detailInfo.name==null)
+				$('#info_goods_name').text('-');
+			else
+				$('#info_goods_name').text(detailInfo.name);
+
+			if(detailInfo.type==null)
+				$('#info_goods_type').text('-');
+			else
+				$('#info_goods_type').text(detailInfo.type);
+
+			if(detailInfo.size==null)
+				$('#info_goods_size').text('-');
+			else
+				$('#info_goods_size').text(detailInfo.size);
+
+			if(detailInfo.value==null)
+				$('#info_goods_value').text('-');
+			else
+				$('#info_goods_value').text(detailInfo.value);
+		}
+	})
+}
+
+function customerInfoSet(customerID){
+	var detailInfo;
+	$.each(customerCache,function(index,elem){
+		if(elem.id == customerID){
+			detailInfo = elem;
+
+			if(detailInfo.id == null)
+				$('#info_customer_ID').text('-');
+			else
+				$('#info_customer_ID').text(detailInfo.id);
+
+			if(detailInfo.name == null)
+				$('#info_customer_name').text('-');
+			else
+				$('#info_customer_name').text(detailInfo.name);
+
+			if(detailInfo.tel == null)
+				$('#info_customer_tel').text('-');
+			else
+				$('#info_customer_tel').text(detailInfo.tel);
+
+			if(detailInfo.address == null)
+				$('#info_customer_address').text('-');
+			else
+				$('#info_customer_address').text(detailInfo.address);
+
+			if(detailInfo.email == null)
+				$('#info_customer_email').text('-');
+			else
+				$('#info_customer_email').text(detailInfo.email);
+
+			if(detailInfo.personInCharge == null)
+				$('#info_customer_person').text('-');
+			else
+				$('#info_customer_person').text(detailInfo.personInCharge);
+
+		}
+	})
+}
+
+//详细信息
+function detilInfoToggle(){
+	$('#info-show').click(function(){
+		$('#detailInfo').removeClass('hide');
+		$(this).addClass('hide');
+		$('#info-hidden').removeClass('hide');
+	});
+
+	$('#info-hidden').click(function(){
+		$('#detailInfo').removeClass('hide').addClass('hide');
+		$(this).addClass('hide');
+		$('#info-show').removeClass('hide');
+	});
+}
+
+//获取待入库库存
+function fetchStorage(){
+	$('#batch_selector').change(function(){
+		stockin_batch = $(this).val();
+		loadStorageInfo();
+	});
 }
 
 function loadStorageInfo(){
@@ -264,6 +360,7 @@ function stockInOption(){
 		}
 		data = {
             packetID: stockin_packet,
+			customerID: stockin_customer,
 			batchID : $('#batch_selector').val(),
             repositoryID: stockin_repository,
             goodsID: stockin_goods,
@@ -362,12 +459,147 @@ function infoModal(type, msg) {
 					<div class="col-md-10 col-sm-11">
 						<form action="" class="form-inline">
 							<div class="form-group">
-								<label for="" class="form-label">入库仓库：</label>
-								<select name="" id="repository_selector" class="form-control">
-									<%--									<option value="">请选择仓库</option>--%>
-								</select>
+								<label for="" class="form-label">入库货物：</label>
+								<input type="text" class="form-control" id="goods_input" placeholder="请输入货物名称">
 							</div>
 						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row visible-md visible-lg">
+			<div class="col-md-12">
+				<div class='pull-right' style="cursor:pointer" id="info-show">
+					<span>显示详细信息</span>
+					<span class="glyphicon glyphicon-chevron-down"></span>
+				</div>
+				<div class='pull-right hide' style="cursor:pointer" id="info-hidden">
+					<span>隐藏详细信息</span>
+					<span class="glyphicon glyphicon-chevron-up"></span>
+				</div>
+			</div>
+		</div>
+		<div class="row hide" id="detailInfo" style="margin-bottom:30px">
+			<div class="col-md-6  visible-md visible-lg">
+				<div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-10">
+						<label for="" class="text-info">客户信息</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-11">
+						<div class="col-md-6">
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">客户ID：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_ID">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">负责人：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_person">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">电子邮件：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_email">-</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">客户名：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_name">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">联系电话：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_tel">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">联系地址：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_customer_address">-</span>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6  visible-md visible-lg">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-11 col-sm-11">
+						<label for="" class="text-info">货物信息</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-1"></div>
+					<div class="col-md-11">
+						<div class="col-md-6">
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">货物ID：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_goods_ID">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">货物类型：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_goods_type">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">货物名：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_goods_name">-</span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">货物规格：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_goods_size">-</span>
+								</div>
+							</div>
+							<div style="margin-top:5px">
+								<div class="col-md-6">
+									<span for="" class="pull-right">货物价值：</span>
+								</div>
+								<div class="col-md-6">
+									<span id="info_goods_value">-</span>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -379,8 +611,10 @@ function infoModal(type, msg) {
 					<div class="col-md-10 col-sm-11">
 						<form action="" class="form-inline">
 							<div class="form-group">
-								<label for="" class="form-label">入库货物：</label>
-								<input type="text" class="form-control" id="goods_input" placeholder="请输入货物名称">
+								<label for="" class="form-label">可用批次：</label>
+								<select name="" id="batch_selector" class="form-control">
+									<%--									<option value="">请选择仓库</option>--%>
+								</select>
 							</div>
 						</form>
 					</div>
@@ -392,8 +626,8 @@ function infoModal(type, msg) {
 					<div class="col-md-10 col-sm-11">
 						<form action="" class="form-inline">
 							<div class="form-group">
-								<label for="" class="form-label">货物批次：</label>
-								<select name="" id="batch_selector" class="form-control">
+								<label for="" class="form-label">入库仓库：</label>
+								<select name="" id="repository_selector" class="form-control">
 									<%--									<option value="">请选择仓库</option>--%>
 								</select>
 							</div>

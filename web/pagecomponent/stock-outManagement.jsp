@@ -353,9 +353,9 @@ function stockoutOperation(){
 
 		data = {
 			packetID : stockout_packet,
-			batchID :  stockout_batch,
 			customerID : stockout_customer,
 			goodsID : stockout_goods,
+			batchID :  stockout_batch,
 			repositoryID : $('#repository_selector').val(),
 			number : $('#stockout_input').val()
 		}

@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_storage = "none";
+	var search_type_storage = "searchAll";
 	var search_keyWord = "";
 	var search_batch = "";
 	var search_repository = "";
@@ -84,19 +84,10 @@
 									field : 'goodsID',
 									title : '货物ID'
 									//sortable: true
-
 								},
 								{
 									field : 'goodsName',
 									title : '货物名称'
-								},
-								{
-									field : 'customerID',
-									title : '客户ID'
-								},
-								{
-									field : 'customerName',
-									title : '客户名称'
 								},
 								{
 									field : 'batchID',
@@ -140,7 +131,7 @@
 										}
 									}
 								} ],
-							url : 'storageManage/getStorageListWithRepository',
+							url : 'storageManage/getStorageList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

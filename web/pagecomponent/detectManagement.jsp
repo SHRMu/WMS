@@ -117,7 +117,7 @@
         if(detect_batch != null && detect_repository != null && detect_goods != null){
             $.ajax({
                 type : 'GET',
-                url : 'storageManage/getStorageListWithRepository',
+                url : 'storageManage/getStorageList',
                 dataType : 'json',
                 contentType : 'application/json',
                 data : {

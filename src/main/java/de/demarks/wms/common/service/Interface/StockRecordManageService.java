@@ -23,21 +23,25 @@ public interface StockRecordManageService {
      * @return
      * @throws StockRecordManageServiceException
      */
-    boolean stockInOperation(@Param("packetID") Integer packetID,  @Param("goodsID") Integer goodsID, @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+    boolean stockInOperation(@Param("packetID") Integer packetID, @Param("customerID") Integer customerID, @Param("goodsID") Integer goodsID,
+                             @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
                              @Param("number") long number, @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException;
 
     /**
-     * 货物出库操作
-     *
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 出库仓库ID
-     * @param number       出库数量
-     * @return 返回一个boolean值，若值为true表示出库成功，否则表示出库失败
+     * 货物出库
+     * @param packetID
+     * @param customerID
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param number
+     * @param personInCharge
+     * @return
+     * @throws StockRecordManageServiceException
      */
-    boolean stockOutOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException;
+    boolean stockOutOperation(@Param("packetID") Integer packetID, @Param("customerID") Integer customerID, @Param("goodsID") Integer goodsID,
+                              @Param("batchID") Integer batchID, @Param("repositoryID") Integer repositoryID,
+                              @Param("number") long number, @Param("personInCharge") String personInCharge) throws StockRecordManageServiceException;
 
     /**
      * 查询出入库记录

@@ -3,7 +3,7 @@ pageEncoding="UTF-8"%>
 
 <script>
     // 出入库记录查询参数
-    search_type = 'none';
+    search_type = 'searchAll';
     search_batchID = '';
     search_repositoryID = '';
     search_start_date = null;

@@ -94,11 +94,11 @@ pageEncoding="UTF-8"%>
                                 <shiro:hasRole name="systemAdmin">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/packetStorageManagement.jsp">预报包裹</a>
+                                           name="pagecomponent/packetStorageManagement.jsp">预报数量</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/stockStorageManagement.jsp">入库库存</a>
+                                           name="pagecomponent/stockStorageManagement.jsp">到库库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
@@ -110,11 +110,11 @@ pageEncoding="UTF-8"%>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectRecordManagement.jsp">检测记录</a>
+                                           name="pagecomponent/stockRecordManagement.jsp">出入库记录</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/stockRecordManagement.jsp">出入库记录</a>
+                                           name="pagecomponent/detectRecordManagement.jsp">检测记录</a>
                                     </li>
                                 </shiro:hasRole>
                             </ul>

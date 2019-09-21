@@ -96,7 +96,7 @@ public class StockStorageManageHandler {
      * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getStorageListWithRepository", method = RequestMethod.GET)
+    @RequestMapping(value = "getStorageList", method = RequestMethod.GET)
     public
     @ResponseBody
     Map<String, Object> getStorageListWithRepoID(@RequestParam("keyword") String keyword,@RequestParam("searchType") String searchType,
@@ -122,46 +122,46 @@ public class StockStorageManageHandler {
         return responseContent.generateResponse();
     }
 
-    /**
-     * 查询库存信息，查询所属的仓库为session保存的信息
-     *
-     * @param keyword    查询关键字
-     * @param searchType 查询类型
-     * @param offset     分页偏移值
-     * @param limit      分页大小
-     * @param request    请求
-     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
-     */
-    @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getStorageList", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Map<String, Object> getStorageList(@RequestParam("keyword") String keyword,
-                                       @RequestParam("searchType") String searchType, @RequestParam("offset") int offset,
-                                       @RequestParam("limit") int limit, HttpServletRequest request) throws StorageManageServiceException {
-        // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
-
-        List<StockStorage> rows = null;
-        long total = 0;
-
-        HttpSession session = request.getSession();
-        Integer batchID = (Integer) session.getAttribute("batchBelong");
-        Integer repositoryID = (Integer) session.getAttribute("repositoryBelong");
-
-        if (batchID != null && repositoryID != null) {
-            Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID, offset, limit);
-            if (queryResult != null) {
-                rows = (List<StockStorage>) queryResult.get("data");
-                total = (long) queryResult.get("total");
-            }
-        }
-
-        // 设置 Response
-        responseContent.setCustomerInfo("rows", rows);
-        responseContent.setResponseTotal(total);
-        return responseContent.generateResponse();
-    }
+//    /**
+//     * 查询库存信息，查询所属的仓库为session保存的信息
+//     *
+//     * @param keyword    查询关键字
+//     * @param searchType 查询类型
+//     * @param offset     分页偏移值
+//     * @param limit      分页大小
+//     * @param request    请求
+//     * @return 结果的一个Map，其中： key为 rows 的代表记录数据；key 为 total 代表结果记录的数量
+//     */
+//    @SuppressWarnings("unchecked")
+//    @RequestMapping(value = "getStorageList", method = RequestMethod.GET)
+//    public
+//    @ResponseBody
+//    Map<String, Object> getStorageList(@RequestParam("keyword") String keyword,
+//                                       @RequestParam("searchType") String searchType, @RequestParam("offset") int offset,
+//                                       @RequestParam("limit") int limit, HttpServletRequest request) throws StorageManageServiceException {
+//        // 初始化 Response
+//        Response responseContent = responseUtil.newResponseInstance();
+//
+//        List<StockStorage> rows = null;
+//        long total = 0;
+//
+//        HttpSession session = request.getSession();
+//        Integer batchID = (Integer) session.getAttribute("batchBelong");
+//        Integer repositoryID = (Integer) session.getAttribute("repositoryBelong");
+//
+//        if (batchID != null && repositoryID != null) {
+//            Map<String, Object> queryResult = query(searchType, keyword, batchID.toString(), repositoryID, offset, limit);
+//            if (queryResult != null) {
+//                rows = (List<StockStorage>) queryResult.get("data");
+//                total = (long) queryResult.get("total");
+//            }
+//        }
+//
+//        // 设置 Response
+//        responseContent.setCustomerInfo("rows", rows);
+//        responseContent.setResponseTotal(total);
+//        return responseContent.generateResponse();
+//    }
 
     /**
      * 添加一条库存信息

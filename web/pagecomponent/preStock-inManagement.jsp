@@ -280,7 +280,6 @@ function infoModal(type, msg) {
 	</div>
 	<div class="panel-footer">
 		<div style="text-align: right">
-			<button class="btn btn-success" id="batch_submit">批量预报</button>
 			<button class="btn btn-success" id="submit">提交预报</button>
 		</div>
 	</div>

@@ -59,11 +59,11 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
      */
     @UserOperation(value = "货物入库")
     @Override
-    public boolean stockInOperation(Integer packetID, Integer goodsID, Integer batchID, Integer repositoryID,
+    public boolean stockInOperation(Integer packetID, Integer customerID, Integer goodsID, Integer batchID, Integer repositoryID,
                                     long number, String personInCharge) throws StockRecordManageServiceException {
 
         // ID对应的记录是否存在
-        if (!(packetValidate(packetID) && batchValidate(batchID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
+        if (!(packetValidate(packetID) && customerValidate(customerID) && goodsValidate(goodsID)))
             return false;
 
         if (personInCharge == null)
@@ -86,7 +86,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
                 StockInDO stockInDO = new StockInDO();
                 stockInDO.setGoodsID(goodsID);
                 stockInDO.setBatchID(batchID);
-                stockInDO.setCustomerID(2001);
+                stockInDO.setCustomerID(customerID);
                 stockInDO.setNumber(number);
                 stockInDO.setPersonInCharge(personInCharge);
                 stockInDO.setTime(new Date());
@@ -100,22 +100,24 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     }
 
     /**
-     * 货物出库操作
-     *
-     * @param packet       包裹运单号
-     * @param batchID      批次ID
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 出库仓库ID
-     * @param number       出库数量
-     * @return 返回一个boolean值，若值为true表示出库成功，否则表示出库失败
+     * 出库操作
+     * @param packetID
+     * @param customerID
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param number
+     * @param personInCharge
+     * @return
+     * @throws StockRecordManageServiceException
      */
     @UserOperation(value = "货物出库")
     @Override
-    public boolean stockOutOperation(String packet, Integer batchID, Integer customerID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws StockRecordManageServiceException {
+    public boolean stockOutOperation(Integer packetID, Integer customerID, Integer goodsID, Integer batchID, Integer repositoryID,
+                                     long number, String personInCharge) throws StockRecordManageServiceException {
 
         // 检查ID对应的记录是否存在
-        if (!(goodsValidate(goodsID) && batchValidate(batchID) && customerValidate(customerID) && repositoryValidate(goodsID)))
+        if (!(packetValidate(packetID) && customerValidate(customerID) && goodsValidate(goodsID)))
             return false;
         List<DetectStorage> detectStorageList = detectStorageMapper.selectByGoodsID(goodsID, batchID, repositoryID);
         if (detectStorageList.isEmpty())
@@ -134,9 +136,9 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
             // 保存出库记录
             if (isSuccess) {
                 StockOutDO stockOutDO = new StockOutDO();
-                stockOutDO.setBatchID(batchID);
                 stockOutDO.setCustomerID(customerID);
                 stockOutDO.setGoodsID(goodsID);
+                stockOutDO.setBatchID(batchID);
                 stockOutDO.setNumber(number);
                 stockOutDO.setPersonInCharge(personInCharge);
                 stockOutDO.setRepositoryID(repositoryID);
