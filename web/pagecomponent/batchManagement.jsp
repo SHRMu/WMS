@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 
 <script>
-	var search_type_batch = "none";
+	var search_type_batch = "searchAll";
 	var search_keyWord = "";
 	var selectID;
 	var selected_repositoryID;
@@ -11,7 +11,6 @@
 		optionAction();
 		searchAction();
 		repositorySelectorInit();
-		repositorySelected();
 		batchListInit();
 		bootstrapValidatorInit();
 
@@ -85,14 +84,7 @@
 			error : function(response){
 				$('#repository_selector, #repository_selector_edit').append("<option value='-1'>加载失败</option>");
 			}
-
 		})
-	}
-	
-	function repositorySelected() {
-		$('#repository_selector, #repository_selector_edit').change(function(){
-			selected_repositoryID = $(this).val();
-		});
 	}
 
 	// 表格初始化
@@ -115,13 +107,13 @@
 										title : '状态'
 									},
 									{
-										field : 'desc',
-										title : '描述',
-										visible: false
-									},
-									{
 										field : 'repositoryID',
 										title : '所属仓库'
+									},
+									{
+										field : 'desc',
+										title : '描述'
+										// visible: false
 									},
 									{
 										field : 'operation',
@@ -195,13 +187,6 @@
 					validators : {
 						notEmpty : {
 							message : '批次编号不能为空'
-						}
-					}
-				},
-				batch_status : {
-					validators : {
-						notEmpty : {
-							message : '批次状态不能为空'
 						}
 					}
 				}
@@ -303,9 +288,8 @@
 			var data = {
 				code : $('#batch_code').val(),
 				status : $('#batch_status').val(),
-				desc : $('#batch_desc').val(),
-				// repositoryID : $('#repository_selector').val(),
-				repositoryID : selected_repositoryID,
+				repositoryID : $('#repository_selector').val(),
+				desc : $('#batch_desc').val()
 			}
 			// ajax
 			$.ajax({
@@ -344,6 +328,7 @@
 	var import_step = 1;
 	var import_start = 1;
 	var import_end = 3;
+
 	// 导入批次信息
 	function importBatchAction() {
 		$('#import_batch').click(function() {
@@ -597,7 +582,7 @@
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<select name="" class="form-control" id="repository_selector" name="">
-										<option value="">请选择仓库</option>
+<%--										<option value="">请选择仓库</option>--%>
 									</select>
 								</div>
 							</div>
@@ -903,7 +888,7 @@
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<select name="" class="form-control" id="repository_selector_edit" name="">
-										<option value="">请选择仓库</option>
+<%--										<option value="">请选择仓库</option>--%>
 									</select>
 								</div>
 							</div>

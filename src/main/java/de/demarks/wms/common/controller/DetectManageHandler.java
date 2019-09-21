@@ -6,6 +6,7 @@ import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.domain.DetectDO;
 import de.demarks.wms.exception.DetectManageServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,29 +33,33 @@ public class DetectManageHandler {
 
     /**
      * 货物检测操作
-     *
-     * @param goodsID      货物ID
-     * @param batchID      批次ID
-     * @param repositoryID 仓库ID
-     * @param passed       良品数量
-     * @param scratch      划痕数量
-     * @param damage       故障数量
-     * @param request      http 请求
-     * @return 返回一个map，key为result的值表示操作是否成功
+     * @param goodsID
+     * @param batchID
+     * @param repositoryID
+     * @param passed
+     * @param scratch
+     * @param damage
+     * @param personInCharge
+     * @param desc
+     * @param request
+     * @return
+     * @throws DetectManageServiceException
      */
     @RequestMapping(value = "detect", method = RequestMethod.POST)
     public
     @ResponseBody
     Map<String, Object> detect(@RequestParam("goodsID") Integer goodsID, @RequestParam("batchID") Integer batchID, @RequestParam("repositoryID") Integer repositoryID,
                                @RequestParam("passed") long passed, @RequestParam("scratch") long scratch, @RequestParam("damage") long damage,
+                               @RequestParam("personInCharge") String personInCharge, @Param("desc") String desc,
                                HttpServletRequest request) throws DetectManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
 
         HttpSession session = request.getSession();
-        String personInCharge = (String) session.getAttribute("userName");
+        if (personInCharge.equals(""))
+            personInCharge = (String) session.getAttribute("userName");
 
-        String result = detectManageService.detectOperation(goodsID, batchID, repositoryID, passed, scratch, damage, personInCharge,"") ?
+        String result = detectManageService.detectOperation(goodsID, batchID, repositoryID, passed, scratch, damage, personInCharge,desc) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response

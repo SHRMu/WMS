@@ -19,6 +19,7 @@ $(function(){
 	repositorySelectorInit();
 
 	packetAutocomplete();
+	customerAutocomplete();
 	goodsAutocomplete();
     dataValidateInit();
 
@@ -109,6 +110,45 @@ function packetAutocomplete(){
 		select : function(event, ui){
 			$('#packet_input').val(ui.item.label);
 			stockin_packet = ui.item.value;
+			return false;
+		}
+	})
+}
+
+//客户信息自动匹配
+function customerAutocomplete(){
+	$('#customer_input').autocomplete({
+		minLength : 0,
+		delay : 200,
+		source : function(request, response){
+			$.ajax({
+				type : 'GET',
+				url : 'customerManage/getCustomerList',
+				dataType : 'json',
+				contentType : 'application/json',
+				data : {
+					offset : -1,
+					limit : -1,
+					keyWord : request.term,
+					searchType : 'searchByName'
+				},
+				success : function(data){
+					var autoCompleteInfo = Array();
+					$.each(data.rows,function(index,elem){
+						customerCache.push(elem);
+						autoCompleteInfo.push({label:elem.name,value:elem.id});
+					});
+					response(autoCompleteInfo);
+				}
+			});
+		},
+		focus : function(event,ui){
+			$('#customer_input').val(ui.item.label);
+			return false;
+		},
+		select : function(event,ui){
+			$('#customer_input').val(ui.item.label);
+			stockout_customer = ui.item.value;
 			return false;
 		}
 	})
@@ -287,7 +327,7 @@ function infoModal(type, msg) {
 		<li>货物入库</li>
 	</ol>
 	<div class="panel-body" id="stockin_div">
-		<div class="row" style="margin-bottom: 25px">
+		<div class="row">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
@@ -296,6 +336,21 @@ function infoModal(type, msg) {
 							<div class="form-group">
 								<label for="" class="form-label">包裹运单：</label>
 								<input type="text" class="form-control" placeholder="请输入运单号信息" id="packet_input" name="packet_input">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 25px;">
+			<div class="col-md-6 col-sm-6">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-10 col-sm-11">
+						<form action="" class="form-inline">
+							<div class="form-group">
+								<label for="" class="form-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;客户：</label>
+								<input type="text" class="form-control" id="customer_input" placeholder="请输入客户名称">
 							</div>
 						</form>
 					</div>
@@ -317,7 +372,7 @@ function infoModal(type, msg) {
 				</div>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" style="margin-top: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
@@ -347,7 +402,6 @@ function infoModal(type, msg) {
 				</div>
 			</div>
 		</div>
-
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
@@ -365,7 +419,6 @@ function infoModal(type, msg) {
 				</div>
 			</div>
 		</div>
-
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">

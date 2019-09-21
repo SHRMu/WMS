@@ -1027,7 +1027,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>到货数量：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
 									<input type="text" class="form-control" id="packet_storage_edit"

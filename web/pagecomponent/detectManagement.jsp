@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: huanyingcool
-  Date: 01.09.2019
-  Time: 14:37
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <script>
 
@@ -224,7 +217,9 @@
                 repositoryID : $('#repository_selector').val(),
                 passed: $('#passed_input').val(),
                 scratch: $('#scratch_input').val(),
-                damage: $('#damage_input').val()
+                damage: $('#damage_input').val(),
+                personInCharge : $('#personInCharge_input').val(),
+                desc : $('#desc_input').val()
             }
             $.ajax({
                 type : 'POST',
@@ -259,6 +254,7 @@
     // 页面重置
     function inputReset(){
         $('#goods_input').val('');
+        $('#batch_selector').val('');
         $('#passed_input').val('');
         $('#scratch_input').val('');
         $('#damage_input').val('');
@@ -288,7 +284,6 @@
     </ol>
     <div class="panel-body">
         <div class="row">
-
             <div class="col-md-6 col-sm-6">
                 <div class="row">
                     <div class="col-md-1 col-sm-1"></div>
@@ -374,6 +369,34 @@
                             <div class="form-group">
                                 <label for="" class="control-label">故障数量：</label>
                                 <input type="text" class="form-control" placeholder="请输入故障数量" id="damage_input" name="damage_input">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top:25px">
+            <div class="col-md-6 col-sm-6">
+                <div class="row">
+                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-md-10 col-sm-11">
+                        <form action="" class="form-inline" id="personInCharge_form">
+                            <div class="form-group">
+                                <label for="" class="control-label">检测人员：</label>
+                                <input type="text" class="form-control" placeholder="请输入检测人员" id="personInCharge_input" name="personInCharge_input">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6">
+                <div class="row">
+                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-md-10 col-sm-11">
+                        <form action="" class="form-inline" id="desc_form">
+                            <div class="form-group">
+                                <label for="" class="control-label">备注信息：</label>
+                                <input type="text" class="form-control" placeholder="请输入备注信息" id="desc_input" name="desc_input">
                             </div>
                         </form>
                     </div>

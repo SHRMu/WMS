@@ -246,21 +246,19 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
     @Override
     public boolean addRepositoryBatch(RepositoryBatch repositoryBatch) throws RepositoryBatchManageServiceException {
         // 插入一条新的记录
-        if (repositoryBatch != null) {
-            try {
-                // 有效性验证
-                if (batchCheck(repositoryBatch)){
-                    repositoryBatch.setTime(new Date());
-                    repositoryBatchMapper.insert(repositoryBatch);
-                }
-                if (repositoryBatch.getId() != null) {
+        try {
+            // 有效性验证
+            if (repositoryBatch != null && batchCheck(repositoryBatch)){
+                repositoryBatch.setTime(new Date());
+                repositoryBatchMapper.insert(repositoryBatch);
+                if (repositoryBatch.getId()!= null) {
                     return true;
                 }
-            } catch (PersistenceException e) {
-                throw new RepositoryBatchManageServiceException(e);
             }
+            return false;
+        } catch (PersistenceException e) {
+            throw new RepositoryBatchManageServiceException(e);
         }
-        return false;
     }
 
     /**

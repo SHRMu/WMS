@@ -2,7 +2,7 @@
          pageEncoding="UTF-8"%>
 
 <script>
-    var search_type_repository = "none";
+    var search_type_repository = "searchAll";
     var search_keyWord = "";
     var selectID;
     $(function() {
@@ -447,9 +447,9 @@
                         <span id="search_type">查询方式</span> <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
+                        <li><a href="javascript:void(0)" class="dropOption">所有</a></li>
                         <li><a href="javascript:void(0)" class="dropOption">仓库ID</a></li>
                         <li><a href="javascript:void(0)" class="dropOption">仓库地址</a></li>
-                        <li><a href="javascript:void(0)" class="dropOption">所有</a></li>
                     </ul>
                 </div>
             </div>
