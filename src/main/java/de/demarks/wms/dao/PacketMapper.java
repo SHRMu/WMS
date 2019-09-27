@@ -52,26 +52,34 @@ public interface PacketMapper {
                                             @Param("repositoryID") Integer repositoryID);
 
 
+    /**
+     * 返回 指定日期范围的运单信息
+     * @param packetID
+     * @param repositoryID
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     List<PacketDO> selectByDate(@Param("packetID") Integer packetID,
                                 @Param("repositoryID") Integer repositoryID,
                                 @Param("startDate") Date startDate,
                                 @Param("endDate") Date endDate);
 
     /**
-     * 添加
+     * 添加一条包裹信息
      * @param packetDO
      * @return
      */
-    Integer insert(PacketDO packetDO);
+    void insert(PacketDO packetDO);
 
     /**
-     *
+     * 批量添加包裹信息
      * @param packetDO
      */
     void insertBatch(List<PacketDO> packetDO);
 
     /**
-     * 更新
+     * 更新一条包裹信息
      * @param packetDO
      */
     void update(PacketDO packetDO);

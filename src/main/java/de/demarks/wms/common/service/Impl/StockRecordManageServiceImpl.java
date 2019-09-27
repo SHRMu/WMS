@@ -382,7 +382,7 @@ public class StockRecordManageServiceImpl implements StockRecordManageService {
     private StockRecordDTO stockInRecordConvertToStockRecordDTO(StockInDO stockInDO) {
         StockRecordDTO stockRecordDTO = new StockRecordDTO();
         stockRecordDTO.setRecordID(stockInDO.getId());
-//        stockRecordDTO.setBatchCode(stockInDO.getBatchCode());
+        stockRecordDTO.setBatchCode(stockInDO.getBatchCode());
         stockRecordDTO.setSupplierOrCustomerName(stockInDO.getCustomerName());
         stockRecordDTO.setGoodsName(stockInDO.getGoodName());
         stockRecordDTO.setNumber(stockInDO.getNumber());

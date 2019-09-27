@@ -108,8 +108,8 @@
 							columns : [
 									{
 										field : 'id',
-										title : '包裹ID'
-									    // sortable: true
+										title : '包裹ID',
+                                        visible : false
 									},
                                     {
                                         field : 'trace',
@@ -132,7 +132,11 @@
 									},
                                     {
                                         field : 'goodsNumber',
-                                        title : '数量'
+                                        title : '预报数量'
+                                    },
+                                    {
+                                        field : 'goodsStorage',
+                                        title : '到货数量'
                                     },
 									{
 										field : 'time',
@@ -144,7 +148,8 @@
                                     },
 									{
 										field : 'personInCharge',
-										title : '经手人'
+										title : '经手人',
+                                        visible : false
 									}
 									 ],
 							url : 'packetManage/searchPacketRecord',

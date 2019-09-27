@@ -407,14 +407,10 @@ public class PacketManageServiceImpl implements PacketManageService {
      */
     @UserOperation(value = "客户预报")
     @Override
-    public boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PacketManageServiceException {
+    public boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number) throws PacketManageServiceException {
 
         // 验证对应ID的记录是否存在
         if (!(packetValidate(packetID) && goodsValidate(goodsID) && repositoryValidate(repositoryID)))
-            return false;
-
-
-        if (personInCharge == null)
             return false;
 
         // 检查入库数量有效性

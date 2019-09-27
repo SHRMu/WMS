@@ -4,18 +4,21 @@
 <script>
 	var search_type_storage = "searchAll";
 	var search_keyWord = "";
-	var search_batch = "";
+	var search_packet = "";
 	var search_repository = "";
+
 	var select_goodsID;
-	var select_batchID;
+	var select_packetID;
 	var select_repositoryID;
 
+	var packetCache = new Array();//包裹信息缓存
+
 	$(function() {
-		batchSelectorInit();
 		repositoryOptionInit();
+		packetAutocomplete();
+		storageListInit();
 		optionAction();
 		searchAction();
-		detectStorageListInit();
 		bootstrapValidatorInit();
 
 		addStorageAction();
@@ -24,31 +27,6 @@
 		importStorageAction();
 		exportStorageAction()
 	})
-
-	//当前可用的批次初始化
-	function batchSelectorInit() {
-		$.ajax({
-			type : 'GET',
-			url : 'repositoryBatchManage/getBatchList',
-			dataType : 'json',
-			contentType : 'application/json',
-			data : {
-				searchType : 'searchByActive',
-				keyWord : '',
-				offset : -1,
-				limit : -1
-			},
-			success : function(response){
-				$.each(response.rows,function(index,elem){
-					$('#search_input_batch').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
-				});
-			},
-			error : function(response){
-				$('#search_input_batch').append("<option value='-1'>加载失败</option>");
-			}
-		});
-		$('#search_input_batch').append("<option value='all'>请选择批次</option>");
-	}
 
 	// 仓库下拉框数据初始化，页面加载时完成
 	function repositoryOptionInit(){
@@ -74,6 +52,47 @@
 		});
 	}
 
+	// 包裹信息自动匹配
+	function packetAutocomplete(){
+		$('#search_input_packet').autocomplete({
+			minLength : 0,
+			delay : 200,
+			source : function(request, response){
+				$.ajax({
+					type : 'GET',
+					url : 'packetManage/getPacketList',
+					dataType : 'json',
+					contentType : 'application/json',
+					data : {
+						offset : -1,
+						limit : -1,
+						keyWord : request.term,
+						repositoryID:$('#search_input_repository').val(),
+						searchType:'searchByTrace'
+					},
+					success : function(data){
+						var autoCompleteInfo = new Array();
+						$.each(data.rows, function(index,elem){
+							packetCache.push(elem);
+
+							autoCompleteInfo.push({label:elem.trace,value:elem.id});
+						});
+						response(autoCompleteInfo);
+					}
+				});
+			},
+			focus : function(event, ui){
+				$('#search_input_packet').val(ui.item.label);
+				return false;
+			},
+			select : function(event, ui){
+				$('#search_input_packet').val(ui.item.label);
+				select_packetID = ui.item.value;
+				return false;
+			}
+		})
+	}
+
 	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
 	function optionAction() {
 		$(".dropOption").click(function() {
@@ -91,54 +110,53 @@
 			} else {
 				$("#search_input_type").removeAttr("readOnly");
 			}
-
 			$("#search_type").text(type);
 			$("#search_input_type").attr("placeholder", type);
 		})
 	}
 
 	// 表格初始化
-	function detectStorageListInit() {
-		$('#detectStorageList')
+	function storageListInit() {
+		$('#storageList')
 				.bootstrapTable(
 						{
 							columns : [
 								{
+									field : 'packetID',
+									title : '包裹ID',
+									sortable: true
+								},
+								{
+									field : 'packetTrace',
+									title : '运单号'
+
+								},
+								{
+									field : 'packetDesc',
+									title : '子运单'
+
+								},
+								{
 									field : 'goodsID',
 									title : '货物ID',
-									//sortable: true
+									visible : false
 								},
 								{
 									field : 'goodsName',
 									title : '货物名称'
 								},
 								{
-									field : 'batchID',
-									title : '批次ID',
-								},
-								{
-									field : 'batchCode',
-									title : '批次编号'
-								},
-								{
-									field : 'repositoryID',
-									title : '仓库ID'
-								},
-								{
 									field : 'number',
-									title : '已测总数'
+									title : '预报数量'
 								},
 								{
-									field : 'passed',
-									title : '待发良品'
+									field : 'storage',
+									title : '到货数量'
 								},
 								{
-									field : 'scratch',
-									title : '划痕数'
-								},
-								{
-									field : 'damage',
-									title : '故障数'
+									field : 'packetStatus',
+									title : '状态'
+
 								},
 								{
 									field : 'operation',
@@ -159,14 +177,14 @@
 										'click .delete' : function(e,
 																   value, row, index) {
 											select_goodsID = row.goodsID;
-											select_batchID = row.batchID;
-											select_repositoryID = row.repositoryID;
+											select_packetID = row.packetID;
+											select_repositoryID = row.repositoryID
 											$('#deleteWarning_modal').modal(
 													'show');
 										}
 									}
 								} ],
-							url : 'detectStorageManage/getDetectStorageList',
+							url : 'packetStorageManage/getStorageList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",
@@ -183,10 +201,28 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
-			search_batch = $('#search_input_batch').val();
+			if (select_packetID != null){
+				search_packet = select_packetID;
+			}else{
+				search_packet = -1;
+			}
 			search_repository = $('#search_input_repository').val();
 			tableRefresh();
+			inputReset();
 		})
+	}
+
+	// 表格刷新
+	function tableRefresh() {
+		$('#storageList').bootstrapTable('refresh', {
+			query : {}
+		});
+	}
+	
+	function inputReset() {
+		$('#search_input_packet').val('');
+		select_packetID = null;
+		search_packet = -1;
 	}
 
 	// 分页查询参数
@@ -195,36 +231,31 @@
 			limit : params.limit,
 			offset : params.offset,
 			searchType : search_type_storage,
-			batchBelong : search_batch,
-			repositoryBelong : search_repository,
-			keyword : search_keyWord
+			keyword : search_keyWord,
+			packetID : search_packet,
+			repositoryID : search_repository
 		}
 		return temp;
-	}
-
-	// 表格刷新
-	function tableRefresh() {
-		$('#detectStorageList').bootstrapTable('refresh', {
-			query : {}
-		});
 	}
 
 	// 行编辑操作模态框展示与数据填充
 	function rowEditOperation(row) {
 		$('#edit_modal').modal("show");
-
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
+		$('#storage_packetID_edit').text(row.packetID);
+		$('#storage_packetTrace_edit').text(row.packetTrace);
 		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_batchID_edit').text(row.batchID);
+		$('#storage_goodsName_edit').text(row.goodsName);
 		$('#storage_repositoryID_edit').text(row.repositoryID);
-		$('#storage_number_edit').val(row.number);
+		$('#packet_number_edit').val(row.number);
+		$('#packet_storage_edit').val(row.storage);
+		$('#packet_status_edit').val(row.packetStatus);
 	}
 
-
-	// 添加检测库存模态框数据校验
+	// 添加库存信息模态框数据校验
 	function bootstrapValidatorInit() {
-		$("#detect_form").bootstrapValidator({
+		$("#storage_form").bootstrapValidator({
 			message : 'This is not valid',
 			feedbackIcons : {
 				valid : 'glyphicon glyphicon-ok',
@@ -233,45 +264,31 @@
 			},
 			excluded : [ ':disabled' ],
 			fields : {
-				detect_goodsID : {
+				storage_goodsID : {
 					validators : {
 						notEmpty : {
 							message : '货物ID不能为空'
 						}
 					}
 				},
-				detect_batchID : {
+				storage_packetID : {
 					validators : {
 						notEmpty : {
-							message : '批次ID不能为空'
+							message : '包裹ID不能为空'
 						}
 					}
 				},
-				detect_repositoryID : {
+				storage_repositoryID : {
 					validators : {
 						notEmpty : {
 							message : '仓库ID不能为空'
 						}
 					}
 				},
-				detect_passed : {
+				packet_number : {
 					validators : {
 						notEmpty : {
-							message : '检测良品数不能为空'
-						}
-					}
-				},
-				detect_scratch : {
-					validators : {
-						notEmpty : {
-							message : '检测划痕数不能为空'
-						}
-					}
-				},
-				detect_damage : {
-					validators : {
-						notEmpty : {
-							message : '检测故障数不能为空'
+							message : '库存数量不能为空'
 						}
 					}
 				}
@@ -292,17 +309,17 @@
 
 					var data = {
 						goodsID : $('#storage_goodsID_edit').text(),
-						batchID : $('#storage_batchID_edit').text(),
+						packetID : $('#storage_packetID_edit').text(),
 						repositoryID : $('#storage_repositoryID_edit').text(),
-						passed : $('#storage_passed_edit').val(),
-						scratch : $('#storage_scratch_edit').val(),
-						damage : $('#storage_damage_edit').val()
+						number : $('#packet_number_edit').val(),
+						storage : $('#packet_storage_edit').val(),
+						status : $('#packet_status_edit').val()
 					}
 
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'detectStorageManage/updateDetectStorage',
+						url : 'storageManage/updateStorageRecord',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -326,19 +343,68 @@
 				});
 	}
 
+	// 添加库存信息
+	function addStorageAction() {
+		$('#add_storage').click(function() {
+			$('#add_modal').modal("show");
+		});
+
+		$('#add_modal_submit').click(function() {
+			var data = {
+				goodsID : $('#storage_goodsID').val(),
+				packetID : $('#storage_packetID').val(),
+				repositoryID : $('#storage_repositoryID').val(),
+				number : $('#packet_number').val(),
+				storage : $('#packet_storage').val()
+			}
+			// ajax
+			$.ajax({
+				type : "POST",
+				url : "storageManage/addStorageRecord",
+				dataType : "json",
+				contentType : "application/json",
+				data : JSON.stringify(data),
+				success : function(response) {
+					$('#add_modal').modal("hide");
+					var msg;
+					var type;
+					if (response.result == "success") {
+						type = "success";
+						msg = "库存信息添加成功";
+					} else if (response.result == "error") {
+						type = "error";
+						msg = "库存信息添加失败";
+					}
+					infoModal(type, msg);
+					tableRefresh();
+
+					// reset
+					$('#storage_goodsID').val("");
+					$('#storage_packetID').val("");
+					$('#storage_repositoryID').val("");
+					$('#packet_number').val("");
+					$('#packet_storage').val("");
+					$('#storage_form').bootstrapValidator("resetForm", true);
+				},
+				error : function(response) {
+				}
+			})
+		})
+	}
+
 	// 刪除库存信息
 	function deleteStorageAction(){
 		$('#delete_confirm').click(function(){
 			var data = {
 				"goodsID" : select_goodsID,
-				"batchID" : select_batchID,
+				"packetID" : select_packetID,
 				"repositoryID" : select_repositoryID
 			}
 			
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "detectStorageManage/deleteDetectStorage",
+				url : "storageManage/deleteStorageRecord",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
@@ -360,57 +426,6 @@
 			})
 			
 			$('#deleteWarning_modal').modal('hide');
-		})
-	}
-
-	// 添加库存信息
-	function addStorageAction() {
-		$('#add_storage').click(function() {
-			$('#add_modal').modal("show");
-		});
-
-		$('#add_modal_submit').click(function() {
-			var data = {
-				goodsID : $('#storage_goodsID').val(),
-				batchID : $('#storage_batchID').val(),
-				repositoryID : $('#storage_repositoryID').val(),
-				passed : $('#storage_passed').val(),
-				scratch : $('#storage_scratch').val(),
-				damage : $('#storage_damage').val()
-			}
-			// ajax
-			$.ajax({
-				type : "POST",
-				url : "detectStorageManage/addDetectStorage",
-				dataType : "json",
-				contentType : "application/json",
-				data : JSON.stringify(data),
-				success : function(response) {
-					$('#add_modal').modal("hide");
-					var msg;
-					var type;
-					if (response.result == "success") {
-						type = "success";
-						msg = "库存信息添加成功";
-					} else if (response.result == "error") {
-						type = "error";
-						msg = "库存信息添加失败";
-					}
-					infoModal(type, msg);
-					tableRefresh();
-
-					// reset
-					$('#storage_goodsID').val("");
-					$('#storage_batchID').val("");
-					$('#storage_repositoryID').val("");
-					$('#storage_passed').val("");
-					$('#storage_scratch').val("");
-					$('#storage_damage').val("");
-					$('#detectStorage_form').bootstrapValidator("resetForm", true);
-				},
-				error : function(response) {
-				}
-			})
 		})
 	}
 
@@ -462,7 +477,7 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "detectStorageManage/importDetectStorage",
+				url : "storageManage/importStorageRecord",
 				secureuri: false,
 				dataType: 'json',
 				fileElementId:"file",
@@ -507,11 +522,10 @@
 		$('#export_storage_download').click(function(){
 			var data = {
 				searchType : search_type_storage,
-				batchBelong : search_batch,
 				repositoryBelong : search_repository,
 				keyword : search_keyWord
 			}
-			var url = "detectStorageManage/exportStorageRecord?" + $.param(data)
+			var url = "storageManage/exportStorageRecord?" + $.param(data)
 			window.open(url, '_blank');
 			$('#export_modal').modal("hide");
 		})
@@ -573,11 +587,12 @@
 		$('#info_content').text(msg);
 		$('#info_modal').modal("show");
 	}
+
 </script>
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>库存信息管理</li>
+		<li>预报包裹信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
@@ -600,11 +615,11 @@
 						<input id="search_input_type" type="text" class="form-control"
 							placeholder="货物ID">
 					</div>
-					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">
-						<select class="form-control" id="search_input_batch">
-						</select>
+						<input id="search_input_packet" type="text" class="form-control"
+							placeholder="包裹运单号">
 					</div>
+					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">
 						<select class="form-control" id="search_input_repository">
 						</select>
@@ -621,7 +636,7 @@
 		<div class="row" style="margin-top: 25px">
 			<div class="col-md-5">
 				<button class="btn btn-sm btn-default" id="add_storage">
-					<span class="glyphicon glyphicon-plus"></span> <span>添加检测数据</span>
+					<span class="glyphicon glyphicon-plus"></span> <span>添加预报信息</span>
 				</button>
 				<button class="btn btn-sm btn-default" id="import_storage">
 					<span class="glyphicon glyphicon-import"></span> <span>导入</span>
@@ -635,7 +650,7 @@
 
 		<div class="row" style="margin-top: 15px">
 			<div class="col-md-12">
-				<table id="detectStorageList" class="table table-striped"></table>
+				<table id="storageList" class="table table-striped"></table>
 			</div>
 		</div>
 	</div>
@@ -650,29 +665,29 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">添加已检测数据</h4>
+				<h4 class="modal-title" id="myModalLabel">添加预报记录</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 添加库存信息模态框的内容 -->
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-8 col-sm-8">
-						<form class="form-horizontal" role="form" id="detectStorage_form"
+						<form class="form-horizontal" role="form" id="storage_form"
 							style="margin-top: 25px">
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>包裹ID：</span>
+								</label>
+								<div class="col-md-8 col-sm-8">
+									<input type="text" class="form-control" id="storage_packetID"
+										   name="storage_packetID" placeholder="包裹ID">
+								</div>
+							</div>
 							<div class="form-group">
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物ID：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
 									<input type="text" class="form-control" id="storage_goodsID"
 										name="storage_goodsID" placeholder="货物ID">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
-								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_batchID"
-										   name="storage_batchID" placeholder="批次ID">
 								</div>
 							</div>
 							<div class="form-group">
@@ -684,27 +699,19 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>良品数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_passed"
-										name="storage_passed" placeholder="良品数量">
+									<input type="text" class="form-control" id="packet_number"
+										name="packet_number" placeholder="数量">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>到货数量：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_scratch"
-										   name="storage_scratch" placeholder="数量数量">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障数量：</span>
-								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_damage"
-										   name="storage_damage" placeholder="故障数量">
+									<input type="text" class="form-control" id="packet_storage"
+										   name="packet_storage" placeholder="到货数量">
 								</div>
 							</div>
 						</form>
@@ -746,7 +753,7 @@
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<!--下载本地表格，被FileSourceHandler拦截-->
 								<a class="btn btn-info"
-									href="commons/fileSource/download/stockStorageRecord.xlsx"
+									href="commons/fileSource/download/storageRecord.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>
@@ -971,7 +978,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">编辑货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">编辑包裹预报信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->
@@ -981,48 +988,50 @@
 						<form class="form-horizontal" role="form" id="storage_form_edit"
 							style="margin-top: 25px">
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>货物ID：</span>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>包裹ID：</span>
+								</label>
+								<div class="col-md-2 col-sm-2">
+									<p id="storage_packetID_edit" class="form-control-static"></p>
+								</div>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>运单：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
+									<p id="storage_packetTrace_edit" class="form-control-static"></p>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>货物ID：</span>
+								</label>
+								<div class="col-md-2 col-sm-2">
 									<p id="storage_goodsID_edit" class="form-control-static"></p>
 								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>名称：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
-									<p id="storage_batchID_edit" class="form-control-static"></p>
+									<p id="storage_goodsName_edit" class="form-control-static"></p>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库ID：</span>
+								<label for="" class="control-label col-md-3 col-sm-3"> <span>仓库ID：</span>
 								</label>
-								<div class="col-md-4 col-sm-4">
+								<div class="col-md-2 col-sm-2">
 									<p id="storage_repositoryID_edit" class="form-control-static"></p>
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>待发货良品：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>预报数量：</span>
 								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_passed_edit"
-										name="storage_passed" placeholder="待发货良品">
+								<div class="col-md-4 col-sm-4">
+									<input type="text" class="form-control" id="packet_number_edit"
+										name="packet_number" placeholder="预报数量">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>划痕数量：</span>
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>到货数量：</span>
 								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_scratch_edit"
-										   name="storage_scratch" placeholder="划痕数量">
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="" class="control-label col-md-4 col-sm-4"> <span>故障数量：</span>
-								</label>
-								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_damage_edit"
-										   name="storage_damage" placeholder="故障数量">
+								<div class="col-md-4 col-sm-4">
+									<input type="text" class="form-control" id="packet_storage_edit"
+										   name="packet_storage" placeholder="到货数量">
 								</div>
 							</div>
 						</form>

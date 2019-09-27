@@ -33,10 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 包裹信息管理请求 Handler
+ * 包裹操作请求 Handler
  *
  * @author huanyingcool
- *
  */
 @RequestMapping(value = "packetManage")
 @Controller
@@ -99,13 +98,14 @@ public class PacketMangeHandler {
     }
 
     /**
-     * 搜索匹配的包裹信息
-     *
-     * @param searchType 搜索类型
-     * @param offset     如有多条记录时分页的偏移值
-     * @param limit      如有多条记录时分页的大小
-     * @param keyWord    搜索的关键字
-     * @return 返回所有符合要求的记录
+     * 获取指定包裹列表
+     * @param searchType
+     * @param keyWord
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketManageServiceException
      */
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "getPacketList", method = RequestMethod.GET)
@@ -129,6 +129,72 @@ public class PacketMangeHandler {
         // 设置 Response
         responseContent.setCustomerInfo("rows", rows);
         responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 获取未签收包裹列表
+     * @param searchType
+     * @param keyWord
+     * @param repositoryID
+     * @param offset
+     * @param limit
+     * @return
+     * @throws PacketManageServiceException
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "getActivePacketList", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getActivePacketList(@RequestParam("searchType") String searchType, @RequestParam("keyWord") String keyWord, @Param("repositoryID") Integer repositoryID,
+                                            @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws PacketManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        List<PacketDO> rows = null;
+        long total = 0;
+
+        // 查询
+        Map<String, Object> queryResult = query(searchType, keyWord, repositoryID, offset, limit);
+
+        if (queryResult != null) {
+            rows = (List<PacketDO>) queryResult.get("data");
+            total = (long) queryResult.get("total");
+        }
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+
+    /**
+     * 查询指定packetID的包裹信息
+     * @param packetID
+     * @return
+     * @throws PacketManageServiceException
+     */
+    @RequestMapping(value = "getPacketInfo", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getPacketInfo(@RequestParam("packetID") Integer packetID) throws PacketManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        // 获取货物信息
+        PacketDTO packetDTO = null;
+        Map<String, Object> queryResult = packetManageService.selectByPacketID(packetID);
+        if (queryResult != null) {
+            packetDTO = (PacketDTO) queryResult.get("data");
+            if (packetDTO != null) {
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        responseContent.setResponseData(packetDTO);
         return responseContent.generateResponse();
     }
 
@@ -293,7 +359,7 @@ public class PacketMangeHandler {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         HttpSession session = request.getSession();
-        String personInCharge = (String) session.getAttribute("userName"); //默认获取的userName取锁定客户ID
+//        String personInCharge = (String) session.getAttribute("userName"); //默认获取的userName取锁定客户ID
 
         PacketDO packetDO = packetMapper.selectByTrace(trace,repositoryID); //验证是否有过该包裹预报
         Integer packetID;
@@ -311,7 +377,7 @@ public class PacketMangeHandler {
         }
 
         //执行包裹预报操作
-        String result = packetManageService.packetStockInOperation(packetID, goodsID, repositoryID, number, personInCharge) ?
+        String result = packetManageService.packetStockInOperation(packetID, goodsID, repositoryID, number) ?
                 Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response

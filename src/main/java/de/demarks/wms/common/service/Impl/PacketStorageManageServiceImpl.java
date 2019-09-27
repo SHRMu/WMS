@@ -461,6 +461,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         packetDTO.setGoodsID(packetStorage.getGoodsID());
         packetDTO.setGoodsName(packetStorage.getGoodsName());
         packetDTO.setGoodsNumber(packetStorage.getNumber());
+        packetDTO.setGoodsStorage(packetStorage.getStorage());
         return packetDTO;
     }
 

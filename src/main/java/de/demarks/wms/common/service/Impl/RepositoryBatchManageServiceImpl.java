@@ -5,18 +5,23 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.RepositoryBatchManageService;
 
+import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.dao.DetectStorageMapper;
 import de.demarks.wms.dao.RepositoryBatchMapper;
 import de.demarks.wms.dao.StockStorageMapper;
 import de.demarks.wms.domain.DetectStorage;
+import de.demarks.wms.domain.Goods;
 import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.domain.StockStorage;
+import de.demarks.wms.exception.GoodsManageServiceException;
 import de.demarks.wms.exception.RepositoryBatchManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.*;
 
 
@@ -28,6 +33,8 @@ import java.util.*;
 @Service
 public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageService {
 
+    @Autowired
+    private ExcelUtil excelUtil;
     @Autowired
     private RepositoryBatchMapper repositoryBatchMapper;
     @Autowired
@@ -42,7 +49,7 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
     @Override
-    public Map<String, Object> selectById(Integer batchID) throws RepositoryBatchManageServiceException {
+    public Map<String, Object> selectByBatchID(Integer batchID) throws RepositoryBatchManageServiceException {
         // 初始化結果集
         Map<String, Object> resultSet = new HashMap<>();
         List<RepositoryBatch> batches = new ArrayList<>();
@@ -326,6 +333,53 @@ public class RepositoryBatchManageServiceImpl implements RepositoryBatchManageSe
         } catch (PersistenceException e) {
             throw new RepositoryBatchManageServiceException(e);
         }
+    }
+
+    @UserOperation(value = "导入批次信息")
+    @Override
+    public Map<String, Object> importRepositoryBatch(MultipartFile file) throws RepositoryBatchManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        int total = 0;
+        int available = 0;
+
+        // 从 Excel 文件中读取
+        List<Object> batchList = excelUtil.excelReader(RepositoryBatch.class, file);
+        if (batchList != null) {
+            total = batchList.size();
+
+            // 验证每一条记录
+            RepositoryBatch repositoryBatch;
+            List<RepositoryBatch> availableList = new ArrayList<>();
+            for (Object object : batchList) {
+                repositoryBatch = (RepositoryBatch) object;
+                if (batchCheck(repositoryBatch)) {
+                    availableList.add(repositoryBatch);
+                }
+            }
+            // 保存到数据库
+            try {
+                available = availableList.size();
+                if (available > 0) {
+                    repositoryBatchMapper.insertBatch(availableList);
+                }
+            } catch (PersistenceException e) {
+                throw new RepositoryBatchManageServiceException(e);
+            }
+        }
+
+        resultSet.put("total", total);
+        resultSet.put("available", available);
+        return resultSet;
+    }
+
+    @UserOperation(value = "导出批次信息")
+    @Override
+    public File exportRepositoryBatch(List<RepositoryBatch> repositoryBatchList) {
+        if (repositoryBatchList == null)
+            return null;
+
+        return excelUtil.excelWriter(RepositoryBatch.class, repositoryBatchList);
     }
 
     /**

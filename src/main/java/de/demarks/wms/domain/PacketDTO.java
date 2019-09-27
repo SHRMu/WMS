@@ -12,6 +12,7 @@ public class PacketDTO {
     private Integer goodsID;
     private String goodsName;
     private long goodsNumber;
+    private long goodsStorage; //到货数量
     private Integer repositoryID; //包裹所属仓库
 
     public Integer getId() {
@@ -94,6 +95,14 @@ public class PacketDTO {
         this.goodsNumber = goodsNumber;
     }
 
+    public long getGoodsStorage() {
+        return goodsStorage;
+    }
+
+    public void setGoodsStorage(long goodsStorage) {
+        this.goodsStorage = goodsStorage;
+    }
+
     public Integer getRepositoryID() {
         return repositoryID;
     }
@@ -114,7 +123,8 @@ public class PacketDTO {
                 ", desc='" + desc + '\'' +
                 ", goodsID=" + goodsID +
                 ", goodsName='" + goodsName + '\'' +
-                ", goodsNumber='" + goodsNumber + '\'' +
+                ", goodsNumber=" + goodsNumber +
+                ", goodsStorage=" + goodsStorage +
                 ", repositoryID=" + repositoryID +
                 '}';
     }

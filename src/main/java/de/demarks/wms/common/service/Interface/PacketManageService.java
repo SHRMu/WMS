@@ -121,7 +121,7 @@ public interface PacketManageService {
      * @param number       入库数量
      * @return 返回一个boolean 值，若值为true表示入库成功，否则表示入库失败
      */
-    boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number, String personInCharge) throws PacketManageServiceException;
+    boolean packetStockInOperation(Integer packetID, Integer goodsID, Integer repositoryID, long number) throws PacketManageServiceException;
 
 
 

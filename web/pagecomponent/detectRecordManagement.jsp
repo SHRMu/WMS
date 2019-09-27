@@ -21,7 +21,7 @@
     function batchSelectorInit() {
         $.ajax({
             type : 'GET',
-            url : 'repositoryBatchManage/getRepositoryBatchList',
+            url : 'repositoryBatchManage/getBatchList',
             dataType : 'json',
             contentType : 'application/json',
             data : {

@@ -85,6 +85,14 @@
 		values(#{code},#{status},#{desc},#{time},#{repositoryID})
 	</insert>
 
+	<insert id="insertBatch">
+		insert into wms_repo_batch(REPO_BATCH_CODE,REPO_BATCH_STATUS,REPO_BATCH_DESC,REPO_BATCH_TIME,REPO_BATCH_REPOID)
+		values
+		<foreach collection="list" item="repositoryBatch" separator=",">
+			(#{repositoryBatch.code},#{repositoryBatch.status},#{repositoryBatch.desc},#{repositoryBatch.time},#}{repositoryBatch.repositoryID})
+		</foreach>
+	</insert>
+
 	<update id="update">
 		update
 			wms_repo_batch

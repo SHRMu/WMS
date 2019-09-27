@@ -10,7 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
 
 @Controller
@@ -45,7 +51,7 @@ public class RepositoryBatchManageHandler {
                 break;
             case SEARCH_BY_ID:
                 if (StringUtils.isNumeric(keyword)) {
-                    queryResult = repositoryBatchManageService.selectById(Integer.valueOf(keyword));
+                    queryResult = repositoryBatchManageService.selectByBatchID(Integer.valueOf(keyword));
                 }
                 break;
             case SEARCH_BY_CODE:
@@ -71,10 +77,10 @@ public class RepositoryBatchManageHandler {
      * @return 返回一个Map，其中key=rows，表示查询出来的记录；key=total，表示记录的总条数
      */
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "getRepositoryBatchList", method = RequestMethod.GET)
+    @RequestMapping(value = "getBatchList", method = RequestMethod.GET)
     public
     @ResponseBody
-    Map<String, Object> getRepositoryBatchList(@RequestParam("searchType") String searchType,
+    Map<String, Object> getBatchList(@RequestParam("searchType") String searchType,
                                           @RequestParam("offset") int offset, @RequestParam("limit") int limit,
                                           @RequestParam("keyWord") String keyWord) throws RepositoryBatchManageServiceException {
         // 初始化 Response
@@ -94,6 +100,72 @@ public class RepositoryBatchManageHandler {
         // 设置 Response
         responseContent.setCustomerInfo("rows", rows);
         responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 查询批次信息
+     *
+     * @param searchType 查询类型
+     * @param offset     分页偏移值
+     * @param limit      分页大小
+     * @param keyWord    查询关键字
+     * @return 返回一个Map，其中key=rows，表示查询出来的记录；key=total，表示记录的总条数
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "getActiveBatchList", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getActiveBatchList(@RequestParam("searchType") String searchType,
+                                     @RequestParam("offset") int offset, @RequestParam("limit") int limit,
+                                     @RequestParam("keyWord") String keyWord) throws RepositoryBatchManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+
+        List<RepositoryBatch> rows = null;
+        long total = 0;
+
+        // 查询
+        Map<String, Object> queryResult = query(searchType, keyWord, offset, limit);
+
+        if (queryResult != null) {
+            rows = (List<RepositoryBatch>) queryResult.get("data");
+            total = (long) queryResult.get("total");
+        }
+
+        // 设置 Response
+        responseContent.setCustomerInfo("rows", rows);
+        responseContent.setResponseTotal(total);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 获取指定batchID的批次信息
+     * @param batchID
+     * @return
+     * @throws RepositoryBatchManageServiceException
+     */
+    @RequestMapping(value = "getBatchInfo", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    Map<String, Object> getBatchInfo(@RequestParam("batchID") Integer batchID) throws RepositoryBatchManageServiceException {
+        // 初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        // 获取货物信息
+        RepositoryBatch repositoryBatch = null;
+        Map<String, Object> queryResult = repositoryBatchManageService.selectByBatchID(batchID);
+        if (queryResult != null) {
+            repositoryBatch = (RepositoryBatch) queryResult.get("data");
+            if (repositoryBatch != null) {
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        responseContent.setResponseData(repositoryBatch);
         return responseContent.generateResponse();
     }
 
@@ -163,6 +235,85 @@ public class RepositoryBatchManageHandler {
         // 设置 Response
         responseContent.setResponseResult(result);
         return responseContent.generateResponse();
+    }
+
+    /**
+     * 导入货物信息
+     *
+     * @param file 保存有货物信息的文件
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
+     * error；key为total表示导入的总条数；key为available表示有效的条数
+     */
+    @RequestMapping(value = "importRepositoryBatch", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> importRepositoryBatch(@RequestParam("file") MultipartFile file) throws RepositoryBatchManageServiceException {
+        //  初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        // 读取文件内容
+        int total = 0;
+        int available = 0;
+        if (file != null) {
+            Map<String, Object> importInfo = repositoryBatchManageService.importRepositoryBatch(file);
+            if (importInfo != null) {
+                total = (int) importInfo.get("total");
+                available = (int) importInfo.get("available");
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        responseContent.setResponseTotal(total);
+        responseContent.setCustomerInfo("available", available);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 导出货物信息
+     *
+     * @param searchType 查找类型
+     * @param keyWord    查找关键字
+     * @param response   HttpServletResponse
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "exportRepositoryBatch", method = RequestMethod.GET)
+    public void exportRepositoryBatch(@RequestParam("searchType") String searchType, @RequestParam("keyWord") String keyWord,
+                            HttpServletResponse response) throws RepositoryBatchManageServiceException, IOException {
+
+        String fileName = "repositoryBatchInfo.xlsx";
+
+        List<RepositoryBatch> batchList = null;
+        Map<String, Object> queryResult = query(searchType, keyWord, -1, -1);
+
+        if (queryResult != null) {
+            batchList = (List<RepositoryBatch>) queryResult.get("data");
+        }
+
+        // 获取生成的文件
+        File file = repositoryBatchManageService.exportRepositoryBatch(batchList);
+
+        // 写出文件
+        if (file != null) {
+            // 设置响应头
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+            FileInputStream inputStream = new FileInputStream(file);
+            OutputStream outputStream = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+
+            int len;
+            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+        }
     }
 
 }

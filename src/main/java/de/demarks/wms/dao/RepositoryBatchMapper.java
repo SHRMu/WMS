@@ -57,6 +57,9 @@ public interface RepositoryBatchMapper {
      */
     void insert(RepositoryBatch repositoryBatch);
 
+
+    void insertBatch(List<RepositoryBatch> repositoryBatch);
+
     /**
      * 更新 repositoryBatch 记录
      * @param repositoryBatch 批次信息

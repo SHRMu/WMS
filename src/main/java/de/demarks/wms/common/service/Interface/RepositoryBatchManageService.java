@@ -2,7 +2,10 @@ package de.demarks.wms.common.service.Interface;
 
 import de.demarks.wms.domain.RepositoryBatch;
 import de.demarks.wms.exception.RepositoryBatchManageServiceException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +21,7 @@ public interface RepositoryBatchManageService {
      * @param batchID 批次ID
      * @return 结果的一个Map，其中： key为 data 的代表记录数据；key 为 total 代表结果记录的数量
      */
-    Map<String, Object> selectById(Integer batchID) throws RepositoryBatchManageServiceException;
+    Map<String, Object> selectByBatchID(Integer batchID) throws RepositoryBatchManageServiceException;
 
     /**
      * 返回指定 Batch code 的批次记录
@@ -101,5 +104,10 @@ public interface RepositoryBatchManageService {
      */
     boolean deleteRepositoryBatch(Integer batchID, Integer repositoryID) throws RepositoryBatchManageServiceException;
 
+
+    Map<String, Object> importRepositoryBatch(MultipartFile file) throws RepositoryBatchManageServiceException;
+
+
+    File exportRepositoryBatch(List<RepositoryBatch> repositoryBatchList);
 
 }
