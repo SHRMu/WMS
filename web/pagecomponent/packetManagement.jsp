@@ -55,7 +55,7 @@
 			} else if (type == "未签收") {
 				$("#search_input").attr("readOnly","true");
 				search_type_packet = "searchActive";
-			} else if (type == "包裹ID") {
+			} else if (type == "包裹ID号") {
 				$("#search_input").removeAttr("readOnly");
 				search_type_packet = "searchByPacketID";
 			} else if (type == "包裹运单号") {
@@ -198,7 +198,7 @@
 		})
 	}
 
-	// 编辑货物信息
+	// 编辑包裹信息
 	function editpacketAction() {
 		$('#edit_modal_submit').click(
 				function() {
@@ -244,7 +244,7 @@
 				});
 	}
 
-	// 刪除货物信息
+	// 刪除包裹信息
 	function deletepacketAction(){
 		$('#delete_confirm').click(function(){
 			var data = {
@@ -267,7 +267,7 @@
 						msg = "包裹信息删除成功";
 					}else{
 						type = "error";
-						msg = "包裹信息删除失败";
+						msg = "包裹信息删除失败，请确认包裹已收货";
 					}
 					infoModal(type, msg);
 					tableRefresh();
@@ -286,6 +286,13 @@
 		});
 
 		$('#add_modal_submit').click(function() {
+			$('#packet_form').data('bootstrapValidator')
+					.validate();
+			if (!$('#packet_form').data('bootstrapValidator')
+					.isValid()) {
+				return;
+			}
+
 			var data = {
 				trace : $('#packet_trace').val(),
 				desc : $('#packet_desc').val(),
@@ -315,7 +322,7 @@
 					// reset
 					$('#packet_trace').val("");
 					$('#packet_desc').val("");
-					$('#repository_selector').val("");
+					$('#repository_selector').val();
 					$('#packet_form').bootstrapValidator("resetForm", true);
 				},
 				error : function(response) {
@@ -327,7 +334,7 @@
 	var import_step = 1;
 	var import_start = 1;
 	var import_end = 3;
-	// 导入货物信息
+	// 导入包裹信息
 	function importpacketAction() {
 		$('#import_packet').click(function() {
 			$('#import_modal').modal("show");
@@ -379,8 +386,8 @@
 				success : function(data, status){
 					var total = 0;
 					var available = 0;
-					var msg1 = "货物信息导入成功";
-					var msg2 = "货物信息导入失败";
+					var msg1 = "包裹信息导入成功";
+					var msg2 = "包裹信息导入失败";
 					var info;
 
 					$('#import_progress_bar').addClass("hide");
@@ -500,7 +507,7 @@
 					<ul class="dropdown-menu" role="menu">
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">未签收</a></li>
-						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹ID号</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">包裹运单号</a></li>
 					</ul>
 				</div>
@@ -508,7 +515,7 @@
 			<div class="col-md-9 col-sm-9">
 				<div>
 					<div class="col-md-3 col-sm-4">
-						<input id="search_input" type="text" class="form-control" placeholder="包裹ID">
+						<input id="search_input" type="text" class="form-control" placeholder="包裹ID号">
 					</div>
 					<div class="col-md-2 col-sm-2">
 						<button id="search_button" class="btn btn-success">
@@ -600,7 +607,7 @@
 	</div>
 </div>
 
-<!-- 导入货物信息模态框 -->
+<!-- 导入包裹信息模态框 -->
 <div class="modal fade" id="import_modal" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -609,7 +616,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">导入货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">导入包裹信息</h4>
 			</div>
 			<div class="modal-body">
 				<div id="step1">
@@ -617,7 +624,7 @@
 						<div class="col-md-1 col-sm-1"></div>
 						<div class="col-md-10 col-sm-10">
 							<div>
-								<h4>点击下面的下载按钮，下载货物信息电子表格</h4>
+								<h4>点击下面的下载按钮，下载包裹信息电子表格</h4>
 							</div>
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<a class="btn btn-info"
@@ -634,11 +641,11 @@
 						<div class="col-md-1 col-sm-1"></div>
 						<div class="col-md-10 col-sm-10">
 							<div>
-								<h4>请按照货物信息电子表格中指定的格式填写需要添加的一个或多个货物信息</h4>
+								<h4>请按照包裹信息电子表格中指定的格式填写需要添加的一个或多个包裹信息</h4>
 							</div>
 							<div class="alert alert-info"
 								style="margin-top: 10px; margin-buttom: 30px">
-								<p>注意：表格中各个列均不能为空，若存在未填写的项，则该条信息将不能成功导入</p>
+								<p>注意：表格中除子运单各个列均不能为空，若存在未填写的项，则该条信息将不能成功导入</p>
 							</div>
 						</div>
 					</div>
@@ -649,7 +656,7 @@
 						<div class="col-md-8 col-sm-10">
 							<div>
 								<div>
-									<h4>请点击下面上传文件按钮，上传填写好的货物信息电子表格</h4>
+									<h4>请点击下面上传文件按钮，上传填写好的包裹信息电子表格</h4>
 								</div>
 								<div style="margin-top: 30px; margin-buttom: 15px">
 									<span class="btn btn-info btn-file"> <span> <span
@@ -721,7 +728,7 @@
 	</div>
 </div>
 
-<!-- 导出货物信息模态框 -->
+<!-- 导出包裹信息模态框 -->
 <div class="modal fade" id="export_modal" table-index="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true"
 	data-backdrop="static">
@@ -730,7 +737,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">导出货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">导出包裹信息</h4>
 			</div>
 			<div class="modal-body">
 				<div class="row">
@@ -739,8 +746,8 @@
 							style="width: 70px; height: 70px; margin-top: 20px;">
 					</div>
 					<div class="col-md-8 col-sm-8">
-						<h3>是否确认导出货物信息</h3>
-						<p>(注意：请确定要导出的货物信息，导出的内容为当前列表的搜索结果)</p>
+						<h3>是否确认导出包裹信息</h3>
+						<p>(注意：请确定要导出的包裹信息，导出的内容为当前列表的搜索结果)</p>
 					</div>
 				</div>
 			</div>

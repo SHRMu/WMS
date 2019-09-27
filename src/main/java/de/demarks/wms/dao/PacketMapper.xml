@@ -115,6 +115,14 @@
 		insert into wms_packet(PACKET_TRACE,PACKET_TIME,PACKET_STATUS,PACKET_DESC,PACKET_REPOID)
 		values (#{trace},#{time},#{status},#{desc},#{repositoryID})
 	</insert>
+	
+	<insert id="insertBatch">
+		insert into wms_packet(PACKET_TRACE,PACKET_TIME,PACKET_STATUS,PACKET_DESC,PACKET_REPOID)
+		values
+		<foreach collection="list" item="packetDO" separator=",">
+			(#{packetDO.trace},#{packetDO.time},#{packetDO.status},#{packetDO.desc},#{packetDO.repositoryID})
+		</foreach>
+	</insert>
 
 	<update id="update">
 		update

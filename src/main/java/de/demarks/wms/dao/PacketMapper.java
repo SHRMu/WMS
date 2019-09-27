@@ -65,6 +65,12 @@ public interface PacketMapper {
     Integer insert(PacketDO packetDO);
 
     /**
+     *
+     * @param packetDO
+     */
+    void insertBatch(List<PacketDO> packetDO);
+
+    /**
      * 更新
      * @param packetDO
      */

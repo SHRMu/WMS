@@ -1,9 +1,13 @@
 package de.demarks.wms.common.service.Interface;
 
+import com.sun.xml.internal.ws.api.message.Packet;
 import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.exception.PacketManageServiceException;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -92,6 +96,21 @@ public interface PacketManageService {
      * @throws PacketManageServiceException
      */
     boolean deletePacket(Integer packetID) throws  PacketManageServiceException;
+
+    /**
+     *
+     * @param file
+     * @return
+     * @throws PacketManageServiceException
+     */
+    Map<String, Object> importPacket(MultipartFile file) throws PacketManageServiceException;
+
+    /**
+     *
+     * @param packetDOS
+     * @return
+     */
+    File exportPacket(List<PacketDO> packetDOS);
 
     /**
      * 客户预报操作

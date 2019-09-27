@@ -1,5 +1,6 @@
 package de.demarks.wms.common.controller;
 
+import com.sun.xml.internal.ws.api.message.Packet;
 import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketRefMangeService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
@@ -17,9 +18,15 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,6 +192,86 @@ public class PacketMangeHandler {
         // 设置 Response
         responseContent.setResponseResult(result);
         return responseContent.generateResponse();
+    }
+
+
+    /**
+     * 导入包裹信息
+     *
+     * @param file 保存有货物信息的文件
+     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
+     * error；key为total表示导入的总条数；key为available表示有效的条数
+     */
+    @RequestMapping(value = "importPacket", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Map<String, Object> importPacket(@RequestParam("file") MultipartFile file) throws PacketManageServiceException {
+        //  初始化 Response
+        Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+
+        // 读取文件内容
+        int total = 0;
+        int available = 0;
+        if (file != null) {
+            Map<String, Object> importInfo = packetManageService.importPacket(file);
+            if (importInfo != null) {
+                total = (int) importInfo.get("total");
+                available = (int) importInfo.get("available");
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
+
+        // 设置 Response
+        responseContent.setResponseResult(result);
+        responseContent.setResponseTotal(total);
+        responseContent.setCustomerInfo("available", available);
+        return responseContent.generateResponse();
+    }
+
+    /**
+     * 导出包裹信息
+     *
+     * @param searchType 查找类型
+     * @param keyWord    查找关键字
+     * @param response   HttpServletResponse
+     */
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "exportPacket", method = RequestMethod.GET)
+    public void exportPacket(@RequestParam("searchType") String searchType, @RequestParam("keyWord") String keyWord,
+                            HttpServletResponse response) throws PacketManageServiceException, IOException {
+
+        String fileName = "packetInfo.xlsx";
+
+        List<PacketDO> packetDOS = null;
+        Map<String, Object> queryResult = query(searchType, keyWord, -1, -1, -1);
+
+        if (queryResult != null) {
+            packetDOS = (List<PacketDO>) queryResult.get("data");
+        }
+
+        // 获取生成的文件
+        File file = packetManageService.exportPacket(packetDOS);
+
+        // 写出文件
+        if (file != null) {
+            // 设置响应头
+            response.addHeader("Content-Disposition", "attachment;filename=" + fileName);
+
+            FileInputStream inputStream = new FileInputStream(file);
+            OutputStream outputStream = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+
+            int len;
+            while ((len = inputStream.read(buffer, 0, buffer.length)) > 0) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+        }
     }
 
     /**

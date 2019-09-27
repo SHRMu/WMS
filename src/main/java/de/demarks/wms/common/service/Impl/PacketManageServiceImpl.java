@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketRefMangeService;
+import de.demarks.wms.common.util.ExcelUtil;
 import de.demarks.wms.common.util.StatusUtil;
 import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
@@ -11,9 +12,12 @@ import de.demarks.wms.exception.PacketManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +32,8 @@ import java.util.*;
 @Service
 public class PacketManageServiceImpl implements PacketManageService {
 
+    @Autowired
+    private ExcelUtil excelUtil;
     @Autowired
     private PacketMapper packetMapper;
     @Autowired
@@ -286,6 +292,68 @@ public class PacketManageServiceImpl implements PacketManageService {
     }
 
     /**
+     *
+     * @param file
+     * @return
+     * @throws PacketManageServiceException
+     */
+    @UserOperation(value = "导入包裹信息")
+    @Override
+    public Map<String, Object> importPacket(MultipartFile file) throws PacketManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        int total = 0;
+        int available = 0;
+
+        // 从 Excel 文件中读取
+        List<Object> packetList = excelUtil.excelReader(PacketDO.class, file);
+        if (packetList != null) {
+            total = packetList.size();
+
+            // 验证每一条记录
+            Packet packet;
+            PacketDO packetDO;
+            List<PacketDO> availableList = new ArrayList<>();
+            for (Object object : packetList) {
+                packet = (Packet) object;
+                packetDO = packetConvertToPacketDO(packet);
+                if (packetCheck(packetDO)) {
+                    availableList.add(packetDO);
+                }
+            }
+            // 保存到数据库
+            try {
+                available = availableList.size();
+                if (available > 0) {
+                    packetMapper.insertBatch(availableList);
+                }
+            } catch (PersistenceException e) {
+                throw new PacketManageServiceException(e);
+            }
+        }
+
+        resultSet.put("total", total);
+        resultSet.put("available", available);
+        return resultSet;
+    }
+
+    /**
+     * 导出包裹信息到文件中
+     *
+     * @param packetDOS 包含若干条 Supplier 信息的 List
+     * @return excel 文件
+     */
+    @UserOperation(value = "导出包裹信息")
+    @Override
+    public File exportPacket(List<PacketDO> packetDOS) {
+        if (packetDOS == null)
+            return null;
+
+        return excelUtil.excelWriter(PacketDO.class, packetDOS);
+    }
+
+
+    /**
      * 检查包裹信息是否满足要求
      *
      * @param packetDO 货物信息
@@ -301,6 +369,16 @@ public class PacketManageServiceImpl implements PacketManageService {
     }
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+
+    private PacketDO packetConvertToPacketDO(Packet packet){
+        PacketDO packetDO = new PacketDO();
+        packetDO.setTrace(packet.getTrace());
+        packetDO.setStatus(StatusUtil.PACKET_STATUS_SEND);
+        packetDO.setTime(new Date());
+        packetDO.setRepositoryID(packet.getRepositoryID());
+        packetDO.setDesc(packet.getDesc());
+        return packetDO;
+    }
 
     /**
      *
