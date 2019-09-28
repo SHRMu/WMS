@@ -15,14 +15,19 @@ import java.util.List;
 @Repository
 public interface PacketStorageMapper {
 
+    List<PacketStorage> selectAll(@Param("packetID") Integer packetID,
+                                  @Param("repositoryID") Integer repositoryID);
+
     /**
-     *
-     * @param packetID
+     * 模糊搜索
+     * @param trace
+     * @param status
      * @param repositoryID
      * @return
      */
-    List<PacketStorage> selectAll(@Param("packetID") Integer packetID,
-                                  @Param("repositoryID") Integer repositoryID);
+    List<PacketStorage> selectByPacketTrace(@Param("trace") String trace,
+                                            @Param("status") String status,
+                                            @Param("repositoryID") Integer repositoryID);
 
     /**
      * 精确搜索
@@ -31,8 +36,7 @@ public interface PacketStorageMapper {
      * @param repositoryID
      * @return
      */
-    List<PacketStorage> selectByGoodsID(@Param("goodsID") Integer goodsID,
-                                        @Param("packetID") Integer packetID,
+    List<PacketStorage> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
                                         @Param("repositoryID") Integer repositoryID);
 
     /**
@@ -46,37 +50,26 @@ public interface PacketStorageMapper {
                                           @Param("packetID") Integer packetID,
                                           @Param("repositoryID") Integer repositoryID);
 
-
-    /**
-     * 模糊搜索
-     * @param trace
-     * @param status
-     * @param repositoryID
-     * @return
-     */
-    List<PacketStorage> selectByPacketTrace(@Param("trace") String trace,
-                                              @Param("status") String status,
-                                              @Param("repositoryID") Integer repositoryID);
+    List<PacketStorage> selectByGoodsIDandTrace(@Param("goodsID") Integer goodsID, @Param("packetTrace") String packetTrace,
+                                        @Param("repositoryID") Integer repositoryID);
 
 
-    List<PacketStorage> selectByDate(@Param("packetID") Integer packetID,
-                                     @Param("repositoryID") Integer repositoryID,
-                                     @Param("startDate") Date startDate,
-                                     @Param("endDate") Date endDate);
+    List<PacketStorage> selectByGoodsNameAndTrace(@Param("goodsName") String goodsName, @Param("packetTrace") String packetTrace,
+                                          @Param("repositoryID") Integer repositoryID);
 
-    /**
-     * 添加
-     * @param packetStorage
-     */
+
+    List<PacketStorage> selectByDate(@Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
+                                     @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+
     void insert(PacketStorage packetStorage);
 
-    /**
-     * 更新
-     * @param packetStorage
-     */
+    void insertBatch(List<PacketStorage> packetStorageList);
+
     void update(PacketStorage packetStorage);
 
-
     void delete(PacketStorage packetStorage);
+
+    void deleteByID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID);
 
 }

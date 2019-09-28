@@ -10,16 +10,13 @@ import de.demarks.wms.dao.*;
 import de.demarks.wms.domain.*;
 import de.demarks.wms.exception.PacketManageServiceException;
 import de.demarks.wms.util.aop.UserOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.exceptions.PersistenceException;
-import org.apache.tools.ant.taskdefs.Pack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -306,17 +303,16 @@ public class PacketManageServiceImpl implements PacketManageService {
         int available = 0;
 
         // 从 Excel 文件中读取
-        List<Object> packetList = excelUtil.excelReader(PacketDO.class, file);
-        if (packetList != null) {
-            total = packetList.size();
-
+        List<Object> packetUpList = excelUtil.excelReader(PacketUp.class, file);
+        if (packetUpList != null) {
+            total = packetUpList.size();
             // 验证每一条记录
-            Packet packet;
+            PacketUp packetUp;
             PacketDO packetDO;
             List<PacketDO> availableList = new ArrayList<>();
-            for (Object object : packetList) {
-                packet = (Packet) object;
-                packetDO = packetConvertToPacketDO(packet);
+            for (Object object : packetUpList) {
+                packetUp = (PacketUp) object;
+                packetDO = packetConvertToPacketDO(packetUp);
                 if (packetCheck(packetDO)) {
                     availableList.add(packetDO);
                 }
@@ -370,13 +366,13 @@ public class PacketManageServiceImpl implements PacketManageService {
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
 
-    private PacketDO packetConvertToPacketDO(Packet packet){
+    private PacketDO packetConvertToPacketDO(PacketUp packetUp){
         PacketDO packetDO = new PacketDO();
-        packetDO.setTrace(packet.getTrace());
+        packetDO.setTrace(packetUp.getTrace());
         packetDO.setStatus(StatusUtil.PACKET_STATUS_SEND);
         packetDO.setTime(new Date());
-        packetDO.setRepositoryID(packet.getRepositoryID());
-        packetDO.setDesc(packet.getDesc());
+        packetDO.setRepositoryID(StatusUtil.DEFAULT_REPOSITORY_ID);
+        packetDO.setDesc(packetUp.getDesc());
         return packetDO;
     }
 

@@ -45,24 +45,51 @@
 	</select>
 
 	<select id="selectByGoodsID" resultMap="packetStorage">
+	select
+	ps.PRE_PACKETID as preStorage_packetID,
+	ps.PRE_GOODID as preStorage_goodsID,
+	ps.PRE_REPOSITORYID as preStorage_repositoryID,
+	ps.PRE_NUMBER as preStorage_number,
+	ps.PRE_STORAGE as preStorage_storage,
+	p.PACKET_TRACE as preStorage_packetTrace,
+	p.PACKET_STATUS as preStorage_packetStatus,
+	p.PACKET_TIME as preStorage_packetTime,
+	p.PACKET_DESC as preStorage_packetDesc,
+	g.GOOD_NAME as preStorage_goodsName
+	from
+	wms_packet_storage ps,wms_packet p, wms_goods g, wms_repository r
+	where
+	ps.PRE_GOODID =  g.GOOD_ID and
+	ps.PRE_PACKETID = p.PACKET_ID and
+	ps.PRE_REPOSITORYID = r.REPO_ID and
+	ps.PRE_GOODID = #{goodsID}
+	<if test="packetID !=null">
+		and ps.PRE_PACKETID = #{packetID}
+	</if>
+	<if test="repositoryID !=null">
+		and ps.PRE_REPOSITORYID = #{repositoryID}
+	</if>
+</select>
+
+	<select id="selectByGoodsName" resultMap="packetStorage">
 		select
-			ps.PRE_PACKETID as preStorage_packetID,
-			ps.PRE_GOODID as preStorage_goodsID,
-			ps.PRE_REPOSITORYID as preStorage_repositoryID,
-			ps.PRE_NUMBER as preStorage_number,
-			ps.PRE_STORAGE as preStorage_storage,
-			p.PACKET_TRACE as preStorage_packetTrace,
-			p.PACKET_STATUS as preStorage_packetStatus,
-			p.PACKET_TIME as preStorage_packetTime,
-			p.PACKET_DESC as preStorage_packetDesc,
-			g.GOOD_NAME as preStorage_goodsName
+		ps.PRE_PACKETID as preStorage_packetID,
+		ps.PRE_GOODID as preStorage_goodsID,
+		ps.PRE_REPOSITORYID as preStorage_repositoryID,
+		ps.PRE_NUMBER as preStorage_number,
+		ps.PRE_STORAGE as preStorage_storage,
+		p.PACKET_TRACE as preStorage_packetTrace,
+		p.PACKET_STATUS as preStorage_packetStatus,
+		p.PACKET_TIME as preStorage_packetTime,
+		p.PACKET_DESC as preStorage_packetDesc,
+		g.GOOD_NAME as preStorage_goodsName
 		from
-			wms_packet_storage ps,wms_packet p, wms_goods g, wms_repository r
+		wms_packet_storage ps,wms_packet p, wms_goods g, wms_repository r
 		where
-			ps.PRE_GOODID =  g.GOOD_ID and
-			ps.PRE_PACKETID = p.PACKET_ID and
-			ps.PRE_REPOSITORYID = r.REPO_ID and
-			ps.PRE_GOODID = #{goodsID}
+		ps.PRE_GOODID =  g.GOOD_ID and
+		ps.PRE_PACKETID = p.PACKET_ID and
+		ps.PRE_REPOSITORYID = r.REPO_ID and
+		g.GOOD_NAME like concat ('%',#{goodsName},'%')
 		<if test="packetID !=null">
 			and ps.PRE_PACKETID = #{packetID}
 		</if>
@@ -71,7 +98,7 @@
 		</if>
 	</select>
 
-	<select id="selectByGoodsName" resultMap="packetStorage">
+	<select id="selectByGoodsIDandTrace" resultMap="packetStorage">
 		select
 			ps.PRE_PACKETID as preStorage_packetID,
 			ps.PRE_GOODID as preStorage_goodsID,
@@ -89,10 +116,33 @@
 			ps.PRE_GOODID =  g.GOOD_ID and
 			ps.PRE_PACKETID = p.PACKET_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
-			g.GOOD_NAME like concat ('%',#{goodsName},'%')
-		<if test="packetID !=null">
-			and ps.PRE_PACKETID = #{packetID}
+			ps.PRE_GOODID = #{goodsID} and
+			p.PACKET_TRACE like concat ('%',#{packetTrace},'%')
+		<if test="repositoryID !=null">
+			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>
+	</select>
+
+	<select id="selectByGoodsNameAndTrace" resultMap="packetStorage">
+		select
+			ps.PRE_PACKETID as preStorage_packetID,
+			ps.PRE_GOODID as preStorage_goodsID,
+			ps.PRE_REPOSITORYID as preStorage_repositoryID,
+			ps.PRE_NUMBER as preStorage_number,
+			ps.PRE_STORAGE as preStorage_storage,
+			p.PACKET_TRACE as preStorage_packetTrace,
+			p.PACKET_STATUS as preStorage_packetStatus,
+			p.PACKET_TIME as preStorage_packetTime,
+			p.PACKET_DESC as preStorage_packetDesc,
+			g.GOOD_NAME as preStorage_goodsName
+		from
+			wms_packet_storage ps,wms_packet p, wms_goods g, wms_repository r
+		where
+			ps.PRE_GOODID =  g.GOOD_ID and
+			ps.PRE_PACKETID = p.PACKET_ID and
+			ps.PRE_REPOSITORYID = r.REPO_ID and
+			g.GOOD_NAME like concat ('%',#{goodsName},'%') and
+			p.PACKET_TRACE like concat ('%',#{packetTrace},'%')
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>
@@ -161,7 +211,16 @@
 		insert into wms_packet_storage(PRE_PACKETID,PRE_GOODID,PRE_REPOSITORYID,PRE_NUMBER,PRE_STORAGE)
 		values(#{packetID},#{goodsID},#{repositoryID},#{number},#{storage})
 	</insert>
-	
+
+	<insert id="insertBatch">
+		insert into wms_packet_storage(PRE_PACKETID,PRE_GOODID,PRE_REPOSITORYID,PRE_NUMBER,PRE_STORAGE)
+		values
+		<foreach collection="list" item="packetStorage" separator=",">
+			(#{packetStorage.packetID},#{packetStorage.goodsID},#{packetStorage.repositoryID},#{packetStorage.number},#{packetStorage.storage})
+		</foreach>
+	</insert>
+
+
 	<update id="update">
 		update 
 			wms_packet_storage
@@ -175,6 +234,14 @@
 	</update>
 	
 	<delete id="delete">
+		delete from wms_packet_storage
+		where
+			PRE_GOODID = #{goodsID} and
+			PRE_PACKETID = #{packetID} and
+			PRE_REPOSITORYID = #{repositoryID}
+	</delete>
+
+	<delete id="deleteByID">
 		delete from wms_packet_storage
 		where
 			PRE_GOODID = #{goodsID} and

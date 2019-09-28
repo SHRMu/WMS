@@ -1,9 +1,8 @@
 package de.demarks.wms.domain;
 
-public class Packet {
+public class PacketUp {
     private String trace;
-    private Integer repositoryID; //包裹所属仓库
-    private String desc; //包裹描述
+    private String desc;
 
     public String getTrace() {
         return trace;
@@ -11,14 +10,6 @@ public class Packet {
 
     public void setTrace(String trace) {
         this.trace = trace;
-    }
-
-    public Integer getRepositoryID() {
-        return repositoryID;
-    }
-
-    public void setRepositoryID(Integer repositoryID) {
-        this.repositoryID = repositoryID;
     }
 
     public String getDesc() {
@@ -31,9 +22,8 @@ public class Packet {
 
     @Override
     public String toString() {
-        return "Packet{" +
+        return "PacketUp{" +
                 "trace='" + trace + '\'' +
-                ", repositoryID=" + repositoryID +
                 ", desc='" + desc + '\'' +
                 '}';
     }

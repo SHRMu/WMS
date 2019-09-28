@@ -261,13 +261,7 @@ public class PacketMangeHandler {
     }
 
 
-    /**
-     * 导入包裹信息
-     *
-     * @param file 保存有货物信息的文件
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与
-     * error；key为total表示导入的总条数；key为available表示有效的条数
-     */
+    //todo: 导入包裹是添加packetRef信息
     @RequestMapping(value = "importPacket", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -363,22 +357,14 @@ public class PacketMangeHandler {
 
         PacketDO packetDO = packetMapper.selectByTrace(trace,repositoryID); //验证是否有过该包裹预报
         Integer packetID;
+        String result = Response.RESPONSE_RESULT_ERROR;
         if (packetDO != null){
             //如果包裹已有预报信息
             packetID = packetDO.getId();
-        }else{
-            //首先预报包裹信息
-            packetDO = new PacketDO();
-            packetDO.setTrace(trace);
-            packetDO.setStatus(StatusUtil.PACKET_STATUS_SEND);
-            packetDO.setRepositoryID(repositoryID);
-            packetManageService.addPacket(packetDO);
-            packetID = packetMapper.selectByTrace(trace,repositoryID).getId();
+            //执行包裹预报操作
+            result = packetManageService.packetStockInOperation(packetID, goodsID, repositoryID, number) ?
+                    Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
-
-        //执行包裹预报操作
-        String result = packetManageService.packetStockInOperation(packetID, goodsID, repositoryID, number) ?
-                Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
 
         // 设置 Response
         responseContent.setResponseResult(result);

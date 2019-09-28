@@ -413,7 +413,7 @@ public class ExcelUtil {
     /**
      * 该对象代表了各个注册到 ExcelUtil 对象的映射信息 映射信息包括：注册对象的类型，对象属性与 Excel 列名的映射
      *
-     * @author Ken
+     * @author huanyingcool
      */
     private class MappingInfo {
         private String className;

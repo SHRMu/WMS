@@ -301,8 +301,8 @@ function loadStorageInfo(){
 			data : {
 				offset : -1,
 				limit : -1,
-				searchType : 'searchByGoodsID',
-				packetID : stockin_packet,
+				searchType : 'searchByGoodsIDPacketID',
+				packetInfo : stockin_packet,
 				repositoryID : stockin_repository,
 				keyword : stockin_goods
 			},

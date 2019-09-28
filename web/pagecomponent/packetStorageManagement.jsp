@@ -15,7 +15,6 @@
 
 	$(function() {
 		repositoryOptionInit();
-		packetAutocomplete();
 		storageListInit();
 		optionAction();
 		searchAction();
@@ -44,7 +43,7 @@
 			success : function(response){
 				//组装option
 				$.each(response.rows,function(index,elem){
-					$('#search_input_repository').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
+					$('#storage_repositoryID, #search_input_repository').append("<option value='" + elem.id + "'>" + elem.id +"号仓库</option>");
 				})
 			},
 			error : function(response){
@@ -52,46 +51,6 @@
 		});
 	}
 
-	// 包裹信息自动匹配
-	function packetAutocomplete(){
-		$('#search_input_packet').autocomplete({
-			minLength : 0,
-			delay : 200,
-			source : function(request, response){
-				$.ajax({
-					type : 'GET',
-					url : 'packetManage/getPacketList',
-					dataType : 'json',
-					contentType : 'application/json',
-					data : {
-						offset : -1,
-						limit : -1,
-						keyWord : request.term,
-						repositoryID:$('#search_input_repository').val(),
-						searchType:'searchByTrace'
-					},
-					success : function(data){
-						var autoCompleteInfo = new Array();
-						$.each(data.rows, function(index,elem){
-							packetCache.push(elem);
-
-							autoCompleteInfo.push({label:elem.trace,value:elem.id});
-						});
-						response(autoCompleteInfo);
-					}
-				});
-			},
-			focus : function(event, ui){
-				$('#search_input_packet').val(ui.item.label);
-				return false;
-			},
-			select : function(event, ui){
-				$('#search_input_packet').val(ui.item.label);
-				select_packetID = ui.item.value;
-				return false;
-			}
-		})
-	}
 
 	// 查询方式下拉框，为search_type_storage赋值，若为所有，搜索框不能编辑
 	function optionAction() {
@@ -123,8 +82,8 @@
 							columns : [
 								{
 									field : 'packetID',
-									title : '包裹ID',
-									sortable: true
+									title : '包裹ID'
+									// sortable: true
 								},
 								{
 									field : 'packetTrace',
@@ -138,8 +97,7 @@
 								},
 								{
 									field : 'goodsID',
-									title : '货物ID',
-									visible : false
+									title : '货物ID'
 								},
 								{
 									field : 'goodsName',
@@ -201,14 +159,9 @@
 	function searchAction() {
 		$('#search_button').click(function() {
 			search_keyWord = $('#search_input_type').val();
-			if (select_packetID != null){
-				search_packet = select_packetID;
-			}else{
-				search_packet = -1;
-			}
+			search_packet = $('#search_input_packet').val();
 			search_repository = $('#search_input_repository').val();
 			tableRefresh();
-			inputReset();
 		})
 	}
 
@@ -218,12 +171,6 @@
 			query : {}
 		});
 	}
-	
-	function inputReset() {
-		$('#search_input_packet').val('');
-		select_packetID = null;
-		search_packet = -1;
-	}
 
 	// 分页查询参数
 	function queryParams(params) {
@@ -232,7 +179,7 @@
 			offset : params.offset,
 			searchType : search_type_storage,
 			keyword : search_keyWord,
-			packetID : search_packet,
+			packetInfo : search_packet,
 			repositoryID : search_repository
 		}
 		return temp;
@@ -278,13 +225,6 @@
 						}
 					}
 				},
-				storage_repositoryID : {
-					validators : {
-						notEmpty : {
-							message : '仓库ID不能为空'
-						}
-					}
-				},
 				packet_number : {
 					validators : {
 						notEmpty : {
@@ -319,7 +259,7 @@
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'storageManage/updateStorageRecord',
+						url : 'packetStorageManage/updateStorageRecord',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -360,7 +300,7 @@
 			// ajax
 			$.ajax({
 				type : "POST",
-				url : "storageManage/addStorageRecord",
+				url : "packetStorageManage/addStorageRecord",
 				dataType : "json",
 				contentType : "application/json",
 				data : JSON.stringify(data),
@@ -404,7 +344,7 @@
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "storageManage/deleteStorageRecord",
+				url : "packetStorageManage/deleteStorageRecord",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
@@ -477,7 +417,7 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "storageManage/importStorageRecord",
+				url : "packetStorageManage/importStorageRecord",
 				secureuri: false,
 				dataType: 'json',
 				fileElementId:"file",
@@ -525,7 +465,7 @@
 				repositoryBelong : search_repository,
 				keyword : search_keyWord
 			}
-			var url = "storageManage/exportStorageRecord?" + $.param(data)
+			var url = "packetStorageManage/exportStorageRecord?" + $.param(data)
 			window.open(url, '_blank');
 			$('#export_modal').modal("hide");
 		})
@@ -694,8 +634,8 @@
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>仓库ID：</span>
 								</label>
 								<div class="col-md-8 col-sm-8">
-									<input type="text" class="form-control" id="storage_repositoryID"
-										name="storage_repositoryID" placeholder="仓库ID">
+									<select name="" id="storage_repositoryID" class="form-control">
+									</select>
 								</div>
 							</div>
 							<div class="form-group">
@@ -753,7 +693,7 @@
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<!--下载本地表格，被FileSourceHandler拦截-->
 								<a class="btn btn-info"
-									href="commons/fileSource/download/storageRecord.xlsx"
+									href="commons/fileSource/download/packetStorage.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>

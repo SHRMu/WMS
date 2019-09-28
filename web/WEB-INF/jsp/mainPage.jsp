@@ -145,7 +145,7 @@ pageEncoding="UTF-8"%>
                                 <ul class="list-group">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/preStock-inManagement.jsp">客户预报</a>
+                                           name="pagecomponent/packetStockManagement.jsp">客户预报</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"

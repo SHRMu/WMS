@@ -52,11 +52,11 @@ INSERT INTO `wms_action` VALUES
 (45,'exportRepository',NULL,'/repositoryAdminManage/exportRepositoryAdmin'),
 
 (46,'getStorageList',NULL,'/packetStorageManage/getStorageList'),
-(47,'addStorageRecord',NULL,'/packetStorageManage/addStorageRecord'),
-(48,'updateStorageRecord',NULL,'/packetStorageManage/updateStorageRecord'),
-(49,'deleteStorageRecord',NULL,'/packetStorageManage/deleteStorageRecord'),
-(50,'importStorageRecord',NULL,'/packetStorageManage/importStorageRecord'),
-(51,'exportStorageRecord',NULL,'/packetStorageManage/exportStorageRecord'),
+(47,'addPacketStorage',NULL,'/packetStorageManage/addPacketStorage'),
+(48,'updatePacketStorage',NULL,'/packetStorageManage/updatePacketStorage'),
+(49,'deletePacketStorage',NULL,'/packetStorageManage/deletePacketStorage'),
+(50,'importPacketStorage',NULL,'/packetStorageManage/importPacketStorage'),
+(51,'exportPacketStorage',NULL,'/packetStorageManage/exportPacketStorage'),
 
 (52,'getStorageList',NULL,'/storageManage/getStorageList'),
 (53,'addStorageRecord',NULL,'/storageManage/addStorageRecord'),

@@ -9,4 +9,7 @@ public class StatusUtil {
     //仓库状态
     public static final String BATCH_STATUS_AVAILABLE = "可用";
     public static final String BATCH_STATUS_END = "完结";
+
+    //仓库编号
+    public static final Integer DEFAULT_REPOSITORY_ID = 3001;
 }

@@ -112,7 +112,7 @@ create table wms_customer
  )engine=innodb;
 
  # 导入客户信息
-INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888@136.com','中国 湖南'),(2002,'深圳市松林达电子有限公司','刘明','85263335-820','85264958@126.com','中国 广东 深圳市宝安区'),(2003,'郑州绿之源饮品有限公司 ','赵志敬','87094196','87092165@qq.com','中国 河南 郑州市 郑州市嘉亿东方大厦609');
+INSERT INTO `wms_customer` VALUES (2001,'Anker','陈娟','17716786888','23369888@136.com','中国 湖南');
 
  # 创建仓库信息表
  create table wms_repository

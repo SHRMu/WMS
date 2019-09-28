@@ -114,7 +114,8 @@
 									},
 									{
 										field : 'repositoryID',
-										title : '仓库ID'
+										title : '仓库ID',
+										visible : false
 									},
 									{
 										field : 'status',
@@ -152,7 +153,7 @@
 							dataType : 'json',
 							pagination : true,
 							pageNumber : 1,
-							pageSize : 5,
+							pageSize : 100,
 							pageList : [ 5, 10, 25, 50, 100 ],
 							clickToSelect : true
 						});
@@ -379,7 +380,7 @@
 
 			// ajax
 			$.ajaxFileUpload({
-				url : "packetManage/importpacket",
+				url : "packetManage/importPacket",
 				secureuri: false,
 				dataType: 'json',
 				fileElementId:"file",
@@ -426,7 +427,7 @@
 				searchType : search_type_packet,
 				keyWord : search_keyWord
 			}
-			var url = "packetManage/exportpacket?" + $.param(data)
+			var url = "packetManage/exportPacket?" + $.param(data)
 			window.open(url, '_blank');
 			$('#export_modal').modal("hide");
 		})
@@ -490,7 +491,6 @@
 	}
 
 </script>
-
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
@@ -628,7 +628,7 @@
 							</div>
 							<div style="margin-top: 30px; margin-buttom: 15px">
 								<a class="btn btn-info"
-									href="commons/fileSource/download/packetInfo.xlsx"
+									href="commons/fileSource/download/packetUpInfo.xlsx"
 									target="_blank"> <span class="glyphicon glyphicon-download"></span>
 									<span>下载</span>
 								</a>
@@ -645,7 +645,7 @@
 							</div>
 							<div class="alert alert-info"
 								style="margin-top: 10px; margin-buttom: 30px">
-								<p>注意：表格中除子运单各个列均不能为空，若存在未填写的项，则该条信息将不能成功导入</p>
+								<p>注意：请在英文状态下输入，同时确保运单号不为空，子运单号请用英文逗号分隔，若存在不正确的填写项，则该条信息将不能成功导入</p>
 							</div>
 						</div>
 					</div>

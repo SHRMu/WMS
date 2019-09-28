@@ -2,9 +2,9 @@
     pageEncoding="UTF-8"%>
 <script>
 
-var preStockin_packet = null;// 预报的包裹ID
-var preStockin_goods = null;// 预报货物ID
-var preStockin_number = null;// 预报的数量
+var packetStockin_packet = null;// 预报的包裹ID
+var packetStockin_goods = null;// 预报货物ID
+var packetStockin_number = null;// 预报的数量
 
 var packetCache = new Array();//包裹信息缓存
 var goodsCache = new Array();//货物信息缓存
@@ -16,7 +16,7 @@ $(function(){
 	goodsAutocomplete();
     dataValidateInit();
 
-	preStockInOption();
+	packetStockInOption();
 })
 
 // 仓库下拉列表初始化
@@ -40,7 +40,6 @@ function repositorySelectorInit(){
 		error : function(response){
 			$('#repository_selector').append("<option value='-1'>加载失败</option>");
 		}
-
 	})
 }
 
@@ -66,7 +65,6 @@ function packetAutocomplete(){
 					var autoCompleteInfo = new Array();
 					$.each(data.rows, function(index,elem){
 						packetCache.push(elem);
-
 						autoCompleteInfo.push({label:elem.trace,value:elem.id});
 					});
 					response(autoCompleteInfo);
@@ -79,7 +77,7 @@ function packetAutocomplete(){
 		},
 		select : function(event, ui){
 			$('#packet_trace').val(ui.item.label);
-			preStockin_packet = ui.item.value;
+			packetStockin_packet = ui.item.value;
 			return false;
 		}
 	})
@@ -118,7 +116,7 @@ function goodsAutocomplete(){
 		},
 		select : function(event, ui){
 			$('#goods_input').val(ui.item.label);
-			preStockin_goods = ui.item.value;
+			packetStockin_goods = ui.item.value;
 			return false;
 		}
 	})
@@ -126,10 +124,10 @@ function goodsAutocomplete(){
 
 // 数据校验
 function dataValidateInit(){
-    $('#preStockin_form').bootstrapValidator({
+    $('#packetStockin_form').bootstrapValidator({
         message : 'This is not valid',
         fields : {
-            preStockin_input : {
+            packetStockin_input : {
                 validators : {
                     notEmpty : {
                         message : '数量不能为空'
@@ -145,55 +143,93 @@ function dataValidateInit(){
 }
 
 // 执行货物预报操作
-function preStockInOption(){
+function packetStockInOption(){
 	$('#submit').click(function(){
 		// data validate
-		$('#preStockin_form').data('bootstrapValidator').validate();
-		if (!$('#preStockin_form').data('bootstrapValidator').isValid()) {
+		$('#packetStockin_form').data('bootstrapValidator').validate();
+		if (!$('#packetStockin_form').data('bootstrapValidator').isValid()) {
 			return;
 		}
-		data = {
-            trace: $('#packet_trace').val(),
-			repositoryID: $('#repository_selector').val(),
-			goodsID: preStockin_goods,
-			number: $('#preStockin_input').val()
-        }
-		$.ajax({
-			type : 'POST',
-			url : 'packetManage/packetStockIn',
-			dataType : 'json',
-			content : 'application/json',
-			data : data,
-			success : function(response){
-				var msg;
-				var type;
-				
-				if(response.result == "success"){
-					type = 'success';
-					msg = '货物预报成功';
-					inputReset();
-				}else{
-					type = 'error';
-					msg = '货物预报失败'
+		if (packetStockin_packet == null){
+			$('#addPacketWarning_modal').modal('show');
+			$('#addPacket_confirm').click(function(){
+				var data = {
+					trace : $('#packet_trace').val(),
+					desc : "",
+					repositoryID : $('#repository_selector').val()
 				}
-				infoModal(type, msg);
-			},
-			error : function(response){
-				var msg = "服务器错误";
-				var type = "error";
-				infoModal(type, msg);
-			}
-		})
+				// ajax
+				$.ajax({
+					type : "POST",
+					url : "packetManage/addPacket",
+					dataType : "json",
+					contentType : "application/json",
+					data : JSON.stringify(data),
+					success : function(response) {
+						$('#addPacketWarning_modal').modal("hide");
+						var msg;
+						var type;
+						if (response.result == "success") {
+							packetStockInAction();
+						} else if (response.result == "error") {
+							type = "error";
+							msg = "包裹添加失败";
+						}
+						infoModal(type, msg);
+					},
+					error : function(response) {
+
+					}
+				})
+			})
+		}else{
+			packetStockInAction();
+		}
 	});
+}
+
+function packetStockInAction() {
+	var data = {
+		trace: $('#packet_trace').val(),
+		repositoryID: $('#repository_selector').val(),
+		goodsID: packetStockin_goods,
+		number: $('#packetStockin_input').val()
+	}
+	$.ajax({
+		type : 'POST',
+		url : 'packetManage/packetStockIn',
+		dataType : 'json',
+		content : 'application/json',
+		data : data,
+		success : function(response){
+			var msg;
+			var type;
+
+			if(response.result == "success"){
+				type = 'success';
+				msg = '货物预报成功';
+				inputReset();
+			}else{
+				type = 'error';
+				msg = '货物预报失败'
+			}
+			infoModal(type, msg);
+		},
+		error : function(response){
+			var msg = "服务器错误";
+			var type = "error";
+			infoModal(type, msg);
+		}
+	})
 }
 
 // 页面重置
 function inputReset(){
 	$('#packet_trace').val('');
 	$('#goods_input').val('');
-	$('#preStockin_input').val('');
+	$('#packetStockin_input').val('');
 	$('#info_storage').text('-');
-	$('#preStockin_form').bootstrapValidator("resetForm",true);
+	$('#packetStockin_form').bootstrapValidator("resetForm",true);
 }
 
 //操作结果提示模态框
@@ -215,7 +251,7 @@ function infoModal(type, msg) {
 	<ol class="breadcrumb">
 		<li>客户预报</li>
 	</ol>
-	<div class="panel-body" id="preStockin_div">
+	<div class="panel-body" id="packetStockin_div">
 		<div class="row" style="margin-bottom: 25px">
 			<div class="col-md-6 col-sm-6">
 				<div class="row">
@@ -266,10 +302,10 @@ function infoModal(type, msg) {
 				<div class="row">
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-10 col-sm-11">
-						<form action="" class="form-inline" id="preStockin_form">
+						<form action="" class="form-inline" id="packetStockin_form">
 							<div class="form-group">
 								<label for="" class="control-label">预报数量：</label>
-								<input type="text" class="form-control" placeholder="请输入数量" id="preStockin_input" name="preStockin_input">
+								<input type="text" class="form-control" placeholder="请输入数量" id="packetStockin_input" name="packetStockin_input">
 							</div>
 						</form>
 					</div>
@@ -284,6 +320,41 @@ function infoModal(type, msg) {
 		</div>
 	</div>
 </div>
+
+<!-- 添加包裹信息确认提示框 -->
+<div class="modal fade" id="addPacketWarning_modal" table-index="-1"
+	 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button class="close" type="button" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">警告</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-3 col-sm-3" style="text-align: center;">
+						<img src="media/icons/warning-icon.png" alt=""
+							 style="width: 70px; height: 70px; margin-top: 20px;">
+					</div>
+					<div class="col-md-8 col-sm-8">
+						<h3>该包裹信息不存在预报记录，是否添加该包裹信息</h3>
+						<p>(注意：请确认该包裹信息为初次预报，避免重复信息)</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default" type="button" data-dismiss="modal">
+					<span>取消</span>
+				</button>
+				<button class="btn btn-danger" type="button" id="addPacket_confirm">
+					<span>确认添加</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <!-- 提示消息模态框 -->
 <div class="modal fade" id="info_modal" table-index="-1" role="dialog"
