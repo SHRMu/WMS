@@ -1,73 +1,78 @@
 package de.demarks.wms;
 
-import de.demarks.wms.dao.PacketMapper;
-import de.demarks.wms.domain.Packet;
-import org.apache.tools.ant.taskdefs.Pack;
+import de.demarks.wms.dao.PacketStorageMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
-import java.util.List;
-
 @ContextConfiguration(locations = {"classpath:config/SpringApplicationConfiguration.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class PacketMapperTest {
+public class PacketStorageMapperTest {
 
     @Autowired
-    PacketMapper packetMapper;
+    private PacketStorageMapper packetStorageMapper;
 
     @Test
     public void selectAllTest(){
-        List<Packet> packetList = packetMapper.selectAll(null);
-        System.out.println(packetList.size());
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(2, 3001);
+//        System.out.println(packetStorageList.size());
     }
 
     @Test
-    public void selectByIDTest(){
-        Packet packet = packetMapper.selectByID(1);
-        if (packet != null)
-            System.out.println(packet.toString());
+    public void selectByGoodsIDTest(){
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(1001, null, 3001);
+//        System.out.println(packetStorageList.size());
     }
 
     @Test
-    public void selectByTraceTest(){
-        Packet packet = packetMapper.selectByTrace("DHL123456", 3001);
-        if (packet != null)
-            System.out.println(packet.toString());
+    public void selectByGoodsNameTest(){
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsName("3233", 2, 3001);
+//        System.out.println(packetStorageList.size());
     }
 
     @Test
-    public void selectByTraceApproximateTest(){
-        List<Packet> packetList = packetMapper.selectByTraceApproximate("DHL", null, null);
-        System.out.println(packetList.size());
+    public void selectByCustomerIDTest(){
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectByCustomerID(2001, 1, null);
+//        System.out.println(packetStorageList.size());
+    }
+
+    @Test
+    public void selectByPacketTraceTest(){
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectByPacketTrace("000", null, null);
+//        System.out.println(packetStorageList.size());
     }
 
     @Test
     public void insertTest(){
-        Packet packet = new Packet();
-        packet.setTrace("DHL123456");
-        packet.setTime(new Date());
-        packet.setDesc("DHL654321");
-        packet.setRepositoryID(3001);
-        packetMapper.insert(packet);
+//        PacketStorage packetStorage = new PacketStorage();
+//        packetStorage.setPacketID(2);
+//        packetStorage.setGoodsID(1001);
+//        packetStorage.setCustomerID(2001);
+//        packetStorage.setRepositoryID(3001);
+//        packetStorage.setNumber((long) 100);
+//        packetStorage.setStorage((long) 0);
+//        packetStorageMapper.insert(packetStorage);
     }
 
     @Test
     public void updateTest(){
-        Packet packet = new Packet();
-        packet.setId(1);
-        packet.setTrace("DHL");
-        packet.setTime(new Date());
-        packet.setRepositoryID(3001);
-        packetMapper.update(packet);
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectByGoodsID(1001, 2, 3001);
+//        if (!packetStorageList.isEmpty()){
+//            PacketStorage packetStorage = packetStorageList.get(0);
+//            packetStorage.setStorage((long) 100);
+//            packetStorageMapper.update(packetStorage);
+//        }
     }
 
     @Test
-    public void deleteByIDTest(){
-        packetMapper.deleteByID(1);
+    public void deleteTest(){
+//        List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(2, 3001);
+//        for (PacketStorage packetStorage:
+//                packetStorageList) {
+//            packetStorageMapper.delete(packetStorage);
+//        }
     }
 
 }

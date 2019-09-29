@@ -1,76 +1,63 @@
 package de.demarks.wms;
 
-import de.demarks.wms.dao.PacketMapper;
-import de.demarks.wms.domain.Packet;
-import org.apache.tools.ant.taskdefs.Pack;
+import de.demarks.wms.dao.PacketRefMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
-import java.util.List;
-
 @ContextConfiguration(locations = {"classpath:config/SpringApplicationConfiguration.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class PacketMapperTest {
+public class PacketRefMapperTest {
 
     @Autowired
-    PacketMapper packetMapper;
+    PacketRefMapper packetRefMapper;
 
     @Test
     public void selectAllTest(){
-        List<Packet> packetList = packetMapper.selectAll(3001);
-        System.out.println(packetList.size());
+//        List<PacketRef> packetRefList = packetRefMapper.selectAll(3001);
+//        System.out.println(packetRefList.size());
     }
 
     @Test
-    public void selectByIDTest(){
-        Packet packet = packetMapper.selectByID(1, 3001);
-        if (packet != null)
-            System.out.println(packet.toString());
+    public void selectByPacketIDTest(){
+//        PacketRef packetRef = packetRefMapper.selectByPacketID(3);
+//        if (packetRef != null)
+//            System.out.println(packetRef.toString());
+    }
+
+    @Test
+    public void selectByRefIDTest(){
+//        List<PacketRef> packetRefList = packetRefMapper.selectByRefID(1,3002);
+//        System.out.println(packetRefList.size());
+
     }
 
     @Test
     public void selectByTraceTest(){
-        Packet packet = packetMapper.selectByTrace("DHL", 3001);
-        if (packet != null)
-            System.out.println(packet.toString());
+//        PacketRef packetRef = packetRefMapper.selectByTrace("00340456", 1, 3001);
+//        if (packetRef != null)
+//            System.out.println(packetRef.toString());
     }
 
     @Test
     public void selectByTraceApproximateTest(){
-        List<Packet> packetList = packetMapper.selectByTraceApproximate("DHL", true, false, 3001);
-        System.out.println(packetList.size());
+//        List<PacketRef> packetRefList = packetRefMapper.selectByTraceApproximate("00", "已签收", 3001);
+//        System.out.println(packetRefList.size());
+
     }
 
     @Test
     public void insertTest(){
-        Packet packet = new Packet();
-        packet.setTrace("DHL123456");
-        packet.setTime(new Date());
-        packet.setSend(true);
-        packet.setReceive(false);
-        packet.setRepositoryID(3001);
-        packetMapper.insert(packet);
+//        packetRefMapper.insert("0034999",2);
     }
 
     @Test
-    public void updateTest(){
-        Packet packet = new Packet();
-        packet.setId(1);
-        packet.setTrace("DHL");
-        packet.setTime(new Date());
-        packet.setSend(true);
-        packet.setReceive(false);
-        packet.setRepositoryID(3001);
-        packetMapper.update(packet);
+    public void deleteByPacketIDTest(){
+//        packetRefMapper.deleteByPacketID(5);
     }
 
-    @Test
-    public void deleteByIDTest(){
-        packetMapper.deleteByID(1);
-    }
+
 
 }

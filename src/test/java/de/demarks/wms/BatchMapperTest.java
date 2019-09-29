@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.xml.crypto.Data;
 import java.util.Date;
+import java.util.List;
 
 @ContextConfiguration(locations = {"classpath:config/SpringApplicationConfiguration.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -20,6 +21,30 @@ public class BatchMapperTest {
 
     @Autowired
     RepositoryBatchMapper repositoryBatchMapper;
+
+    @Test
+    public void selectAllTest(){
+        List<RepositoryBatch> batches = repositoryBatchMapper.selectAll(3001);
+        System.out.println(batches.size());
+    }
+
+    @Test
+    public void selectByBatchIDTest(){
+        RepositoryBatch repositoryBatch = repositoryBatchMapper.selectByID(1, 3002);
+        System.out.println(repositoryBatch.toString());
+    }
+
+    @Test
+    public void selectByCodeTest(){
+        List<RepositoryBatch> batches = repositoryBatchMapper.selectByCode("Anker",null);
+        System.out.println(batches.size());
+    }
+
+    @Test
+    public void selectByStatusTest(){
+        List<RepositoryBatch> batches = repositoryBatchMapper.selectByStatus("可用", null);
+        System.out.println(batches.size());
+    }
 
     @Test
     public void insertTest(){
@@ -40,7 +65,11 @@ public class BatchMapperTest {
         repositoryBatch.setStatus("完结");
         repositoryBatch.setDesc("已完结");
         repositoryBatch.setRepositoryID(3001);
-
         repositoryBatchMapper.update(repositoryBatch);
+    }
+
+    @Test
+    public void deleteTest(){
+        repositoryBatchMapper.deleteByID(1);
     }
 }
