@@ -1,3 +1,4 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
@@ -66,6 +67,12 @@
 			} else if (type == "货物名称") {
 				$("#search_input_type").removeAttr("readOnly");
 				search_type_storage = "searchByGoodsName";
+			} else if (type == "包裹ID") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByPacketID";
+			} else if (type == "包裹运单号") {
+				$("#search_input_type").removeAttr("readOnly");
+				search_type_storage = "searchByPacketTrace";
 			} else {
 				$("#search_input_type").removeAttr("readOnly");
 			}
@@ -149,7 +156,7 @@
 							dataType : 'json',
 							pagination : true,
 							pageNumber : 1,
-							pageSize : 5,
+							pageSize : 100,
 							pageList : [ 5, 10, 25, 50, 100 ],
 							clickToSelect : true
 						});
@@ -532,7 +539,7 @@
 
 <div class="panel panel-default">
 	<ol class="breadcrumb">
-		<li>预报包裹信息管理</li>
+		<li>包裹库存信息管理</li>
 	</ol>
 	<div class="panel-body">
 		<div class="row">
@@ -546,6 +553,8 @@
 						<li><a href="javascript:void(0)" class="dropOption">所有</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物ID</a></li>
 						<li><a href="javascript:void(0)" class="dropOption">货物名称</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹ID</a></li>
+						<li><a href="javascript:void(0)" class="dropOption">包裹运单号</a></li>
 					</ul>
 				</div>
 			</div>
@@ -555,9 +564,19 @@
 						<input id="search_input_type" type="text" class="form-control"
 							placeholder="货物ID">
 					</div>
+<%--					<div class="col-md-3 col-sm-4">--%>
+<%--						<input id="search_input_packet" type="text" class="form-control"--%>
+<%--							placeholder="包裹运单号">--%>
+<%--					</div>--%>
+
 					<div class="col-md-3 col-sm-4">
-						<input id="search_input_packet" type="text" class="form-control"
-							placeholder="包裹运单号">
+						<select class="form-control" id="search_input_packet">
+							<option value="">请选择包裹状态</option>
+							<option value="发货中">发货中</option>
+							<option value="已签收">已签收</option>
+							<option value="待箱单">待箱单</option>
+							<option value="已出库">已出库</option>
+						</select>
 					</div>
 					<!--通过后台查询仓库信息-->
 					<div class="col-md-3 col-sm-4">

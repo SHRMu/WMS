@@ -41,19 +41,13 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
     @Autowired
     private PacketStorageMapper packetStorageMapper;
 
-    /**
-     *
-     * @param repositoryID
-     * @return
-     * @throws PacketStorageManageServiceException
-     */
     @Override
-    public Map<String, Object> selectAll(Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectAll(packetID, repositoryID, -1, -1);
+    public Map<String, Object> selectAll(Integer packetID, String packetStatus, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectAll(packetID, packetStatus, repositoryID, -1, -1);
     }
 
     @Override
-    public Map<String, Object> selectAll(Integer packetID, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+    public Map<String, Object> selectAll(Integer packetID, String packetStatus, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
         // 初始化结果集
         Map<String, Object> resultSet = new HashMap<>();
         List<PacketStorage> packetStorageList;
@@ -65,6 +59,8 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
             isPagination = false;
         if (packetID < 0)
             packetID = null;
+        if (packetStatus.equals(""))
+            packetStatus = null;
         if (repositoryID <0)
             repositoryID = null;
 
@@ -72,232 +68,14 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         try {
             if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectAll(packetID,repositoryID);
+                packetStorageList = packetStorageMapper.selectAll(packetID, packetStatus, repositoryID);
                 if (packetStorageList != null) {
                     PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
                     total = pageInfo.getTotal();
                 } else
                     packetStorageList = new ArrayList<>();
             } else {
-                packetStorageList = packetStorageMapper.selectAll(packetID, repositoryID);
-                if (packetStorageList != null)
-                    total = packetStorageList.size();
-                else
-                    packetStorageList = new ArrayList<>();
-            }
-        } catch (PersistenceException e) {
-            throw new PacketStorageManageServiceException(e);
-        }
-
-        resultSet.put("data", packetStorageList);
-        resultSet.put("total", total);
-        return resultSet;
-    }
-
-    /**
-     *
-     * @param goodsID
-     * @param packetID
-     * @param repositoryID
-     * @return
-     * @throws PacketStorageManageServiceException
-     */
-    @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectByGoodsID(goodsID, packetID, repositoryID, -1 ,-1);
-    }
-
-    /**
-     *
-     * @param goodsID
-     * @param packetID
-     * @param repositoryID
-     * @param offset
-     * @param limit
-     * @return
-     * @throws PacketStorageManageServiceException
-     */
-    @Override
-    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID,Integer repositoryID,
-                                               Integer offset, Integer limit) throws PacketStorageManageServiceException {
-        // 初始化结果集
-        Map<String, Object> resultSet = new HashMap<>();
-        List<PacketStorage> packetStorageList;
-
-        long total = 0;
-        boolean isPagination = true;
-
-        // validate
-        if (offset < 0 || limit < 0)
-            isPagination = false;
-
-        if (goodsID < 0)
-            goodsID = null;
-        if (packetID < 0)
-            packetID = null;
-        if (repositoryID < 0)
-            repositoryID = null;
-
-        // query
-        try {
-            if (isPagination) {
-                PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
-                if (packetStorageList != null) {
-                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
-                    total = pageInfo.getTotal();
-                } else
-                    packetStorageList = new ArrayList<>();
-            } else {
-                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
-                if (packetStorageList != null)
-                    total = packetStorageList.size();
-                else
-                    packetStorageList = new ArrayList<>();
-            }
-        } catch (PersistenceException e) {
-            throw new PacketStorageManageServiceException(e);
-        }
-
-        resultSet.put("data", packetStorageList);
-        resultSet.put("total", total);
-        return resultSet;
-    }
-
-    @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
-        return selectByGoodsName(goodsName, packetID, repositoryID, -1, -1);
-    }
-
-    @Override
-    public Map<String, Object> selectByGoodsName(String goodsName, Integer packetID, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
-        // 初始化结果集
-        Map<String, Object> resultSet = new HashMap<>();
-        List<PacketStorage> packetStorageList;
-
-        long total = 0;
-        boolean isPagination = true;
-
-        // validate
-        if (offset < 0 || limit < 0)
-            isPagination = false;
-
-        if (packetID < 0)
-            packetID = null;
-        if (repositoryID < 0)
-            repositoryID = null;
-
-        // query
-        try {
-            if (isPagination) {
-                PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectByGoodsName(goodsName, packetID, repositoryID);
-                if (packetStorageList != null) {
-                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
-                    total = pageInfo.getTotal();
-                } else
-                    packetStorageList = new ArrayList<>();
-            } else {
-                packetStorageList = packetStorageMapper.selectByGoodsName(goodsName, packetID, repositoryID);
-                if (packetStorageList != null)
-                    total = packetStorageList.size();
-                else
-                    packetStorageList = new ArrayList<>();
-            }
-        } catch (PersistenceException e) {
-            throw new PacketStorageManageServiceException(e);
-        }
-
-        resultSet.put("data", packetStorageList);
-        resultSet.put("total", total);
-        return resultSet;
-    }
-
-
-    @Override
-    public Map<String, Object> selectByGoodsIDandTrace(Integer goodsID, String packetTrace, Integer repositoryID) throws PacketStorageManageServiceException {
-        return  selectByGoodsIDandTrace(goodsID, packetTrace, repositoryID, -1 ,-1);
-    }
-
-
-    @Override
-    public Map<String, Object> selectByGoodsIDandTrace(Integer goodsID, String packetTrace, Integer repositoryID,
-                                               Integer offset, Integer limit) throws PacketStorageManageServiceException {
-        // 初始化结果集
-        Map<String, Object> resultSet = new HashMap<>();
-        List<PacketStorage> packetStorageList;
-
-        long total = 0;
-        boolean isPagination = true;
-
-        // validate
-        if (offset < 0 || limit < 0)
-            isPagination = false;
-
-        if (goodsID < 0)
-            goodsID = null;
-        if (repositoryID < 0)
-            repositoryID = null;
-
-        // query
-        try {
-            if (isPagination) {
-                PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectByGoodsIDandTrace(goodsID, packetTrace, repositoryID);
-                if (packetStorageList != null) {
-                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
-                    total = pageInfo.getTotal();
-                } else
-                    packetStorageList = new ArrayList<>();
-            } else {
-                packetStorageList = packetStorageMapper.selectByGoodsIDandTrace(goodsID, packetTrace, repositoryID);
-                if (packetStorageList != null)
-                    total = packetStorageList.size();
-                else
-                    packetStorageList = new ArrayList<>();
-            }
-        } catch (PersistenceException e) {
-            throw new PacketStorageManageServiceException(e);
-        }
-
-        resultSet.put("data", packetStorageList);
-        resultSet.put("total", total);
-        return resultSet;
-    }
-
-    @Override
-    public Map<String, Object> selectByGoodsNameAndTrace(String goodsName, String packetTrace, Integer repositoryID) throws PacketStorageManageServiceException {
-        return selectByGoodsNameAndTrace(goodsName, packetTrace, repositoryID, -1, -1);
-    }
-
-    @Override
-    public Map<String, Object> selectByGoodsNameAndTrace(String goodsName, String packetTrace, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
-        // 初始化结果集
-        Map<String, Object> resultSet = new HashMap<>();
-        List<PacketStorage> packetStorageList;
-
-        long total = 0;
-        boolean isPagination = true;
-
-        // validate
-        if (offset < 0 || limit < 0)
-            isPagination = false;
-
-        if (repositoryID < 0)
-            repositoryID = null;
-
-        // query
-        try {
-            if (isPagination) {
-                PageHelper.offsetPage(offset, limit);
-                packetStorageList = packetStorageMapper.selectByGoodsNameAndTrace(goodsName, packetTrace, repositoryID);
-                if (packetStorageList != null) {
-                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
-                    total = pageInfo.getTotal();
-                } else
-                    packetStorageList = new ArrayList<>();
-            } else {
-                packetStorageList = packetStorageMapper.selectByGoodsNameAndTrace(goodsName, packetTrace, repositoryID);
+                packetStorageList = packetStorageMapper.selectAll(packetID, packetStatus, repositoryID);
                 if (packetStorageList != null)
                     total = packetStorageList.size();
                 else
@@ -361,6 +139,160 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         resultSet.put("total", total);
         return resultSet;
     }
+
+    @Override
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectByGoodsID(goodsID, packetID, repositoryID, -1 ,-1);
+    }
+
+    @Override
+    public Map<String, Object> selectByGoodsID(Integer goodsID, Integer packetID,Integer repositoryID,
+                                               Integer offset, Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        if (goodsID < 0)
+            goodsID = null;
+        if (packetID < 0)
+            packetID = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectByGoodsID(goodsID, packetID, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    @Override
+    public Map<String, Object> selectByGoodsIDandStatus(Integer goodsID, String packetStatus, Integer repositoryID) throws PacketStorageManageServiceException {
+        return  selectByGoodsIDandStatus(goodsID, packetStatus, repositoryID, -1 ,-1);
+    }
+
+    @Override
+    public Map<String, Object> selectByGoodsIDandStatus(Integer goodsID, String packetStatus, Integer repositoryID,
+                                               Integer offset, Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        if (goodsID < 0)
+            goodsID = null;
+        if (packetStatus.equals(""))
+            packetStatus = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectByGoodsIDandStatus(goodsID, packetStatus, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectByGoodsIDandStatus(goodsID, packetStatus, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
+    @Override
+    public Map<String, Object> selectByGoodsNameAndStatus(String goodsName, String packetStatus, Integer repositoryID) throws PacketStorageManageServiceException {
+        return selectByGoodsNameAndStatus(goodsName, packetStatus, repositoryID, -1, -1);
+    }
+
+    @Override
+    public Map<String, Object> selectByGoodsNameAndStatus(String goodsName, String packetStatus, Integer repositoryID, Integer offset, Integer limit) throws PacketStorageManageServiceException {
+        // 初始化结果集
+        Map<String, Object> resultSet = new HashMap<>();
+        List<PacketStorage> packetStorageList;
+
+        long total = 0;
+        boolean isPagination = true;
+
+        // validate
+        if (offset < 0 || limit < 0)
+            isPagination = false;
+
+        if (packetStatus.equals(""))
+            packetStatus = null;
+        if (repositoryID < 0)
+            repositoryID = null;
+
+        // query
+        try {
+            if (isPagination) {
+                PageHelper.offsetPage(offset, limit);
+                packetStorageList = packetStorageMapper.selectByGoodsNameAndStatus(goodsName, packetStatus, repositoryID);
+                if (packetStorageList != null) {
+                    PageInfo<PacketStorage> pageInfo = new PageInfo<>(packetStorageList);
+                    total = pageInfo.getTotal();
+                } else
+                    packetStorageList = new ArrayList<>();
+            } else {
+                packetStorageList = packetStorageMapper.selectByGoodsNameAndStatus(goodsName, packetStatus, repositoryID);
+                if (packetStorageList != null)
+                    total = packetStorageList.size();
+                else
+                    packetStorageList = new ArrayList<>();
+            }
+        } catch (PersistenceException e) {
+            throw new PacketStorageManageServiceException(e);
+        }
+
+        resultSet.put("data", packetStorageList);
+        resultSet.put("total", total);
+        return resultSet;
+    }
+
 
     @UserOperation(value = "添加包裹库存记录")
     @Override

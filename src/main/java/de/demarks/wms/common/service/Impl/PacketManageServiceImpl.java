@@ -270,7 +270,7 @@ public class PacketManageServiceImpl implements PacketManageService {
     public boolean deletePacket(Integer packetID) throws PacketManageServiceException {
         try {
             //查看是否有预报信息
-            List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(packetID, null);
+            List<PacketStorage> packetStorageList = packetStorageMapper.selectAll(packetID, "",null);
             if (!packetStorageList.isEmpty())
                 return false;
             //检查该包裹是否已签收

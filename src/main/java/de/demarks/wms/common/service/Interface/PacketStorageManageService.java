@@ -19,10 +19,15 @@ import java.util.Map;
  */
 public interface PacketStorageManageService {
 
-   Map<String, Object> selectAll(@Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+   Map<String, Object> selectAll(@Param("packetID") Integer packetID, @Param("packetStatus")String packetStatus, @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
-   Map<String, Object> selectAll(@Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
+   Map<String, Object> selectAll(@Param("packetID") Integer packetID,@Param("packetStatus")String packetStatus, @Param("repositoryID") Integer repositoryID,
                                  @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
+
+   Map<String, Object> selectByTrace(@Param("trace") String trace, @Param("status") String status, @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
+
+   Map<String, Object> selectByTrace(@Param("trace") String trace, @Param("status") String status, @Param("repositoryID") Integer repositoryID,
+                                     @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID,
                                        @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
@@ -30,29 +35,17 @@ public interface PacketStorageManageService {
    Map<String, Object> selectByGoodsID(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
                                        @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
-   Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName, @Param("packetID") Integer packetID,
+   Map<String, Object> selectByGoodsIDandStatus(@Param("goodsID") Integer goodsID, @Param("packetStatus") String packetStatus,
                                        @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
-   Map<String, Object> selectByGoodsName(@Param("goodsName") String goodsName,  @Param("packetID") Integer packetID,  @Param("repositoryID") Integer repositoryID,
-                                          @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
-
-   Map<String, Object> selectByGoodsIDandTrace(@Param("goodsID") Integer goodsID, @Param("packetTrace") String packetTrace,
-                                       @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
-
-   Map<String, Object> selectByGoodsIDandTrace(@Param("goodsID") Integer goodsID, @Param("packetTrace") String packetTrace, @Param("repositoryID") Integer repositoryID,
+   Map<String, Object> selectByGoodsIDandStatus(@Param("goodsID") Integer goodsID, @Param("packetStatus") String packetStatus, @Param("repositoryID") Integer repositoryID,
                                        @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
-   Map<String, Object> selectByGoodsNameAndTrace(@Param("goodsName") String goodsName, @Param("packetTrace") String packetTrace,
+   Map<String, Object> selectByGoodsNameAndStatus(@Param("goodsName") String goodsName, @Param("packetStatus") String packetStatus,
                                          @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
 
-   Map<String, Object> selectByGoodsNameAndTrace (@Param("goodsName") String goodsName,  @Param("packetTrace") String packetTrace,  @Param("repositoryID") Integer repositoryID,
+   Map<String, Object> selectByGoodsNameAndStatus (@Param("goodsName") String goodsName,  @Param("packetStatus") String packetStatus,  @Param("repositoryID") Integer repositoryID,
                                          @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
-
-   Map<String, Object> selectByTrace(@Param("trace") String trace, @Param("status") String status,
-                                     @Param("repositoryID") Integer repositoryID) throws PacketStorageManageServiceException;
-
-   Map<String, Object> selectByTrace(@Param("trace") String trace, @Param("status") String status, @Param("repositoryID") Integer repositoryID,
-                                      @Param("offset") Integer offset, @Param("limit") Integer limit) throws PacketStorageManageServiceException;
 
    boolean addPacketStorage(@Param("goodsID") Integer goodsID, @Param("packetID") Integer packetID, @Param("repositoryID") Integer repositoryID,
                       @Param("number") long number, @Param("storage") long storage) throws PacketStorageManageServiceException;

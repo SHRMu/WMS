@@ -43,9 +43,10 @@ public class PacketStorageManageHandler {
     @Autowired
     private PacketStorageManageService packetStorageManageService;
 
-    private static final String SEARCH_BY_GOODID_PACKETID = "searchByGoodsIDPacketID";
     private static final String SEARCH_BY_GOODID = "searchByGoodsID";
     private static final String SEARCH_BY_GOODNAME = "searchByGoodsName";
+    private static final String SEARCH_BY_PACKETID = "searchByPacketID";
+    private static final String SEARCH_BY_PACKETTRACE = "searchByPacketTrace";
     private static final String SEARCH_ALL = "searchAll";
 
     /**
@@ -64,24 +65,26 @@ public class PacketStorageManageHandler {
         Map<String, Object> queryResult = null;
 
         switch (searchType) {
-            case SEARCH_BY_GOODID_PACKETID:
-                if (StringUtils.isNumeric(keyword) && StringUtils.isNumeric(packetInfo)){
-                    Integer goodsID = Integer.valueOf(keyword);
-                    Integer packetID = Integer.valueOf(packetInfo);
-                    queryResult = packetStorageManageService.selectByGoodsID(goodsID, packetID, repositoryID);
-                }
-                break;
             case SEARCH_BY_GOODID:
                 if (StringUtils.isNumeric(keyword)){
                     Integer goodsID = Integer.valueOf(keyword);
-                    queryResult = packetStorageManageService.selectByGoodsIDandTrace(goodsID,packetInfo,repositoryID);
+                    queryResult = packetStorageManageService.selectByGoodsIDandStatus(goodsID,packetInfo,repositoryID);
                 }
                 break;
             case SEARCH_BY_GOODNAME:
-                queryResult = packetStorageManageService.selectByGoodsNameAndTrace(keyword, packetInfo, repositoryID);
+                queryResult = packetStorageManageService.selectByGoodsNameAndStatus(keyword, packetInfo, repositoryID);
+                break;
+            case SEARCH_BY_PACKETID:
+                if (StringUtils.isNumeric(keyword)){
+                    Integer packetID = Integer.valueOf(keyword);
+                    queryResult = packetStorageManageService.selectAll(packetID,packetInfo,repositoryID);
+                }
+                break;
+            case SEARCH_BY_PACKETTRACE:
+                queryResult = packetStorageManageService.selectByTrace(keyword, packetInfo, repositoryID);
                 break;
             case SEARCH_ALL:
-                queryResult = packetStorageManageService.selectByTrace(packetInfo,"", repositoryID);
+                queryResult = packetStorageManageService.selectAll(-1,packetInfo, repositoryID);
             default:
                 break;
         }

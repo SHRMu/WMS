@@ -39,6 +39,9 @@
 		<if test="packetID !=null">
 			and ps.PRE_PACKETID = #{packetID}
 		</if>
+		<if test="packetStatus !=null">
+			and p.PACKET_STATUS = #{packetStatus}
+		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>
@@ -98,7 +101,7 @@
 		</if>
 	</select>
 
-	<select id="selectByGoodsIDandTrace" resultMap="packetStorage">
+	<select id="selectByGoodsIDandStatus" resultMap="packetStorage">
 		select
 			ps.PRE_PACKETID as preStorage_packetID,
 			ps.PRE_GOODID as preStorage_goodsID,
@@ -116,14 +119,16 @@
 			ps.PRE_GOODID =  g.GOOD_ID and
 			ps.PRE_PACKETID = p.PACKET_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
-			ps.PRE_GOODID = #{goodsID} and
-			p.PACKET_TRACE like concat ('%',#{packetTrace},'%')
+			ps.PRE_GOODID = #{goodsID}
+		<if test="packetStatus !=null">
+			and p.PACKET_STATUS = #{packetStatus}
+		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>
 	</select>
 
-	<select id="selectByGoodsNameAndTrace" resultMap="packetStorage">
+	<select id="selectByGoodsNameAndStatus" resultMap="packetStorage">
 		select
 			ps.PRE_PACKETID as preStorage_packetID,
 			ps.PRE_GOODID as preStorage_goodsID,
@@ -141,8 +146,10 @@
 			ps.PRE_GOODID =  g.GOOD_ID and
 			ps.PRE_PACKETID = p.PACKET_ID and
 			ps.PRE_REPOSITORYID = r.REPO_ID and
-			g.GOOD_NAME like concat ('%',#{goodsName},'%') and
-			p.PACKET_TRACE like concat ('%',#{packetTrace},'%')
+			g.GOOD_NAME like concat ('%',#{goodsName},'%')
+		<if test="packetStatus !=null">
+			and p.PACKET_STATUS = #{packetStatus}
+		</if>
 		<if test="repositoryID !=null">
 			and ps.PRE_REPOSITORYID = #{repositoryID}
 		</if>

@@ -16,6 +16,7 @@ import java.util.List;
 public interface PacketStorageMapper {
 
     List<PacketStorage> selectAll(@Param("packetID") Integer packetID,
+                                  @Param("packetStatus") String packetStatus,
                                   @Param("repositoryID") Integer repositoryID);
 
     /**
@@ -50,11 +51,11 @@ public interface PacketStorageMapper {
                                           @Param("packetID") Integer packetID,
                                           @Param("repositoryID") Integer repositoryID);
 
-    List<PacketStorage> selectByGoodsIDandTrace(@Param("goodsID") Integer goodsID, @Param("packetTrace") String packetTrace,
+    List<PacketStorage> selectByGoodsIDandStatus(@Param("goodsID") Integer goodsID, @Param("packetStatus") String packetStatus,
                                         @Param("repositoryID") Integer repositoryID);
 
 
-    List<PacketStorage> selectByGoodsNameAndTrace(@Param("goodsName") String goodsName, @Param("packetTrace") String packetTrace,
+    List<PacketStorage> selectByGoodsNameAndStatus(@Param("goodsName") String goodsName, @Param("packetStatus") String packetStatus,
                                           @Param("repositoryID") Integer repositoryID);
 
 

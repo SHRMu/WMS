@@ -74,7 +74,7 @@ pageEncoding="UTF-8"%>
                         <h4 class="panel-title">
                             <!--<a>链接至class为collapse1的div，即库存管理与出入库管理-->
                             <a href="#collapse1" data-toggle="collapse" data-parent="#accordion"
-                               class="parentMenuTitle collapseHead">库存管理</a>
+                               class="parentMenuTitle collapseHead">操作记录</a>
                             <div class="pull-right">
                                 <span class="caret"></span>
                             </div>
@@ -83,28 +83,6 @@ pageEncoding="UTF-8"%>
                     <div id="collapse1" class="panel-collapse collapse collapseBody">
                         <div class="panel-body">
                             <ul class="list-group">
-                                <!--若为普通管理员-->
-<%--                                <shiro:hasRole name="commonsAdmin">--%>
-<%--                                    <li class="list-group-item">--%>
-<%--                                        <a href="javascript:void(0)" id="" class="menu_item"--%>
-<%--                                           name="pagecomponent/packetStorageManagementCommon.jsp">预报数量</a>--%>
-<%--                                    </li>--%>
-<%--                                </shiro:hasRole>--%>
-                                <!--若为超级管理员-->
-                                <shiro:hasRole name="systemAdmin">
-                                    <li class="list-group-item">
-                                        <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/packetStorageManagement.jsp">包裹库存</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/stockStorageManagement.jsp">到库库存</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/detectStorageManagement.jsp">已检测库存</a>
-                                    </li>
-                                </shiro:hasRole>
                                 <li class="list-group-item">
                                     <a href="javascript:void(0)" id="" class="menu_item"
                                        name="pagecomponent/packetRecordManagement.jsp">预报记录</a>
@@ -125,13 +103,50 @@ pageEncoding="UTF-8"%>
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <a href="#collapse2" data-toggle="collapse" data-parent="#accordion"
-                               class="parentMenuTitle collapseHead">出入库管理</a>
+                               class="parentMenuTitle collapseHead">批量操作</a>
                             <div class="pull-right">
                                 <span class="caret"></span>
                             </div>
                         </h4>
                     </div>
                     <div id="collapse2" class="panel-collapse collapse collapseBody in">
+                        <div class="panel-body">
+                            <!--若为普通管理员-->
+                            <%--                                <shiro:hasRole name="commonsAdmin">--%>
+                            <%--                                    <li class="list-group-item">--%>
+                            <%--                                        <a href="javascript:void(0)" id="" class="menu_item"--%>
+                            <%--                                           name="pagecomponent/packetStorageManagementCommon.jsp">预报数量</a>--%>
+                            <%--                                    </li>--%>
+                            <%--                                </shiro:hasRole>--%>
+                            <!--若为超级管理员-->
+                            <shiro:hasRole name="systemAdmin">
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0)" id="" class="menu_item"
+                                       name="pagecomponent/packetStorageManagement.jsp">包裹库存</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0)" id="" class="menu_item"
+                                       name="pagecomponent/stockStorageManagement.jsp">到库库存</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="javascript:void(0)" id="" class="menu_item"
+                                       name="pagecomponent/detectStorageManagement.jsp">已检测库存</a>
+                                </li>
+                            </shiro:hasRole>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="#collapse2" data-toggle="collapse" data-parent="#accordion"
+                               class="parentMenuTitle collapseHead">库存操作</a>
+                            <div class="pull-right">
+                                <span class="caret"></span>
+                            </div>
+                        </h4>
+                    </div>
+                    <div id="collapse3" class="panel-collapse collapse collapseBody in">
                         <div class="panel-body">
                             <shiro:hasRole name="commonsAdmin">
                                 <ul class="list-group">
@@ -161,33 +176,32 @@ pageEncoding="UTF-8"%>
                                     </li>
                                 </ul>
                             </shiro:hasRole>
-
                         </div>
                     </div>
                 </div>
-                <shiro:hasRole name="systemAdmin">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a href="#collapse3" data-toggle="collapse" data-parent="#accordion"
-                                   class="parentMenuTitle collapseHead">人员管理</a>
-                                <div class="pull-right	">
-                                    <span class="caret"></span>
-                                </div>
-                            </h4>
-                        </div>
-                        <div id="collapse3" class="panel-collapse collapse collapseBody">
-                            <div class="panel-body">
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/repositoryAdminManagement.jsp">仓库管理员管理</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </shiro:hasRole>
+<%--                <shiro:hasRole name="systemAdmin">--%>
+<%--                    <div class="panel panel-default">--%>
+<%--                        <div class="panel-heading">--%>
+<%--                            <h4 class="panel-title">--%>
+<%--                                <a href="#collapse3" data-toggle="collapse" data-parent="#accordion"--%>
+<%--                                   class="parentMenuTitle collapseHead">人员管理</a>--%>
+<%--                                <div class="pull-right	">--%>
+<%--                                    <span class="caret"></span>--%>
+<%--                                </div>--%>
+<%--                            </h4>--%>
+<%--                        </div>--%>
+<%--                        <div id="collapse3" class="panel-collapse collapse collapseBody">--%>
+<%--                            <div class="panel-body">--%>
+<%--                                <ul class="list-group">--%>
+<%--                                    <li class="list-group-item">--%>
+<%--                                        <a href="javascript:void(0)" id="" class="menu_item"--%>
+<%--                                           name="pagecomponent/repositoryAdminManagement.jsp">仓库管理员管理</a>--%>
+<%--                                    </li>--%>
+<%--                                </ul>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                </shiro:hasRole>--%>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">

@@ -17,6 +17,7 @@ $(function(){
     dataValidateInit();
 
 	packetStockInOption();
+
 })
 
 // 仓库下拉列表初始化
@@ -232,6 +233,11 @@ function inputReset(){
 	$('#packetStockin_form').bootstrapValidator("resetForm",true);
 }
 
+//todo:完善批量操作时界面切换功能
+function batchPacketStockInOption() {
+	alert("请进入库存管理-包裹库存管理界面")
+}
+
 //操作结果提示模态框
 function infoModal(type, msg) {
 	$('#info_success').removeClass("hide");
@@ -321,7 +327,7 @@ function infoModal(type, msg) {
 					<div class="col-md-1 col-sm-1"></div>
 					<div class="col-md-10 col-sm-11">
 						<div style="text-align: left">
-							<button class="btn btn-success" onclick="">批量操作</button>
+							<button class="btn btn-success" onclick="batchPacketStockInOption()">批量操作</button>
 						</div>
 					</div>
 				</div>
@@ -336,7 +342,6 @@ function infoModal(type, msg) {
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </div>
