@@ -140,7 +140,7 @@
 											}
 										}
 									} ],
-							url : 'repositoryBatchManage/getRepositoryBatchList',
+							url : 'repositoryBatchManage/getBatchList',
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

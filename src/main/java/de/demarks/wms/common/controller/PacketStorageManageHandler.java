@@ -1,8 +1,11 @@
 package de.demarks.wms.common.controller;
+import de.demarks.wms.common.service.Interface.PacketManageService;
 import de.demarks.wms.common.service.Interface.PacketStorageManageService;
 import de.demarks.wms.common.util.Response;
 import de.demarks.wms.common.util.ResponseUtil;
 import de.demarks.wms.common.util.StatusUtil;
+import de.demarks.wms.dao.PacketMapper;
+import de.demarks.wms.domain.PacketDO;
 import de.demarks.wms.domain.PacketStorage;
 import de.demarks.wms.exception.PacketStorageManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,10 @@ public class PacketStorageManageHandler {
 
     @Autowired
     private ResponseUtil responseUtil;
+    @Autowired
+    private  PacketMapper packetMapper;
+    @Autowired
+    private PacketManageService packetManageService;
     @Autowired
     private PacketStorageManageService packetStorageManageService;
 
@@ -135,7 +142,7 @@ public class PacketStorageManageHandler {
         if (StringUtils.isBlank(storage) || !StringUtils.isNumeric(storage))
             isAvailable = false;
         if (isAvailable) {
-            isSuccess = packetStorageManageService.addPacketStorage(Integer.valueOf(packetID), Integer.valueOf(goodsID), Integer.valueOf(repositoryID),
+            isSuccess = packetStorageManageService.addPacketStorage( Integer.valueOf(goodsID), Integer.valueOf(packetID),Integer.valueOf(repositoryID),
                     Integer.valueOf(number), Integer.valueOf(storage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 
@@ -144,11 +151,7 @@ public class PacketStorageManageHandler {
         return responseContent.generateResponse();
     }
 
-    /**
-     * 更新库存信息
-     *
-     * @return 返回一个map，其中：key 为 result表示操作的结果，包括：success 与 error
-     */
+
     @RequestMapping(value = "updatePacketStorage", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -159,14 +162,15 @@ public class PacketStorageManageHandler {
         String result = Response.RESPONSE_RESULT_ERROR;
 
         String goodsID = (String) params.get("goodsID");
-        String batchID = (String) params.get("batchID");
+        String packetID = (String) params.get("packetID");
         String repositoryID = (String) params.get("repositoryID");
         String number = (String) params.get("number");
         String storage = (String) params.get("storage");
+        String status = (String) params.get("status");
 
         if (StringUtils.isBlank(goodsID) || !StringUtils.isNumeric(goodsID))
             isAvailable = false;
-        if (StringUtils.isBlank(batchID) || !StringUtils.isNumeric(batchID))
+        if (StringUtils.isBlank(packetID) || !StringUtils.isNumeric(packetID))
             isAvailable = false;
         if (StringUtils.isBlank(repositoryID) || !StringUtils.isNumeric(repositoryID))
             isAvailable = false;
@@ -174,9 +178,17 @@ public class PacketStorageManageHandler {
             isAvailable = false;
         if (StringUtils.isBlank(storage) || !StringUtils.isNumeric(storage))
             isAvailable = false;
+        if (StringUtils.isBlank(status))
+            isAvailable = false;
+
+        PacketDO packetDO = packetMapper.selectByPacketID(Integer.valueOf(packetID));
+        if (packetDO != null && !packetDO.getStatus().equals(status)){
+            packetDO.setStatus(status);
+            packetMapper.update(packetDO);
+        }
 
         if (isAvailable) {
-            result = packetStorageManageService.updatePacketStorage(Integer.valueOf(goodsID), Integer.valueOf(batchID), Integer.valueOf(repositoryID),
+            result = packetStorageManageService.updatePacketStorage(Integer.valueOf(goodsID), Integer.valueOf(packetID), Integer.valueOf(repositoryID),
                     Integer.valueOf(number), Integer.valueOf(storage)) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
         }
 

@@ -30,7 +30,7 @@
 	function batchSelectorInit() {
 		$.ajax({
 			type : 'GET',
-			url : 'repositoryBatchManage/getRepositoryBatchList',
+			url : 'repositoryBatchManage/getBatchList',
 			dataType : 'json',
 			contentType : 'application/json',
 			data : {
@@ -41,11 +41,11 @@
 			},
 			success : function(response){
 				$.each(response.rows,function(index,elem){
-					$('#search_input_batch').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
+					$('#search_input_batch, #storage_batchID_edit').append("<option value='" + elem.id + "'>第 " + elem.id +" 批次</option>");
 				});
 			},
 			error : function(response){
-				$('#search_input_batch').append("<option value='-1'>加载失败</option>");
+				$('#search_input_batch, #storage_batchID_edit').append("<option value='-1'>加载失败</option>");
 			}
 		})
 	}
@@ -203,7 +203,6 @@
 		// load info
 		$('#storage_form_edit').bootstrapValidator("resetForm", true);
 		$('#storage_goodsID_edit').text(row.goodsID);
-		$('#storage_batchID_edit').text(row.batchID);
 		$('#storage_repositoryID_edit').text(row.repositoryID);
 		$('#storage_number_edit').val(row.number);
 	}
@@ -943,7 +942,7 @@
 								<label for="" class="control-label col-md-4 col-sm-4"> <span>批次ID：</span>
 								</label>
 								<div class="col-md-4 col-sm-4">
-									<p id="storage_batchID_edit" class="form-control-static"></p>
+									<select id="storage_batchID_edit" class="form-control-static"></select>
 								</div>
 							</div>
 							<div class="form-group">

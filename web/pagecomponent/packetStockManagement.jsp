@@ -315,8 +315,28 @@ function infoModal(type, msg) {
 		<div class="row" style="margin-top:80px"></div>
 	</div>
 	<div class="panel-footer">
-		<div style="text-align: right">
-			<button class="btn btn-success" id="submit">提交预报</button>
+		<div class="row">
+			<div class="col-md-6 col-sm-6">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-10 col-sm-11">
+						<div style="text-align: left">
+							<button class="btn btn-success" onclick="">批量操作</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-6">
+				<div class="row">
+					<div class="col-md-1 col-sm-1"></div>
+					<div class="col-md-10 col-sm-11">
+						<div style="text-align: right">
+							<button class="btn btn-success" id="submit">提交预报</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 </div>

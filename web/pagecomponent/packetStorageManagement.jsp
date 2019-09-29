@@ -259,7 +259,7 @@
 					// ajax
 					$.ajax({
 						type : "POST",
-						url : 'packetStorageManage/updateStorageRecord',
+						url : 'packetStorageManage/updatePacketStorage',
 						dataType : "json",
 						contentType : "application/json",
 						data : JSON.stringify(data),
@@ -300,7 +300,7 @@
 			// ajax
 			$.ajax({
 				type : "POST",
-				url : "packetStorageManage/addStorageRecord",
+				url : "packetStorageManage/addPacketStorage",
 				dataType : "json",
 				contentType : "application/json",
 				data : JSON.stringify(data),
@@ -344,7 +344,7 @@
 			// ajax
 			$.ajax({
 				type : "GET",
-				url : "packetStorageManage/deleteStorageRecord",
+				url : "packetStorageManage/deletePacketStorage",
 				dataType : "json",
 				contentType : "application/json",
 				data : data,
@@ -972,6 +972,17 @@
 								<div class="col-md-4 col-sm-4">
 									<input type="text" class="form-control" id="packet_storage_edit"
 										   name="packet_storage" placeholder="到货数量">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label col-md-4 col-sm-4"> <span>包裹状态：</span>
+								</label>
+								<div class="col-md-4 col-sm-4">
+									<select class="form-control" id="packet_status_edit"
+											name="packet_status">
+										<option value="发货中">发货中</option>
+										<option value="已签收">已签收</option>
+									</select>
 								</div>
 							</div>
 						</form>

@@ -362,9 +362,9 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         return resultSet;
     }
 
-    @UserOperation(value = "添加预报记录")
+    @UserOperation(value = "添加包裹库存记录")
     @Override
-    public boolean addPacketStorage(Integer packetID, Integer goodsID, Integer repositoryID, long number, long storage) throws PacketStorageManageServiceException {
+    public boolean addPacketStorage(Integer goodsID, Integer packetID,  Integer repositoryID, long number, long storage) throws PacketStorageManageServiceException {
         try {
             boolean isAvailable = true;
 
@@ -400,7 +400,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         }
     }
 
-    @UserOperation(value = "更新预报记录")
+    @UserOperation(value = "更新包裹库存记录")
     @Override
     public boolean updatePacketStorage(Integer goodsID, Integer packetID, Integer repositoryID, long number, long storage) throws PacketStorageManageServiceException {
         try {
@@ -422,7 +422,7 @@ public class PacketStorageManageServiceImpl implements PacketStorageManageServic
         }
     }
 
-    @UserOperation(value = "删除预报记录")
+    @UserOperation(value = "删除包裹库存记录")
     @Override
     public boolean deletePacketStorage(Integer goodsID, Integer packetID, Integer repositoryID) throws PacketStorageManageServiceException {
         try {

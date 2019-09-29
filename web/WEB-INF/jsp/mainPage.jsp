@@ -94,7 +94,7 @@ pageEncoding="UTF-8"%>
                                 <shiro:hasRole name="systemAdmin">
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
-                                           name="pagecomponent/packetStorageManagement.jsp">预报数量</a>
+                                           name="pagecomponent/packetStorageManagement.jsp">包裹库存</a>
                                     </li>
                                     <li class="list-group-item">
                                         <a href="javascript:void(0)" id="" class="menu_item"
@@ -188,7 +188,6 @@ pageEncoding="UTF-8"%>
                         </div>
                     </div>
                 </shiro:hasRole>
-
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
